@@ -1,0 +1,31 @@
+name: Deploy Skripsi Nia
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key dan Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 64000 36.50.77.25 >> ~/.ssh/known_hosts
+
+      - name: Deploy ke Production
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p 64000 okkyproj@36.50.77.25 << 'EOF'
+            cd laravel/anker-website
+            git pull origin main
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            php artisan optimize:clear
+            npm run build
+          EOF
