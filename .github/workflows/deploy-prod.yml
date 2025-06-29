@@ -25,10 +25,11 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_ed25519_deploy -p 64000 okkyproj@36.50.77.25 << 'EOF'
             cd laravel/anker-website
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan optimize:clear
-            npm install && npm run build || echo "Lewati npm jika tidak ada"
+            npm run build
             echo "✅ Deploy selesai!"
           EOF
 
