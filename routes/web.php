@@ -24,6 +24,9 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/cart', function () {
+    return Inertia::render('Cart');
+});
 Route::get('/product', function () {
     return Inertia::render('Product');
 });

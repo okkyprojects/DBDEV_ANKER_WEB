@@ -36,7 +36,7 @@ export default function Navbar() {
                                 </div>
                             </div>
                         ) : (
-                            // Normal navbar untuk mobile
+                            // Navbar untuk mobile
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4 flex-shrink-0">
                                     <Link href="/">
@@ -56,7 +56,9 @@ export default function Navbar() {
                                     >
                                         <FiSearch className="w-5 h-5 text-neutral-700" />
                                     </button>
-                                    <FiShoppingCart className="w-5 h-5 cursor-pointer" />
+                                    <Link href="/cart">
+                                        <FiShoppingCart className="w-5 h-5 cursor-pointer" />
+                                    </Link>
                                     <FiBell className="w-5 h-5 cursor-pointer" />
                                     <FiHeart className="w-5 h-5 cursor-pointer" />
                                     <FaUserCircle className="w-6 h-6 text-gray-700" />
@@ -92,7 +94,9 @@ export default function Navbar() {
 
                         {/* Icons */}
                         <div className="flex items-center space-x-4">
-                            <FiShoppingCart className="w-5 h-5 cursor-pointer" />
+                            <Link href="/cart">
+                                <FiShoppingCart className="w-5 h-5 cursor-pointer" />
+                            </Link>
                             <FiBell className="w-5 h-5 cursor-pointer" />
                             <FiHeart className="w-5 h-5 cursor-pointer" />
                             <div className="w-px h-6 bg-gray-300 mx-1" />
