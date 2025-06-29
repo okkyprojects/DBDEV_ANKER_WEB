@@ -1,0 +1,35 @@
+name: Deploy Anker Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key dan Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_deploy
+          chmod 600 ~/.ssh/id_ed25519_deploy
+          chmod 700 ~/.ssh
+          ssh-keyscan -p 64000 36.50.77.25 >> ~/.ssh/known_hosts
+
+      - name: Jalankan SSH Deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519_deploy -p 64000 okkyproj@36.50.77.25 << 'EOF'
+            cd laravel/anker-website
+            git fetch origin main
+            git reset --hard origin/main
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            php artisan optimize:clear
+            npm run build
+            echo "✅ Deploy selesai!"
+          EOF
+
