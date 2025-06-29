@@ -13,30 +13,22 @@ jobs:
       - name: Checkout kode
         uses: actions/checkout@v3
 
-      - name: Setup SSH key dan known_hosts
+      - name: Setup SSH Key dan Known Hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_deploy
+          chmod 600 ~/.ssh/id_ed25519_deploy
           chmod 700 ~/.ssh
           ssh-keyscan -p 64000 36.50.77.25 >> ~/.ssh/known_hosts
 
-      - name: Deploy ke Shared Hosting
+      - name: Jalankan SSH Deploy
         run: |
-          ssh -i ~/.ssh/id_ed25519 -p 64000 okkyproj@36.50.77.25 << 'EOF'
+          ssh -i ~/.ssh/id_ed25519_deploy -p 64000 okkyproj@36.50.77.25 << 'EOF'
             cd laravel/anker-website
-
-            echo "🛠 Menarik update dari Git..."
             git pull origin main
-
-            echo "📦 Menjalankan Composer..."
             composer install --no-interaction --prefer-dist --optimize-autoloader
-
-            echo "🚀 Optimize Laravel..."
             php artisan optimize:clear
-
-            echo "🔨 Build frontend (jika ada)..."
             npm install && npm run build || echo "Lewati npm jika tidak ada"
-
             echo "✅ Deploy selesai!"
           EOF
+
