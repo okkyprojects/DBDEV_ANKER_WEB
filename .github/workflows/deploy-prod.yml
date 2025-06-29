@@ -19,7 +19,6 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/authorized_keys
           ssh-keyscan -p 64000 36.50.77.25 >> ~/.ssh/known_hosts
 
       - name: Deploy ke Shared Hosting
