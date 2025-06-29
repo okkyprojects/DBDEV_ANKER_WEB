@@ -1,4 +1,4 @@
-name: Deploy Skripsi Nia
+name: Deploy Anker Website
 
 on:
   push:
@@ -13,19 +13,29 @@ jobs:
       - name: Checkout kode
         uses: actions/checkout@v3
 
-      - name: Setup SSH Key dan Known Hosts
+      - name: Setup SSH key dan known_hosts
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 64000 36.50.77.25 >> ~/.ssh/known_hosts
 
-      - name: Deploy ke Production
+      - name: Deploy ke Shared Hosting
         run: |
           ssh -i ~/.ssh/id_ed25519 -p 64000 okkyproj@36.50.77.25 << 'EOF'
             cd laravel/anker-website
+
+            echo "🛠 Menarik update dari Git..."
             git pull origin main
+
+            echo "📦 Menjalankan Composer..."
             composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            echo "🚀 Optimize Laravel..."
             php artisan optimize:clear
-            npm run build
+
+            echo "🔨 Build frontend (jika ada)..."
+            npm install && npm run build || echo "Lewati npm jika tidak ada"
+
+            echo "✅ Deploy selesai!"
           EOF
