@@ -42,7 +42,7 @@ export default function Footer() {
 
                     {/* Appstore */}
                     <div>
-                        <div className="flex flex-col gap-3 text-sm">
+                        <div className="flex flex-raw md:flex-col gap-3 text-sm">
                             <a href="/">
                                 <img
                                     src="/images/appstore/appstore.svg"

@@ -7,6 +7,7 @@ import HomeLayout from "@/Layouts/HomeLayout";
 import ProductCard from "@/Components/Card/ProductCard";
 import { useState } from "react";
 import { categories, products } from "@/Dummy/dummy";
+import Pagination from "@/Components/Pagination/Pagination";
 
 export default function Product() {
     const [selected, setSelected] = useState([]);
@@ -37,11 +38,11 @@ export default function Product() {
                                 {categories.map((item, index) => (
                                     <label
                                         key={index}
-                                        className="flex items-center gap-2 cursor-pointer"
+                                        className="inline-flex items-center cursor-pointer"
                                     >
                                         <input
                                             type="checkbox"
-                                            className="h-4 w-4 accent-green-600"
+                                            className="hidden peer"
                                             checked={selected.includes(
                                                 item.name
                                             )}
@@ -49,9 +50,25 @@ export default function Product() {
                                                 handleChange(item.name)
                                             }
                                         />
-                                        <p className="text-sm sm:text-base text-neutral-800">
+                                        <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="w-3 h-3 text-white  peer-checked:opacity-100 transition-opacity duration-200"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={3}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span className="ml-2 text-sm text-neutral-800">
                                             {item.name}
-                                        </p>
+                                        </span>
                                     </label>
                                 ))}
                             </div>
@@ -66,11 +83,11 @@ export default function Product() {
                                 {categories.map((item, index) => (
                                     <label
                                         key={index}
-                                        className="flex items-center gap-2 cursor-pointer"
+                                        className="inline-flex items-center cursor-pointer"
                                     >
                                         <input
                                             type="checkbox"
-                                            className="h-4 w-4 accent-green-600"
+                                            className="hidden peer"
                                             checked={selected.includes(
                                                 item.name
                                             )}
@@ -78,16 +95,31 @@ export default function Product() {
                                                 handleChange(item.name)
                                             }
                                         />
-                                        <p className="text-sm sm:text-base text-neutral-800">
+                                        <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="w-3 h-3 text-white  peer-checked:opacity-100 transition-opacity duration-200"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={3}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span className="ml-2 text-sm text-neutral-800">
                                             {item.name}
-                                        </p>
+                                        </span>
                                     </label>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* PRODUK LIST */}
                     <div className="lg:col-span-9 w-full">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                             <p className="text-xl sm:text-2xl lg:text-3xl font-medium">
@@ -116,6 +148,7 @@ export default function Product() {
                         </div>
                     </div>
                 </div>
+                <Pagination currentPage={1} totalPages={10} />
             </section>
         </HomeLayout>
     );

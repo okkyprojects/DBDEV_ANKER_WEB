@@ -27,6 +27,9 @@ Route::get('/', function () {
 Route::get('/product', function () {
     return Inertia::render('Product');
 });
+Route::get('/product/detail', function () {
+    return Inertia::render('DetailProduct');
+});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

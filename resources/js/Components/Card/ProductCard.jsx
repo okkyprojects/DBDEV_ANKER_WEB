@@ -1,10 +1,10 @@
-// components/ProductCard.jsx
+import { Link } from "@inertiajs/react";
 import { FaStar } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
 
 export default function ProductCard({ item }) {
     return (
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition">
+        <Link href="/product/detail" className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition">
             <img
                 src={item.img}
                 alt={item.name}
@@ -35,10 +35,10 @@ export default function ProductCard({ item }) {
                 <p className="text-xs sm:text-sm font-light text-neutral-900">
                     {item.seller}
                 </p>
-                <p className="flex items-center gap-1 text-[10px] sm:text-xs text-neutral-500">
+                <p className="flex items-center gap-1 text-[10px] sm:text-xs text-neutral-400">
                     <FaLocationDot size={15} /> {item.location}
                 </p>
             </div>
-        </div>
+        </Link>
     );
 }
