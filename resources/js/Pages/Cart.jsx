@@ -85,15 +85,16 @@ export default function Cart() {
                                     </label>
                                 </div>
                                 <div className="text-sm font-medium">
-                                    <label className="inline-flex items-start sm:items-center w-full cursor-pointer">
+                                    <label className="flex flex-col sm:flex-row w-full cursor-pointer gap-4">
+                                        {/* Checkbox */}
                                         <input
                                             type="checkbox"
                                             className="hidden peer"
                                         />
-                                        <div className="w-5 h-5 mt-1 sm:mt-0 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
+                                        <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
+                                                className="w-3 h-3 text-white peer-checked:opacity-100 opacity-0 transition-opacity duration-200"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -106,189 +107,47 @@ export default function Cart() {
                                                 />
                                             </svg>
                                         </div>
-
-                                        <div className="ml-4 w-full">
-                                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-5">
-                                                <div className="sm:col-span-2">
-                                                    <img
-                                                        src="/images/dummy/product/product2.svg"
-                                                        alt=""
-                                                        className="w-full h-28 object-cover rounded-xl"
-                                                    />
-                                                </div>
-                                                <div className="sm:col-span-7">
-                                                    <div className="flex flex-col gap-4 sm:gap-6 justify-center h-full">
-                                                        <div className="flex flex-col gap-1.5">
-                                                            <p className="text-sm font-medium">
-                                                                Nama produk
-                                                            </p>
-                                                            <p className="text-xs font-normal text-neutral-700">
-                                                                Varian : Varian
-                                                                X
-                                                            </p>
-                                                        </div>
-                                                        <p className="text-base font-normal">
-                                                            Rp 450.000
+                                        <div className="flex flex-col sm:flex-row justify-between w-full gap-4 sm:gap-5">
+                                            <div className="flex gap-4 w-full sm:w-auto">
+                                                <img
+                                                    src="/images/dummy/product/product2.svg"
+                                                    alt=""
+                                                    className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded-xl"
+                                                />
+                                                <div className="flex flex-col justify-center gap-4">
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="text-sm font-medium">
+                                                            Nama produk
+                                                        </p>
+                                                        <p className="text-xs text-neutral-700">
+                                                            Varian : Varian X
                                                         </p>
                                                     </div>
-                                                </div>
-
-                                                <div className="sm:col-span-3 flex flex-col sm:flex-col justify-between sm:h-full gap-4 sm:gap-0">
-                                                    <div className="flex justify-end gap-2.5 text-neutral-500">
-                                                        <GoPencil size={20} />
-                                                        <LuTrash size={20} />
-                                                    </div>
-                                                    <div className="flex gap-5 justify-end items-center">
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaMinus />
-                                                        </button>
-                                                        <div className="py-1">
-                                                            1
-                                                        </div>
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaPlus />
-                                                        </button>
-                                                    </div>
+                                                    <p className="text-base font-normal">
+                                                        Rp 450.000
+                                                    </p>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div className="text-sm font-medium">
-                                    <label className="inline-flex items-start sm:items-center w-full cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="hidden peer"
-                                        />
-                                        <div className="w-5 h-5 mt-1 sm:mt-0 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={3}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M5 13l4 4L19 7"
-                                                />
-                                            </svg>
-                                        </div>
 
-                                        <div className="ml-4 w-full">
-                                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-5">
-                                                <div className="sm:col-span-2">
-                                                    <img
-                                                        src="/images/dummy/product/product2.svg"
-                                                        alt=""
-                                                        className="w-full h-28 object-cover rounded-xl"
-                                                    />
-                                                </div>
-                                                <div className="sm:col-span-7">
-                                                    <div className="flex flex-col gap-4 sm:gap-6 justify-center h-full">
-                                                        <div className="flex flex-col gap-1.5">
-                                                            <p className="text-sm font-medium">
-                                                                Nama produk
-                                                            </p>
-                                                            <p className="text-xs font-normal text-neutral-700">
-                                                                Varian : Varian
-                                                                X
-                                                            </p>
-                                                        </div>
-                                                        <p className="text-base font-normal">
-                                                            Rp 450.000
-                                                        </p>
-                                                    </div>
+                                            {/* Edit + Qty */}
+                                            <div className="flex flex-row sm:flex-col justify-between items-end sm:items-end sm:justify-between gap-4">
+                                                {/* Edit */}
+                                                <div className="flex gap-2.5 text-neutral-500">
+                                                    <GoPencil size={20} />
+                                                    <LuTrash size={20} />
                                                 </div>
 
-                                                <div className="sm:col-span-3 flex flex-col sm:flex-col justify-between sm:h-full gap-4 sm:gap-0">
-                                                    <div className="flex justify-end gap-2.5 text-neutral-500">
-                                                        <GoPencil size={20} />
-                                                        <LuTrash size={20} />
+                                                {/* Qty */}
+                                                <div className="flex gap-4 items-center">
+                                                    <button className="rounded-full border border-neutral-200 p-2">
+                                                        <FaMinus />
+                                                    </button>
+                                                    <div className="py-1">
+                                                        1
                                                     </div>
-                                                    <div className="flex gap-5 justify-end items-center">
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaMinus />
-                                                        </button>
-                                                        <div className="py-1">
-                                                            1
-                                                        </div>
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaPlus />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div className="text-sm font-medium">
-                                    <label className="inline-flex items-start sm:items-center w-full cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="hidden peer"
-                                        />
-                                        <div className="w-5 h-5 mt-1 sm:mt-0 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={3}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M5 13l4 4L19 7"
-                                                />
-                                            </svg>
-                                        </div>
-
-                                        <div className="ml-4 w-full">
-                                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-5">
-                                                <div className="sm:col-span-2">
-                                                    <img
-                                                        src="/images/dummy/product/product2.svg"
-                                                        alt=""
-                                                        className="w-full h-28 object-cover rounded-xl"
-                                                    />
-                                                </div>
-                                                <div className="sm:col-span-7">
-                                                    <div className="flex flex-col gap-4 sm:gap-6 justify-center h-full">
-                                                        <div className="flex flex-col gap-1.5">
-                                                            <p className="text-sm font-medium">
-                                                                Nama produk
-                                                            </p>
-                                                            <p className="text-xs font-normal text-neutral-700">
-                                                                Varian : Varian
-                                                                X
-                                                            </p>
-                                                        </div>
-                                                        <p className="text-base font-normal">
-                                                            Rp 450.000
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="sm:col-span-3 flex flex-col sm:flex-col justify-between sm:h-full gap-4 sm:gap-0">
-                                                    <div className="flex justify-end gap-2.5 text-neutral-500">
-                                                        <GoPencil size={20} />
-                                                        <LuTrash size={20} />
-                                                    </div>
-                                                    <div className="flex gap-5 justify-end items-center">
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaMinus />
-                                                        </button>
-                                                        <div className="py-1">
-                                                            1
-                                                        </div>
-                                                        <button className="rounded-full border border-neutral-200 p-2">
-                                                            <FaPlus />
-                                                        </button>
-                                                    </div>
+                                                    <button className="rounded-full border border-neutral-200 p-2">
+                                                        <FaPlus />
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

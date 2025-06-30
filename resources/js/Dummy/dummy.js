@@ -5,6 +5,23 @@ export const categories = [
     { name: "Kategori 4", icon: "/images/icons/category.svg" },
     { name: "Kategori 5", icon: "/images/icons/category.svg" },
 ];
+export const banks = [
+    {
+        id: "bca",
+        name: "BCA Virtual Account",
+        logo: "/images/logo/bank/bca.svg",
+    },
+    {
+        id: "bni",
+        name: "BNI Virtual Account",
+        logo: "/images/logo/bank/bca.svg",
+    },
+    {
+        id: "bri",
+        name: "BRI Virtual Account",
+        logo: "/images/logo/bank/bca.svg",
+    },
+];
 
 export const products = [
     {
