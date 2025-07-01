@@ -94,7 +94,7 @@ export default function Cart() {
                                         <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white peer-checked:opacity-100 opacity-0 transition-opacity duration-200"
+                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -169,7 +169,7 @@ export default function Cart() {
                                     Rp 450.000
                                 </p>
                             </div>{" "}
-                            <button className="flex items-center justify-center gap-3 w-full bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-neutral-50 shadow-md text-sm sm:text-base">
+                            <button className="flex items-center justify-center gap-3 w-full bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-2 px-4 rounded-xl text-neutral-50 shadow-md text-sm sm:text-base">
                                 <p className="font-medium">Checkout</p>
                             </button>
                         </div>

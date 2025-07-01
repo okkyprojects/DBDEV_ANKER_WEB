@@ -123,11 +123,13 @@ export default function Register() {
             <Head title="Register" />
 
             <div className="w-full max-w-md rounded-xl shadow-md shadow-neutral-200 p-6 md:p-8">
-                <img
-                    src="/images/logo/primary.svg"
-                    alt="Logo"
-                    className="mx-auto mb-3 h-8"
-                />
+                <Link href="/">
+                    <img
+                        src="/images/logo/primary.svg"
+                        alt="Logo"
+                        className="mx-auto mb-3"
+                    />
+                </Link>
                 <h2 className="text-center text-lg font-semibold text-neutral-900 mb-1">
                     Selamat Datang
                 </h2>

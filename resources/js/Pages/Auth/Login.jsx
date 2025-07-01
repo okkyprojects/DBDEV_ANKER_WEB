@@ -99,11 +99,13 @@ export default function Login({ status, canResetPassword }) {
         // </GuestLayout>
         <AuthLayout>
             <div className="w-full max-w-md rounded-xl shadow-md shadow-neutral-200 p-6 md:p-8">
-                <img
-                    src="/images/logo/primary.svg"
-                    alt="Logo"
-                    className="mx-auto mb-3"
-                />
+                <Link href="/">
+                    <img
+                        src="/images/logo/primary.svg"
+                        alt="Logo"
+                        className="mx-auto mb-3"
+                    />
+                </Link>
                 <h2 className="text-center text-lg font-semibold text-neutral-900 mb-2">
                     Selamat Datang Kembali
                 </h2>
@@ -182,7 +184,7 @@ export default function Login({ status, canResetPassword }) {
                                 onChange={(e) =>
                                     setData("remember", e.target.checked)
                                 }
-                                className="accent-primary-600"
+                                className="accent-primary-600 checked:text-white"
                             />
                             <span>Ingat saya</span>
                         </label>

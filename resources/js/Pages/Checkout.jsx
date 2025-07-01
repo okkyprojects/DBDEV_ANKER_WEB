@@ -3,6 +3,8 @@ import HomeLayout from "@/Layouts/HomeLayout";
 import { FiChevronDown } from "react-icons/fi";
 import { useState } from "react";
 import { banks } from "@/Dummy/dummy";
+import Select from "react-select";
+import { styles } from "@/Config/global";
 
 export default function Checkout() {
     const [selectedBank, setSelectedBank] = useState("bca");
@@ -136,36 +138,30 @@ export default function Checkout() {
                             <h2 className="text-lg sm:text-xl font-medium mb-6">
                                 Metode Pembayaran
                             </h2>
-                            <div className="space-y-5">
-                                {banks.map((bank) => (
-                                    <label
-                                        key={bank.id}
-                                        className="border border-neutral-400 rounded-xl p-5 flex justify-between items-center cursor-pointer"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <img
-                                                src={bank.logo}
-                                                alt={bank.name}
-                                                className="w-10 h-auto"
-                                            />
-                                            <span className="text-sm text-neutral-900">
-                                                {bank.name}
-                                            </span>
-                                        </div>
-
-                                        <input
-                                            type="radio"
-                                            name="bank"
-                                            value={bank.id}
-                                            checked={selectedBank === bank.id}
-                                            onChange={() =>
-                                                setSelectedBank(bank.id)
-                                            }
-                                            className="w-5 h-5 accent-primary-600 focus:ring-0 focus:outline-none"
-                                        />
-                                    </label>
-                                ))}
-                            </div>
+                            <Select
+                                id="bank"
+                                name="bank"
+                                options={banks.map((bank) => ({
+                                    value: bank.id,
+                                    label: bank.name,
+                                }))}
+                                value={banks
+                                    .map((bank) => ({
+                                        value: bank.id,
+                                        label: bank.name,
+                                    }))
+                                    .find(
+                                        (option) =>
+                                            option.value === selectedBank
+                                    )}
+                                onChange={(option) =>
+                                    setSelectedBank(option.value)
+                                }
+                                styles={styles}
+                                classNamePrefix="react-select"
+                                isSearchable={true}
+                                placeholder="Pilih Bank"
+                            />
                         </div>
                     </div>
                     <div className="col-span-full md:col-span-4">
@@ -218,7 +214,7 @@ export default function Checkout() {
                                 <p>Total</p>
                                 <p>Rp 913.500</p>
                             </div>
-                            <button className="mt-5 w-full bg-[#00AEEF] hover:bg-[#0095cc] transition-colors duration-200 text-white font-medium py-3 rounded-xl text-sm sm:text-base shadow-md">
+                            <button className="mt-5 w-full bg-[#00AEEF] hover:bg-[#0095cc] transition-colors duration-200 text-white font-medium py-2 rounded-xl text-sm sm:text-base shadow-md">
                                 Checkout
                             </button>
                         </div>
