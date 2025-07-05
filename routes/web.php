@@ -39,17 +39,18 @@ Route::get('/product/detail', function () {
 
 
 //Auth
-Route::get('/stok/manajemen-stok', function () {
-    return Inertia::render('Stok/StokPage');
+Route::prefix('stok')->group(function () {
+    Route::get('/manajemen-stok', fn() => Inertia::render('Stok/StokPage'));
+    Route::get('/manajemen-stok/create', fn() => Inertia::render('Stok/ManajemenStok/Create'));
 });
-Route::get('/reporting/penjualan', function () {
-    return Inertia::render('Reporting/Penjualan');
+
+Route::prefix('reporting')->group(function () {
+    Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));
+    Route::get('/item', fn() => Inertia::render('Reporting/Item'));
 });
-Route::get('/reporting/item', function () {
-    return Inertia::render('Reporting/Item');
-});
-Route::get('/pesanan/manajemen-pesanan', function () {
-    return Inertia::render('Pesanan/ManajemenPesanan');
+
+Route::prefix('pesanan')->group(function () {
+    Route::get('/manajemen-pesanan', fn() => Inertia::render('Pesanan/ManajemenPesanan'));
 });
 
 Route::get('/dashboard', function () {

@@ -5,6 +5,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
+import { Link } from "@inertiajs/react";
 
 export default function StokPage() {
     const data = [
@@ -125,10 +126,10 @@ export default function StokPage() {
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Produk</p>
-                        <button className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full">
+                        <Link href="/stok/manajemen-stok/create" className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full">
                             <FaPlus />
                             Tambah Produk
-                        </button>
+                        </Link>
                     </div>
                     <div className="max-w-full overflow-x-auto ">
                         <table className="w-full table-auto">
