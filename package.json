@@ -23,8 +23,10 @@
         "framer-motion": "^12.23.0",
         "moment": "^2.30.1",
         "react-apexcharts": "^1.7.0",
+        "react-countdown": "^2.3.6",
         "react-icons": "^5.5.0",
         "react-select": "^5.10.1",
+        "react-tailwindcss-datepicker": "^1.7.3",
         "react-toastify": "^11.0.5",
         "swiper": "^11.2.10"
     }

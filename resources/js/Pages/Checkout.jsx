@@ -170,6 +170,13 @@ export default function Checkout() {
                                 Ringkasan Pesanan
                             </p>
                             <div className="space-y-5">
+                                <div className="flex items-center gap-2.5">
+                                    {" "}
+                                    <div className="w-8 h-8 bg-neutral-200 rounded-full flex-shrink-0"></div>
+                                    <p className="text-sm font-medium text-neutral-900">
+                                        Nama Toko
+                                    </p>
+                                </div>
                                 {[1, 2].map((_, i) => (
                                     <div
                                         key={i}

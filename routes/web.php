@@ -30,6 +30,9 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return Inertia::render('Checkout');
 });
+Route::get('/payment', function () {
+    return Inertia::render('Payment');
+});
 Route::get('/product', function () {
     return Inertia::render('Product');
 });

@@ -6,8 +6,10 @@ import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
+import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 
 export default function StokPage() {
+    const [showModalFilter, setShowModalFilter] = useState(false);
     const data = [
         {
             nama: "Sabun Cuci Piring Lemon 500ml",
@@ -88,7 +90,12 @@ export default function StokPage() {
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        <button
+                            onClick={() => {
+                                setShowModalFilter(!showModalFilter);
+                            }}
+                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                        >
                             <GrFilter size={20} />
                         </button>
                         <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
@@ -123,7 +130,10 @@ export default function StokPage() {
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Produk</p>
-                        <Link href="/stok/manajemen-stok/create" className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full">
+                        <Link
+                            href="/stok/manajemen-stok/create"
+                            className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                        >
                             <FaPlus />
                             Tambah Produk
                         </Link>
@@ -148,9 +158,7 @@ export default function StokPage() {
                                     <th className="min-w-[200px] px-4 py-4 ">
                                         Status
                                     </th>
-                                    <th className="px-4 py-4 ">
-                                        Aksi
-                                    </th>
+                                    <th className="px-4 py-4 ">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -201,14 +209,33 @@ export default function StokPage() {
                                                 }
                                                 className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
                                             >
-                                                Aksi <FaChevronDown size={14}/>
+                                                Aksi <FaChevronDown size={14} />
                                             </button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </div>{" "}
+                    {showModalFilter && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalFilter
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalFilter
+                                    isOpen={showModalFilter}
+                                    onClose={() => {
+                                        setShowModalFilter(!showModalFilter);
+                                    }}
+                                    onApplyFilter={() => {}}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </DefaultLayout>

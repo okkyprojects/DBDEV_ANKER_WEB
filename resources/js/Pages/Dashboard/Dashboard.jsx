@@ -13,43 +13,10 @@ import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
+import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
 
 export default function Dashboard() {
-    const data = [
-        {
-            nama: "Sabun Cuci Piring Lemon 500ml",
-            kategori: "Kebutuhan Rumah Tangga",
-            jumlahVarian: 2,
-            stok: 12,
-            status: "Active",
-            keyProduk: "P001",
-        },
-        {
-            nama: "Minyak Goreng 1L",
-            kategori: "Sembako",
-            jumlahVarian: 1,
-            stok: 3,
-            status: "Inactive",
-            keyProduk: "P002",
-        },
-        {
-            nama: "Gula Pasir 1kg",
-            kategori: "Sembako",
-            jumlahVarian: 1,
-            stok: 0,
-            status: "Rejected",
-            keyProduk: "P003",
-        },
-        {
-            nama: "Susu Kental Manis",
-            kategori: "Minuman",
-            jumlahVarian: 3,
-            stok: 50,
-            status: "Inreview",
-            keyProduk: "P004",
-        },
-    ];
-
+    const [showModalFilter, setShowModalFilter] = useState(false);
     const dataCard = [
         {
             title: "Pendapatan",
@@ -135,12 +102,12 @@ export default function Dashboard() {
         grid: {
             yaxis: {
                 lines: {
-                    show: false, 
+                    show: false,
                 },
             },
             xaxis: {
                 lines: {
-                    show: false, 
+                    show: false,
                 },
             },
         },
@@ -222,7 +189,12 @@ export default function Dashboard() {
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        <button
+                            onClick={() => {
+                                setShowModalFilter(!showModalFilter);
+                            }}
+                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                        >
                             <GrFilter size={20} />
                         </button>
                         <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
@@ -348,10 +320,13 @@ export default function Dashboard() {
                                     <th className="py-2 font-normal">Jumlah</th>
                                     <th className="py-2 font-normal">Status</th>
                                 </tr>
-                            </thead> 
+                            </thead>
                             <tbody>
                                 {[...Array(5)].map((_, idx) => (
-                                    <tr key={idx} className="text-sm text-neutral-600">
+                                    <tr
+                                        key={idx}
+                                        className="text-sm text-neutral-600"
+                                    >
                                         <td className="py-2">#ID-Pesanan</td>
                                         <td className="py-2">John Doe</td>
                                         <td className="py-2">01/07/2025</td>
@@ -365,7 +340,26 @@ export default function Dashboard() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </div>{" "}
+                    {showModalFilter && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalFilter
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalFilter
+                                    isOpen={showModalFilter}
+                                    onClose={() => {
+                                        setShowModalFilter(!showModalFilter);
+                                    }}
+                                    onApplyFilter={() => {}}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </DefaultLayout>

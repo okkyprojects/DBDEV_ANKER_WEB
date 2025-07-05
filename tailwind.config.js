@@ -8,6 +8,7 @@ module.exports = {
         "./storage/framework/views/*.php",
         "./resources/views/**/*.blade.php",
         "./resources/js/**/*.jsx",
+        "./node_modules/react-tailwindcss-datepicker/dist/index.esm.{js,ts}",
     ],
 
     theme: {
@@ -95,6 +96,20 @@ module.exports = {
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
                 dinnext: ['"DIN Next"', "sans-serif"],
+            },
+            keyframes: {
+                fadeIn: {
+                    "0%": { opacity: "0" },
+                    "100%": { opacity: "1" },
+                },
+                fadeOut: {
+                    "0%": { opacity: "1" },
+                    "100%": { opacity: "0" },
+                },
+            },
+            animation: {
+                fadeIn: "fadeIn 300ms ease-in-out",
+                fadeOut: "fadeOut 300ms ease-in-out",
             },
         },
     },
