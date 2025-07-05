@@ -64,7 +64,7 @@ const Navbar = () => {
                         <div className="flex items-center justify-start rtl:justify-end">
                             <button
                                 type="button"
-                                className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden"
+                                className="inline-flex items-center text-sm text-gray-500 rounded-lg sm:hidden"
                                 onClick={toggleSidebar}
                             >
                                 <RxHamburgerMenu size={21} />

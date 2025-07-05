@@ -72,7 +72,6 @@ export default function StokPage() {
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
-                {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">
                         Manajemen Stok
@@ -97,8 +96,6 @@ export default function StokPage() {
                         </button>
                     </div>
                 </div>
-
-                {/* KARTU STATISTIK */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {dataCard.map((item, index) => (
                         <div

@@ -28,7 +28,7 @@ Route::get('/cart', function () {
     return Inertia::render('Cart');
 });
 Route::get('/checkout', function () {
-return Inertia::render('Checkout');
+    return Inertia::render('Checkout');
 });
 Route::get('/product', function () {
     return Inertia::render('Product');
@@ -54,8 +54,9 @@ Route::prefix('pesanan')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return Inertia::render('Dashboard/Dashboard');
+});
+// ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
