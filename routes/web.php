@@ -42,6 +42,12 @@ Route::get('/product', function () {
 Route::get('/product/detail', function () {
     return Inertia::render('DetailProduct');
 });
+Route::get('/profil/informasi-pribadi', function () {
+    return Inertia::render('Profil/InformasiPribadi');
+});
+Route::get('/profil/alamat', function () {
+    return Inertia::render('Profil/Alamat');
+});
 
 
 //Auth
@@ -60,8 +66,9 @@ Route::prefix('pesanan')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Dashboard')->name('dashboard');
-});
+    return Inertia::render('Dashboard/Dashboard');
+})->name('dashboard');
+
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
