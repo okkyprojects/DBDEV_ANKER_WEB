@@ -46,6 +46,20 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-2 text-sm">
+                                <label htmlFor="kategoriProduk">Brand</label>
+                                <select
+                                    id="kategoriProduk"
+                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                >
+                                    <option value="">Pilih Brand</option>
+                                    <option value="makanan">Makanan</option>
+                                    <option value="minuman">Minuman</option>
+                                    <option value="alat-rumah-tangga">
+                                        Alat Rumah Tangga
+                                    </option>
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="kategoriProduk">
                                     Kategori Produk
                                 </label>
@@ -53,7 +67,7 @@ export default function Create() {
                                     id="kategoriProduk"
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                 >
-                                    <option value="">Pilih kategori</option>
+                                    <option value="">Pilih Kategori</option>
                                     <option value="makanan">Makanan</option>
                                     <option value="minuman">Minuman</option>
                                     <option value="alat-rumah-tangga">

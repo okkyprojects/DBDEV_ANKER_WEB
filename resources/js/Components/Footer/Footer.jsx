@@ -12,7 +12,7 @@ export default function Footer() {
                         <Link href="/">
                             <img
                                 src="/images/logo/primary.svg"
-                                className="h-6 lg:h-8"
+                                className="h-4 lg:h-6"
                                 alt="Anker Logo"
                             />
                         </Link>

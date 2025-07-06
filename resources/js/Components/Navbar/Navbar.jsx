@@ -4,7 +4,6 @@ import {
     FiSearch,
     FiShoppingCart,
     FiBell,
-    FiHeart,
     FiArrowLeft,
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
@@ -60,7 +59,6 @@ export default function Navbar() {
                                         <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                                     </Link>
                                     <FiBell className="w-5 h-5 cursor-pointer" />
-                                    <FiHeart className="w-5 h-5 cursor-pointer" />
                                     <FaUserCircle className="w-6 h-6 text-gray-700" />
                                 </div>
                             </div>
@@ -98,7 +96,6 @@ export default function Navbar() {
                                 <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                             </Link>
                             <FiBell className="w-5 h-5 cursor-pointer" />
-                            <FiHeart className="w-5 h-5 cursor-pointer" />
                             <div className="w-px h-6 bg-gray-300 mx-1" />
                             <div className="flex items-center space-x-2">
                                 <FaUserCircle className="w-6 h-6 text-gray-700" />

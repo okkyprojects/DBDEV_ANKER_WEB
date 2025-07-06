@@ -14,6 +14,7 @@ export default function StokPage() {
         {
             nama: "Sabun Cuci Piring Lemon 500ml",
             kategori: "Kebutuhan Rumah Tangga",
+            brand: "Anker",
             jumlahVarian: 2,
             stok: 12,
             status: "Active",
@@ -22,6 +23,7 @@ export default function StokPage() {
         {
             nama: "Minyak Goreng 1L",
             kategori: "Sembako",
+            brand: "Anker",
             jumlahVarian: 1,
             stok: 3,
             status: "Inactive",
@@ -30,6 +32,7 @@ export default function StokPage() {
         {
             nama: "Gula Pasir 1kg",
             kategori: "Sembako",
+            brand: "Anker",
             jumlahVarian: 1,
             stok: 0,
             status: "Rejected",
@@ -38,6 +41,7 @@ export default function StokPage() {
         {
             nama: "Susu Kental Manis",
             kategori: "Minuman",
+            brand: "Anker",
             jumlahVarian: 3,
             stok: 50,
             status: "Inreview",
@@ -150,6 +154,9 @@ export default function StokPage() {
                                         Kategori
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
+                                        Brand
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Jumlah Varian
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -175,6 +182,9 @@ export default function StokPage() {
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item.kategori}
+                                        </td>
+                                        <td className=" px-4 py-5">
+                                            {item.brand}
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item.jumlahVarian}

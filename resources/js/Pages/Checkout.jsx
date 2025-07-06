@@ -5,8 +5,13 @@ import { useState } from "react";
 import { banks } from "@/Dummy/dummy";
 import Select from "react-select";
 import { styles } from "@/Config/global";
+import { IoHome } from "react-icons/io5";
+import ModalGantiAlamat from "@/Components/Modal/Checkout/ModalGantiAlamat";
+import ModalTambahAlamat from "@/Components/Modal/Profil/ModalTambahAlamat";
 
 export default function Checkout() {
+    const [showModalGantiAlamat, setShowModalGantiAlamat] = useState(false);
+    const [showModalTambahAlamat, setShowModalTambahAlamat] = useState(false);
     const [selectedBank, setSelectedBank] = useState("bca");
     return (
         <HomeLayout>
@@ -18,94 +23,57 @@ export default function Checkout() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
                     <div className="col-span-full md:col-span-8 flex flex-col gap-5">
                         <div className="rounded-xl bg-white p-5">
-                            <h2 className="text-lg sm:text-xl font-medium mb-6">
-                                Informasi Kontak
-                            </h2>
-                            <div className="space-y-5">
-                                <div className="flex flex-col gap-2 text-sm">
-                                    <label htmlFor="">Nama Penerima</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Masukkan Nama"
-                                        className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                    />
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-lg sm:text-xl font-medium ">
+                                    Alamat Penerima
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setShowModalGantiAlamat(true);
+                                    }}
+                                    className="rounded-xl px-4 py-1.5 text-sm border text-neutral-500"
+                                >
+                                    Ganti Alamat
+                                </button>
+                            </div>
+                            {/* <button
+                                onClick={() => setShowModalTambahAlamat(true)}
+                                className="flex gap-2 justify-center items-center px-5 py-2 rounded-lg border w-full border-primary-600 text-primary-600"
+                            >
+                                <span>+</span>Tambah Alamat
+                            </button> */}
+                            <div className="border border-primary-600 bg-primary-50 p-5 rounded-xl relative">
+                                <div className="absolute top-4 right-4 bg-primary-200 text-primary-800 text-xs px-3 py-1 rounded-full">
+                                    Utama
                                 </div>
-                                <div className="flex flex-col gap-2 text-sm">
-                                    <label htmlFor="">Nomor HP</label>
-                                    <input
-                                        type="tel"
-                                        placeholder="Masukkan Nomor HP"
-                                        className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                    />
+                                <div className=" text-sm text-neutral-800">
+                                    <div className="flex items-center gap-3">
+                                        {" "}
+                                        <IoHome
+                                            size={20}
+                                            className="text-primary-600"
+                                        />
+                                        <p className="font-semibold ">Rumah</p>
+                                    </div>
+                                    <div className="text-neutral-500">
+                                        <p className="py-3">
+                                            Joan Doe{" "}
+                                            <span className="text-primary-600">
+                                                •
+                                            </span>{" "}
+                                            +62888-8888-8888
+                                        </p>
+                                        <p>
+                                            JL. Kemana saja No 99
+                                            <br />
+                                            Kecamatan Mana, Kabupaten Saja
+                                            <br />
+                                            Jawa Timur [Kode pos]
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-xl bg-white p-5">
-                            <h2 className="text-lg sm:text-xl font-medium mb-6">
-                                Alamat Penerima
-                            </h2>
-                            <div className="space-y-5">
-                                <div className="flex flex-col gap-2 text-sm">
-                                    <label htmlFor="">Alamat</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Masukkan alamat penerima"
-                                        className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2 text-sm">
-                                    <label htmlFor="">Nomor HP</label>
-                                    <input
-                                        type="tel"
-                                        placeholder="Masukkan Nomor HP"
-                                        className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
-                                    <div className="flex flex-col gap-2 text-sm">
-                                        <label htmlFor="">Provinsi</label>
-                                        <select className="px-3 py-2 rounded-xl border border-neutral-400 text-sm text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none">
-                                            <option value="">
-                                                Pilih Provinsi
-                                            </option>
-                                            <option value="Jawa Timur">
-                                                Jawa Timur
-                                            </option>
-                                            <option value="Jawa Barat">
-                                                Jawa Barat
-                                            </option>
-                                            <option value="DKI Jakarta">
-                                                DKI Jakarta
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-col gap-2 text-sm">
-                                        <label htmlFor="">Kota</label>
-                                        <select className="px-3 py-2 rounded-xl border border-neutral-400 text-sm text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none">
-                                            <option value="">Pilih Kota</option>
-                                            <option value="Malang">
-                                                Malang
-                                            </option>
-                                            <option value="Bandung">
-                                                Bandung
-                                            </option>
-                                            <option value="Jakarta Selatan">
-                                                Jakarta Selatan
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div className="flex flex-col gap-2 text-sm">
-                                        <label htmlFor="">Kode Pos</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Masukkan Kode Pos"
-                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>{" "}
                         <div className="rounded-xl bg-white p-5">
                             <h2 className="text-lg sm:text-xl font-medium mb-6">
                                 Pengiriman{" "}
@@ -226,6 +194,48 @@ export default function Checkout() {
                             </button>
                         </div>
                     </div>
+                    {showModalGantiAlamat && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalGantiAlamat
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalGantiAlamat
+                                    isOpen={showModalGantiAlamat}
+                                    onClose={() => {
+                                        setShowModalGantiAlamat(
+                                            !showModalGantiAlamat
+                                        );
+                                    }}
+                                    onApplyFilter={() => {}}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {showModalTambahAlamat && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalTambahAlamat
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalTambahAlamat
+                                    isOpen={showModalTambahAlamat}
+                                    onClose={() => {
+                                        setShowModalTambahAlamat(
+                                            !showModalTambahAlamat
+                                        );
+                                    }}
+                                    onApplyFilter={() => {}}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
         </HomeLayout>
