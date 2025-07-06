@@ -33,3 +33,14 @@
     src: url("/fonts/DINNext/DINNextW1G-Bold.otf") format("opentype");
     font-weight: 700;
 }
+
+@layer utilities {
+    .scrollbar-hidden {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;
+    }
+}

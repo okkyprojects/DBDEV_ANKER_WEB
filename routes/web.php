@@ -30,6 +30,9 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return Inertia::render('Checkout');
 });
+Route::get('/riwayat-transaksi', function () {
+    return Inertia::render('RiwayatTransaksi');
+});
 Route::get('/payment', function () {
     return Inertia::render('Payment');
 });
@@ -57,7 +60,7 @@ Route::prefix('pesanan')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Dashboard');
+    return Inertia::render('Dashboard/Dashboard')->name('dashboard');
 });
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
