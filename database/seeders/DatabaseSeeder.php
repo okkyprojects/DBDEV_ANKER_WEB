@@ -3,6 +3,15 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Brand;
+use App\Models\Cart;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
+use App\Models\User;
+use App\Models\Variant;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +27,14 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-
+        User::factory()->count(5)->create();
+        Category::factory()->count(50)->create();
+        Brand::factory()->count(5)->create();
+        Product::factory()->count(30)->create();
+        Variant::factory()->count(60)->create();
+        Cart::factory()->count(200)->create();
+        Transaction::factory()->count(200)->create();
+        TransactionItem::factory()->count(200)->create();
         $this->call([
             UserSeeder::class,
         ]);
