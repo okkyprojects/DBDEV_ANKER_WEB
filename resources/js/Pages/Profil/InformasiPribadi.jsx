@@ -40,6 +40,28 @@ const InformasiPribadi = () => {
                                     Informasi Pribadi
                                 </Link>
                                 <Link
+                                    href="/profil/informasi-toko"
+                                    className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+                                        currentUrl === "/profil/informasi-toko"
+                                            ? "bg-blue-50 text-primary-600 font-medium"
+                                            : "text-neutral-700 hover:text-primary-600"
+                                    }`}
+                                >
+                                    <BsShopWindow size={18} />
+                                    Informasi Toko
+                                </Link>
+                                <Link
+                                    href="/profil/ubah-kata-sandi"
+                                    className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+                                        currentUrl === "/profil/ubah-kata-sandi"
+                                            ? "bg-blue-50 text-primary-600 font-medium"
+                                            : "text-neutral-700 hover:text-primary-600"
+                                    }`}
+                                >
+                                    <GoLock size={18} />
+                                    Ubah Kata Sandi
+                                </Link>
+                                <Link
                                     href="/profil/alamat"
                                     className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                                         currentUrl === "/profil/alamat"

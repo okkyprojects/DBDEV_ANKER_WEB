@@ -45,6 +45,12 @@ Route::get('/product/detail', function () {
 Route::get('/profil/informasi-pribadi', function () {
     return Inertia::render('Profil/InformasiPribadi');
 });
+Route::get('/profil/informasi-toko', function () {
+    return Inertia::render('Profil/InformasiToko');
+});
+Route::get('/profil/ubah-kata-sandi', function () {
+    return Inertia::render('Profil/InformasiToko');
+});
 Route::get('/profil/alamat', function () {
     return Inertia::render('Profil/Alamat');
 });
