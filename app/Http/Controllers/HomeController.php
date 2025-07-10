@@ -29,9 +29,10 @@ class HomeController extends Controller
 
     public function product(Request $request)
     {
-        $data['categories'] = $this->category->index(new Request());
-        $data['brands'] = $this->brand->index(new Request());
-        $data['products'] = $this->product->index($request);
-        return Inertia::render('Product', compact('data'));
+        return Inertia::render('Product',  [
+            'categories' => $this->category->index(new Request()),
+            'brands' => $this->brand->index(new Request()),
+            'products' => $this->product->index($request),
+        ]);
     }
 }

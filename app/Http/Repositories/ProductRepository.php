@@ -34,11 +34,22 @@ class ProductRepository
                 $q->where('products.name', 'like', '%' . $request->input('search') . '%');
             })
             ->when($request->filled('category'), function ($q) use ($request) {
-                $q->where('categories.name', 'like', '%' . $request->input('category') . '%');
+                $category = $request->input('category');
+                $q->when(is_array($category), function ($q) use ($category) {
+                    $q->whereIn('categories.name', $category);
+                }, function ($q) use ($category) {
+                    $q->where('categories.name', 'like', '%' . $category . '%');
+                });
             })
             ->when($request->filled('brand'), function ($q) use ($request) {
-                $q->where('brands.name', 'like', '%' . $request->input('brand') . '%');
+                $brand = $request->input('brand');
+                $q->when(is_array($brand), function ($q) use ($brand) {
+                    $q->whereIn('brands.name', $brand);
+                }, function ($q) use ($brand) {
+                    $q->where('brands.name', 'like', '%' . $brand . '%');
+                });
             })
+
             ->when(
                 $request->has('status') && in_array($request->input('status'), ['0', '1']),
                 function ($q) use ($request) {

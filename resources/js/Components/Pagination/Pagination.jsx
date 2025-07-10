@@ -1,64 +1,73 @@
 import React from "react";
 import { router } from "@inertiajs/react";
 
-const Pagination = ({ currentPage, totalPages }) => {
-    const goToPage = (page) => {
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set("page", page);
-        router.get(
-            `${window.location.pathname}?${searchParams.toString()}`,
-            {},
-            { preserveScroll: true }
-        );
+const Pagination = ({ links }) => {
+    const goToPage = (url) => {
+        if (!url) return;
+        router.get(url, {}, { preserveScroll: true });
     };
 
-    const parsedCurrent = parseInt(currentPage);
-    const parsedTotal = parseInt(totalPages);
+    // Ambil current page dari link yang active
+    const activeLink = links.find((l) => l.active);
+    const currentPage = activeLink ? parseInt(activeLink.label) : 1;
+
+    // Ambil angka-angka aja (exclude prev/next)
+    const numberedLinks = links.filter((link) => !isNaN(link.label));
+
     const maxPagesToShow = 3;
+    const parsedTotal = numberedLinks.length;
+    let startIndex =
+        numberedLinks.findIndex((l) => parseInt(l.label) === currentPage) -
+        Math.floor(maxPagesToShow / 2);
 
-    let startPage = Math.max(1, parsedCurrent - Math.floor(maxPagesToShow / 2));
-    let endPage = startPage + maxPagesToShow - 1;
+    if (startIndex < 0) startIndex = 0;
+    let paginatedLinks = numberedLinks.slice(
+        startIndex,
+        startIndex + maxPagesToShow
+    );
 
-    if (endPage > parsedTotal) {
-        endPage = parsedTotal;
-        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    if (
+        paginatedLinks.length < maxPagesToShow &&
+        numberedLinks.length >= maxPagesToShow
+    ) {
+        paginatedLinks = numberedLinks.slice(-maxPagesToShow);
     }
+
+    const previous = links.find((l) => l.label.toLowerCase().includes("prev"));
+    const next = links.find((l) => l.label.toLowerCase().includes("next"));
 
     return (
         <nav className="mb-10 mt-8 flex justify-center">
             <ul className="flex flex-wrap gap-3">
                 <li>
                     <button
-                        onClick={() => goToPage(parsedCurrent - 1)}
-                        disabled={parsedCurrent === 1}
+                        onClick={() => goToPage(previous?.url)}
+                        disabled={!previous?.url}
                         className="px-4 h-10 disabled:cursor-not-allowed"
                     >
                         Sebelumnya
                     </button>
                 </li>
 
-                {Array.from(
-                    { length: endPage - startPage + 1 },
-                    (_, index) => startPage + index
-                ).map((page) => (
-                    <li key={page}>
+                {paginatedLinks.map((link, index) => (
+                    <li key={index}>
                         <button
-                            onClick={() => goToPage(page)}
+                            onClick={() => goToPage(link.url)}
                             className={`px-4 h-10 rounded-xl border ${
-                                page === parsedCurrent
-                                    ? "bg-primary-100 text-primary-600  border-primary-100"
+                                link.active
+                                    ? "bg-primary-100 text-primary-600 border-primary-100"
                                     : "bg-white text-neutral-400 border-neutral-400 hover:bg-gray-100"
                             }`}
                         >
-                            {page}
+                            {link.label}
                         </button>
                     </li>
                 ))}
 
                 <li>
                     <button
-                        onClick={() => goToPage(parsedCurrent + 1)}
-                        disabled={parsedCurrent === parsedTotal}
+                        onClick={() => goToPage(next?.url)}
+                        disabled={!next?.url}
                         className="px-4 h-10 disabled:cursor-not-allowed"
                     >
                         Berikutnya

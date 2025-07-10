@@ -1,29 +1,57 @@
-import Footer from "@/Components/Footer/Footer";
-import { Link, Head } from "@inertiajs/react";
-import "swiper/css";
-import "swiper/css/pagination";
-import Navbar from "@/Components/Navbar/Navbar";
+import { Head, router } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 import HomeLayout from "@/Layouts/HomeLayout";
 import ProductCard from "@/Components/Card/ProductCard";
-import { useState } from "react";
-import { categories, products } from "@/Dummy/dummy";
 import Pagination from "@/Components/Pagination/Pagination";
 
-export default function Product({ data }) {
-    console.log(data.products?.data);
-    const [selected, setSelected] = useState([]);
+export default function Product({ products, categories, brands }) {
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState([]);
+    const [sortBy, setSortBy] = useState("");
 
-    const handleChange = (name) => {
-        setSelected((prev) =>
-            prev.includes(name)
-                ? prev.filter((item) => item !== name)
-                : [...prev, name]
-        );
+    const fetchFiltered = (
+        category = selectedCategories,
+        brand = selectedBrands,
+        sort = sortBy
+    ) => {
+        const query = {};
+
+        if (category.length > 0) query.category = category;
+        if (brand.length > 0) query.brand = brand;
+        if (sort) query.sort_by = sort;
+
+        router.get(route("home.product"), query, {
+            preserveState: true,
+            replace: true,
+        });
+    };
+      
+
+    const handleCategoryChange = (name) => {
+        const updated = selectedCategories.includes(name)
+            ? selectedCategories.filter((item) => item !== name)
+            : [...selectedCategories, name];
+        setSelectedCategories(updated);
+        fetchFiltered(updated, selectedBrands, sortBy);
+    };
+
+    const handleBrandChange = (name) => {
+        const updated = selectedBrands.includes(name)
+            ? selectedBrands.filter((item) => item !== name)
+            : [...selectedBrands, name];
+        setSelectedBrands(updated);
+        fetchFiltered(selectedCategories, updated, sortBy);
+    };
+
+    const handleSortChange = (e) => {
+        const value = e.target.value;
+        setSortBy(value);
+        fetchFiltered(selectedCategories, selectedBrands, value);
     };
 
     return (
         <HomeLayout>
-            <Head title="Welcome" />
+            <Head title="Produk" />
             <section className="max-w-7xl mx-auto px-5 p-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                     <div className="bg-white h-fit rounded-xl p-5 lg:col-span-3 w-full">
@@ -36,7 +64,7 @@ export default function Product({ data }) {
                                 Kategori
                             </p>
                             <div className="flex flex-col gap-2.5">
-                                {data?.categories?.map((item, index) => (
+                                {categories?.map((item, index) => (
                                     <label
                                         key={index}
                                         className="inline-flex items-center cursor-pointer"
@@ -44,17 +72,17 @@ export default function Product({ data }) {
                                         <input
                                             type="checkbox"
                                             className="hidden peer"
-                                            checked={selected.includes(
+                                            checked={selectedCategories.includes(
                                                 item.name
                                             )}
                                             onChange={() =>
-                                                handleChange(item.name)
+                                                handleCategoryChange(item.name)
                                             }
                                         />
                                         <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white  peer-checked:opacity-100 transition-opacity duration-200"
+                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -75,13 +103,12 @@ export default function Product({ data }) {
                             </div>
                         </div>
 
-                        {/* Brand */}
                         <div className="mt-6">
                             <p className="text-sm sm:text-base font-semibold mb-3">
                                 Brand
                             </p>
                             <div className="flex flex-col gap-2.5">
-                                {data?.brands?.map((item, index) => (
+                                {brands?.map((item, index) => (
                                     <label
                                         key={index}
                                         className="inline-flex items-center cursor-pointer"
@@ -89,17 +116,17 @@ export default function Product({ data }) {
                                         <input
                                             type="checkbox"
                                             className="hidden peer"
-                                            checked={selected.includes(
+                                            checked={selectedBrands.includes(
                                                 item.name
                                             )}
                                             onChange={() =>
-                                                handleChange(item.name)
+                                                handleBrandChange(item.name)
                                             }
                                         />
                                         <div className="w-5 h-5 rounded border-2 border-primary-600 peer-checked:bg-primary-600 peer-checked:border-primary-600 flex items-center justify-center transition-colors duration-200">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                className="w-3 h-3 text-white  peer-checked:opacity-100 transition-opacity duration-200"
+                                                className="w-3 h-3 text-white peer-checked:opacity-100 transition-opacity duration-200"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -126,30 +153,35 @@ export default function Product({ data }) {
                             <p className="text-xl sm:text-2xl lg:text-3xl font-medium">
                                 Produk
                             </p>
-                            <select className="text-sm sm:text-base border border-neutral-200 rounded-xl px-3 py-2 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none">
-                                <option value="terbaru">Terbaru</option>
-                                <option value="harga-terendah">
+                            <select
+                                className="text-sm sm:text-base border border-neutral-200 rounded-xl px-3 py-2 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                value={sortBy}
+                                onChange={handleSortChange}
+                            >
+                                <option value="">Terbaru</option>
+                                <option value="lowest_price">
                                     Harga Terendah
                                 </option>
-                                <option value="harga-tertinggi">
+                                <option value="highest_price">
                                     Harga Tertinggi
                                 </option>
-                                <option value="terpopuler">Terpopuler</option>
                             </select>
                         </div>
 
                         <p className="text-xs sm:text-sm text-neutral-700 mb-4">
-                            Menampilkan 1–12 dari 36 produk
+                            Menampilkan {products?.from}–{products?.to} dari{" "}
+                            {products?.total} produk
                         </p>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                            {data?.products?.data?.map((item, index) => (
+                            {products?.data?.map((item, index) => (
                                 <ProductCard key={index} item={item} />
                             ))}
                         </div>
+
+                        <Pagination links={products?.links} />
                     </div>
                 </div>
-                <Pagination currentPage={1} totalPages={10} />
             </section>
         </HomeLayout>
     );
