@@ -1,10 +1,14 @@
+import { formatRupiah } from "@/Utils/utils";
 import { Link } from "@inertiajs/react";
 import { FaStar } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
 
 export default function ProductCard({ item }) {
     return (
-        <Link href="/product/detail" className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition">
+        <Link
+            href="/product/detail"
+            className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition"
+        >
             <img
                 src={item.img}
                 alt={item.name}
@@ -15,28 +19,26 @@ export default function ProductCard({ item }) {
                     {item.name}
                 </p>
                 <p className="text-xs sm:text-sm font-light text-neutral-600">
-                    {item.category}
+                    {item.category.name}
                 </p>
 
                 <div className="flex items-center gap-1 my-1.5">
                     <div className="flex items-center gap-1 text-warning-400">
-                        {Array.from({ length: Math.floor(item.rating) }).map(
-                            (_, i) => (
-                                <FaStar key={i} />
-                            )
-                        )}
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <FaStar key={i} />
+                        ))}
                     </div>
                     <p className="text-neutral-500 text-sm">(80)</p>
                 </div>
 
                 <p className="text-lg sm:text-xl text-neutral-900 font-medium mb-1.5">
-                    Rp {item.price.toLocaleString("id-ID")}
+                    {formatRupiah(item.price)}
                 </p>
                 <p className="text-xs sm:text-sm font-light text-neutral-900">
-                    {item.seller}
+                    Siapa
                 </p>
                 <p className="flex items-center gap-1 text-[10px] sm:text-xs text-neutral-400">
-                    <FaLocationDot size={15} /> {item.location}
+                    <FaLocationDot size={15} /> Kota Malang
                 </p>
             </div>
         </Link>

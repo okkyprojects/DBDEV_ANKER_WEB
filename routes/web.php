@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,14 +17,8 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Beranda', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('/product', [HomeController::class, 'product'])->name('home.product');
 Route::get('/cart', function () {
     return Inertia::render('Cart');
 });
@@ -35,9 +30,6 @@ Route::get('/riwayat-transaksi', function () {
 });
 Route::get('/payment', function () {
     return Inertia::render('Payment');
-});
-Route::get('/product', function () {
-    return Inertia::render('Product');
 });
 Route::get('/product/detail', function () {
     return Inertia::render('DetailProduct');

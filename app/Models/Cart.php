@@ -9,9 +9,8 @@ class Cart extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'uuid',
         'user_id',
-        'variant_uuid',
-        'quantity',
     ];
 
     public function user()
@@ -22,8 +21,10 @@ class Cart extends Model
     /**
      * Relasi ke Variant
      */
-    public function variant()
+    public function variants()
     {
-        return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid');
+        return $this->belongsToMany(Variant::class, 'cart_items', 'cart_uuid', 'variant_uuid')
+            ->withPivot('quantity', 'price')
+            ->withTimestamps();
     }
 }

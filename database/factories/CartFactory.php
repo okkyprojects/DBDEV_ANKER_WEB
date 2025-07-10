@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Variant;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,9 +21,8 @@ class CartFactory extends Factory
     public function definition(): array
     {
         return [
+            'uuid' => (string) Str::uuid(),
             'user_id' => User::inRandomOrder()->first()?->id,
-            'variant_uuid' => Variant::inRandomOrder()->first()?->uuid,
-            'quantity' => $this->faker->numberBetween(1, 5),
         ];
     }
 }

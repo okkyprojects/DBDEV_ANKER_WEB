@@ -8,7 +8,7 @@ import {
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 
-export default function Navbar() {
+export default function Navbar({auth}) {
     const [showMobileSearch, setShowMobileSearch] = useState(false);
 
     return (
@@ -59,7 +59,32 @@ export default function Navbar() {
                                         <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                                     </Link>
                                     <FiBell className="w-5 h-5 cursor-pointer" />
-                                    <FaUserCircle className="w-6 h-6 text-gray-700" />
+                                    {auth?.user ? (
+                                        <div className="flex items-center space-x-2">
+                                            <FaUserCircle className="w-6 h-6 text-gray-700" />
+                                            <span className="text-sm font-medium">
+                                                {auth.user.name}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <Link
+                                                href="/login"
+                                                className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
+                                            >
+                                                Login
+                                            </Link>
+                                            <span className="text-sm text-neutral-400">
+                                                |
+                                            </span>
+                                            <Link
+                                                href="/register"
+                                                className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
+                                            >
+                                                Register
+                                            </Link>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -98,10 +123,32 @@ export default function Navbar() {
                             <FiBell className="w-5 h-5 cursor-pointer" />
                             <div className="w-px h-6 bg-gray-300 mx-1" />
                             <div className="flex items-center space-x-2">
-                                <FaUserCircle className="w-6 h-6 text-gray-700" />
-                                <span className="text-sm font-medium">
-                                    Joan Doe
-                                </span>
+                                {auth?.user ? (
+                                    <div className="flex items-center space-x-2">
+                                        <FaUserCircle className="w-6 h-6 text-gray-700" />
+                                        <span className="text-sm font-medium">
+                                            {auth.user.name}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <Link
+                                            href="/login"
+                                            className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
+                                        >
+                                            Login
+                                        </Link>
+                                        <span className="text-sm text-neutral-400">
+                                            |
+                                        </span>
+                                        <Link
+                                            href="/register"
+                                            className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
+                                        >
+                                            Register
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

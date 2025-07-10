@@ -3,7 +3,7 @@ import { Link, Head } from "@inertiajs/react";
 import { FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay,FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Navbar from "@/Components/Navbar/Navbar";
@@ -13,7 +13,7 @@ import BrandCard from "@/Components/Card/BrandCard";
 import ProductCard from "@/Components/Card/ProductCard";
 import { categories, products } from "@/Dummy/dummy";
 
-export default function Beranda({ auth, laravelVersion, phpVersion }) {
+export default function Beranda({data}) {
     return (
         <HomeLayout>
             <Head title="Welcome" />
@@ -56,19 +56,29 @@ export default function Beranda({ auth, laravelVersion, phpVersion }) {
                 </Swiper>
             </section>
             <section className="max-w-7xl mx-auto px-5 py-10">
-                <h2 className="text-xl sm:text-2xl  font-medium text-neutral-900 mb-1">
+                <h2 className="text-xl sm:text-2xl font-medium text-neutral-900 mb-1">
                     Belanja Berdasarkan Kategori
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-700 mb-5">
                     Lebih cepat, lebih mudah. Langsung temukan kelompok produk
                     yang Anda cari.
                 </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-                    {categories.map((item, index) => (
-                        <CategoryCard key={index} item={item} />
+                <Swiper
+                    slidesPerView="auto"
+                    spaceBetween={16}
+                    freeMode={true}
+                    modules={[FreeMode]}
+                    className="overflow-hidden"
+                >
+                    {data?.categories?.map((item, index) => (
+                        <SwiperSlide
+                            key={index}
+                            className="!w-[140px] sm:!w-[180px] lg:!w-[200px]"
+                        >
+                            <CategoryCard item={item} />
+                        </SwiperSlide>
                     ))}
-                </div>
+                </Swiper>
             </section>
             <section className="max-w-7xl mx-auto px-5 py-10">
                 <h2 className="text-xl sm:text-2xl  font-medium text-neutral-900 mb-1">
@@ -78,11 +88,22 @@ export default function Beranda({ auth, laravelVersion, phpVersion }) {
                     Temukan koleksi eksklusif dari brand-brand favorit pilihan.
                 </p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-                    {categories.map((item, index) => (
-                        <BrandCard key={index} item={item} />
+                <Swiper
+                    slidesPerView="auto"
+                    spaceBetween={16}
+                    freeMode={true}
+                    modules={[FreeMode]}
+                    className="overflow-hidden"
+                >
+                    {data?.brands?.map((item, index) => (
+                        <SwiperSlide
+                            key={index}
+                            className="!w-[140px] sm:!w-[180px] lg:!w-[200px]"
+                        >
+                            <CategoryCard item={item} />
+                        </SwiperSlide>
                     ))}
-                </div>
+                </Swiper>
             </section>
             <section className="max-w-7xl mx-auto px-5 py-10">
                 <h2 className="text-xl sm:text-2xl  font-medium text-neutral-900 mb-1">
@@ -98,7 +119,10 @@ export default function Beranda({ auth, laravelVersion, phpVersion }) {
                         <ProductCard key={index} item={item} />
                     ))}
                 </div>
-                <Link href="/product" className="block w-fit mx-auto text-primary-600 font-medium rounded-xl border border-primary-600 px-8 py-2.5 mt-5 transition-all duration-300 hover:bg-primary-600 hover:text-white hover:shadow-lg">
+                <Link
+                    href="/product"
+                    className="block w-fit mx-auto text-primary-600 font-medium rounded-xl border border-primary-600 px-8 py-2.5 mt-5 transition-all duration-300 hover:bg-primary-600 hover:text-white hover:shadow-lg"
+                >
                     Tampilkan produk lainnya
                 </Link>
             </section>

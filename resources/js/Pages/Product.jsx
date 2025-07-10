@@ -9,7 +9,8 @@ import { useState } from "react";
 import { categories, products } from "@/Dummy/dummy";
 import Pagination from "@/Components/Pagination/Pagination";
 
-export default function Product() {
+export default function Product({ data }) {
+    console.log(data.products?.data);
     const [selected, setSelected] = useState([]);
 
     const handleChange = (name) => {
@@ -35,7 +36,7 @@ export default function Product() {
                                 Kategori
                             </p>
                             <div className="flex flex-col gap-2.5">
-                                {categories.map((item, index) => (
+                                {data?.categories?.map((item, index) => (
                                     <label
                                         key={index}
                                         className="inline-flex items-center cursor-pointer"
@@ -80,7 +81,7 @@ export default function Product() {
                                 Brand
                             </p>
                             <div className="flex flex-col gap-2.5">
-                                {categories.map((item, index) => (
+                                {data?.brands?.map((item, index) => (
                                     <label
                                         key={index}
                                         className="inline-flex items-center cursor-pointer"
@@ -142,7 +143,7 @@ export default function Product() {
                         </p>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                            {products.map((item, index) => (
+                            {data?.products?.data?.map((item, index) => (
                                 <ProductCard key={index} item={item} />
                             ))}
                         </div>
