@@ -6,7 +6,7 @@ import { FaLocationDot } from "react-icons/fa6";
 export default function ProductCard({ item }) {
     return (
         <Link
-            href="/product/detail"
+            href={route("home.product.show", { uuid: item.uuid })}
             className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition"
         >
             <img

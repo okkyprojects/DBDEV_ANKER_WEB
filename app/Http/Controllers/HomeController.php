@@ -35,4 +35,9 @@ class HomeController extends Controller
             'products' => $this->product->index($request),
         ]);
     }
+    public function product_show($uuid)
+    {
+        $data['product'] = $this->product->single($uuid);
+        return Inertia::render('DetailProduct',  compact('data'));
+    }
 }

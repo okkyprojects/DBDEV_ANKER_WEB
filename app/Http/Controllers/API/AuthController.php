@@ -44,17 +44,29 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'email'    => 'required|email',
+                'password' => 'required|string|min:6',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
 
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Email atau password salah'],
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah',
+                'errors'  => [
+                    'email' => ['Email atau password salah'],
+                ]
+            ], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

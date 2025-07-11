@@ -5,15 +5,17 @@ import { useState } from "react";
 import { FaCartShopping, FaLocationDot } from "react-icons/fa6";
 import { IoIosInformationCircle } from "react-icons/io";
 import { products } from "@/Dummy/dummy";
+import { formatRupiah } from "@/Utils/utils";
 
-export default function DetailProduct() {
+export default function DetailProduct({ data }) {
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+    const selectedVariant = data.product.variants[selectedVariantIndex];
+    console.log(data["product"]);
     const images = [
-        "/images/dummy/product/product.jpeg",
-        "/images/dummy/product/product2.svg",
-        "/images/dummy/product/product3.jpg",
+        data["product"].img,
+        ...data["product"].variants.map((v) => v.img).filter(Boolean),
     ];
-
-    const [activeImage, setActiveImage] = useState(images[0]);
 
     return (
         <HomeLayout>
@@ -22,20 +24,19 @@ export default function DetailProduct() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="bg-white p-4 sm:p-5 rounded-xl">
                         <img
-                            src={activeImage}
+                            src={images[activeImageIndex]}
                             alt="Gambar utama"
                             className="w-full h-60 sm:h-80 md:h-[28rem] object-cover object-center rounded-2xl mb-5 transition-all duration-300"
                         />
-
                         <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
                             {images.map((img, index) => (
                                 <img
                                     key={index}
                                     src={img}
                                     alt={`Thumbnail ${index}`}
-                                    onClick={() => setActiveImage(img)}
+                                    onClick={() => setActiveImageIndex(index)}
                                     className={`w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover cursor-pointer border-2 transition-all duration-200 ${
-                                        activeImage === img
+                                        index === activeImageIndex
                                             ? "border-primary-600"
                                             : "border-transparent hover:border-neutral-100"
                                     }`}
@@ -47,23 +48,7 @@ export default function DetailProduct() {
                             Deskripsi Produk
                         </h2>
                         <p className="text-sm sm:text-base font-light text-justify">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Hic et sit itaque magni assumenda, doloremque
-                            illo deleniti aut consequuntur eos ipsam, dolor
-                            dolorum praesentium? Repellendus debitis aperiam
-                            minima odio assumenda, quam inventore alias deleniti
-                            ducimus, ea amet facere sit totam sint, ratione
-                            similique iure. Minima et, obcaecati quae
-                            voluptatem, voluptatum nobis delectus, quia
-                            consectetur ducimus libero explicabo reprehenderit
-                            quidem labore exercitationem ipsam repellendus nihil
-                            dolore! Nobis laboriosam vero, impedit aspernatur
-                            fugit natus recusandae nihil. Nulla ratione
-                            veritatis suscipit, perferendis magni aliquid. Nemo
-                            ducimus quidem, animi vitae, dolorem aspernatur
-                            repellendus magnam eaque assumenda quae quaerat
-                            reiciendis dicta tempore dolores inventore
-                            blanditiis.
+                            {data?.product?.description}
                         </p>
 
                         <div className="mt-5 flex items-center gap-3">
@@ -86,25 +71,36 @@ export default function DetailProduct() {
                     <div className="bg-white p-4 sm:p-5 rounded-xl h-fit sticky top-32">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">
-                                <div className="px-4 py-1.5 rounded-full bg-primary-100 text-primary-800">
-                                    Kategori 1
+                                <div className="px-4 py-1.5 rounded-full bg-info-100 text-info-800">
+                                    {data?.product?.brand?.name}
                                 </div>
                                 <div className="px-4 py-1.5 rounded-full bg-primary-100 text-primary-800">
-                                    Kategori 2
+                                    {data?.product?.category?.name}
                                 </div>
                             </div>
 
                             <h2 className="text-xl sm:text-2xl font-semibold text-neutral-800">
-                                Nama Produk
+                                {data?.product?.name}
                             </h2>
 
                             <div className="flex flex-col gap-1">
-                                <p className="line-through text-lg sm:text-xl text-neutral-500">
-                                    Rp 1.000.000
-                                </p>
-                                <p className="text-2xl sm:text-3xl text-primary-600 font-medium">
-                                    Rp 750.000
-                                </p>
+                                <div className="flex flex-col gap-1">
+                                    <p className="line-through text-lg sm:text-xl text-neutral-500">
+                                        {formatRupiah(
+                                            Number(selectedVariant.price) +
+                                                Number(
+                                                    selectedVariant.discount_price
+                                                )
+                                        )}
+                                    </p>
+                                    <p className="text-2xl sm:text-3xl text-primary-600 font-medium">
+                                        {formatRupiah(
+                                            Number(
+                                                selectedVariant.discount_price
+                                            )
+                                        )}
+                                    </p>
+                                </div>
                             </div>
 
                             <div className="flex gap-2 items-center text-sm">
@@ -117,16 +113,24 @@ export default function DetailProduct() {
 
                             <div className="flex gap-2 items-center text-sm">
                                 <p>Varian :</p>
-                                <p className="font-bold">Varian x</p>
+                                <p className="font-bold">
+                                    {selectedVariant.name}
+                                </p>
                             </div>
-
                             <div className="flex flex-wrap gap-3 sm:gap-4">
-                                {images.map((img, index) => (
+                                {data?.product?.variants?.map((item, index) => (
                                     <img
                                         key={index}
-                                        src={img}
+                                        src={item?.img}
                                         alt={`Thumbnail ${index}`}
-                                        className="w-20 h-20 rounded-xl object-cover cursor-pointer border-2 border-transparent hover:border-neutral-100 transition-all duration-200"
+                                        onClick={() =>
+                                            setSelectedVariantIndex(index)
+                                        }
+                                        className={`w-20 h-20 rounded-xl object-cover cursor-pointer border-2 transition-all duration-200 ${
+                                            selectedVariantIndex === index
+                                                ? "border-primary-600"
+                                                : "border-transparent hover:border-neutral-100"
+                                        }`}
                                     />
                                 ))}
                             </div>

@@ -75,4 +75,13 @@ class ProductRepository
         });
         return $products;
     }
+    public function single($uuid)
+    {
+        $data = $this->product
+            ->with(['brand', 'category', 'variants'])
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        return $data;
+    }
 }

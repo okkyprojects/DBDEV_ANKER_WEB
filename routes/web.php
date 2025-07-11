@@ -19,6 +19,7 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/product', [HomeController::class, 'product'])->name('home.product');
+Route::get('/product/{uuid}', [HomeController::class, 'product_show'])->name('home.product.show');
 Route::get('/cart', function () {
     return Inertia::render('Cart');
 });

@@ -12,12 +12,10 @@ class CartItemFactory extends Factory
     {
         $variant = Variant::inRandomOrder()->first();
         $cart = Cart::inRandomOrder()->first();
-
         return [
-            'cart_uuid' => $cart?->uuid,
-            'variant_uuid' => $variant?->uuid,
+            'cart_uuid' => null,        
+            'variant_uuid' => null,     
             'quantity' => $this->faker->numberBetween(1, 5),
-            'price' => $variant?->price ?? 0,
         ];
     }
 }

@@ -23,8 +23,15 @@ class Cart extends Model
      */
     public function variants()
     {
-        return $this->belongsToMany(Variant::class, 'cart_items', 'cart_uuid', 'variant_uuid')
-            ->withPivot('quantity', 'price')
+        return $this->belongsToMany(
+            Variant::class,
+            'cart_items',
+            'cart_uuid',     
+            'variant_uuid',    
+            'uuid',          
+            'uuid'         
+        )
+            ->withPivot('quantity')
             ->withTimestamps();
     }
 }

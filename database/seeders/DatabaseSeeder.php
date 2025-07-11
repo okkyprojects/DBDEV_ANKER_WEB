@@ -34,11 +34,12 @@ class DatabaseSeeder extends Seeder
         Product::factory()->count(30)->create();
         Variant::factory()->count(60)->create();
         Cart::factory()->count(200)->create();
-        CartItem::factory()->count(500)->create();
+        // CartItem::factory()->count(500)->create();
         Transaction::factory()->count(200)->create();
         TransactionItem::factory()->count(200)->create();
         $this->call([
             UserSeeder::class,
+            CartItemSeeder::class,
         ]);
     }
 }
