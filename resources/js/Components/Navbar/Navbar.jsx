@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     FiSearch,
     FiShoppingCart,
     FiBell,
     FiArrowLeft,
+    FiLogOut,
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
+import { IoLogOutOutline } from "react-icons/io5";
 
-export default function Navbar({auth}) {
+export default function Navbar() {
+    const { auth } = usePage().props;
+    const [showDropdown, setShowDropdown] = useState(false);
     const [showMobileSearch, setShowMobileSearch] = useState(false);
 
     return (
@@ -60,11 +64,67 @@ export default function Navbar({auth}) {
                                     </Link>
                                     <FiBell className="w-5 h-5 cursor-pointer" />
                                     {auth?.user ? (
-                                        <div className="flex items-center space-x-2">
-                                            <FaUserCircle className="w-6 h-6 text-gray-700" />
-                                            <span className="text-sm font-medium">
-                                                {auth.user.name}
-                                            </span>
+                                        <div className="relative">
+                                            <div
+                                                onClick={() =>
+                                                    setShowDropdown(
+                                                        (prev) => !prev
+                                                    )
+                                                }
+                                                className="flex items-center space-x-2 cursor-pointer"
+                                            >
+                                                <FaUserCircle className="w-6 h-6 text-gray-700" />
+                                                <span className="text-sm font-medium">
+                                                    {auth.user.name}
+                                                </span>
+                                            </div>
+
+                                            {showDropdown && (
+                                                <div
+                                                    className="z-50 absolute right-0 mt-2 w-64 bg-white divide-y divide-gray-100 rounded shadow-lg"
+                                                    id="dropdown-user"
+                                                >
+                                                    <div className="px-4 py-4 flex items-center">
+                                                        <img
+                                                            className="w-10 h-10 mr-2 rounded-full"
+                                                            src={
+                                                                auth.user
+                                                                    .fotoProfile
+                                                                    ? auth.user
+                                                                          .fotoProfile
+                                                                    : "/images/profile/profile.png"
+                                                            }
+                                                            alt="user photo"
+                                                        />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                                {auth.user.name}
+                                                            </p>
+                                                            <p className="text-xs text-gray-400 truncate">
+                                                                {
+                                                                    auth.user
+                                                                        .email
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="py-1">
+                                                        <Link
+                                                            href="/logout"
+                                                            method="post"
+                                                            as="button"
+                                                            className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                        >
+                                                            <IoLogOutOutline
+                                                                className="mr-2"
+                                                                size={22}
+                                                            />
+                                                            Logout
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -74,9 +134,7 @@ export default function Navbar({auth}) {
                                             >
                                                 Login
                                             </Link>
-                                            <span className="text-sm text-neutral-400">
-                                                |
-                                            </span>
+                                            <div className="w-px h-6 bg-gray-300 mx-1" />
                                             <Link
                                                 href="/register"
                                                 className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
@@ -124,11 +182,62 @@ export default function Navbar({auth}) {
                             <div className="w-px h-6 bg-gray-300 mx-1" />
                             <div className="flex items-center space-x-2">
                                 {auth?.user ? (
-                                    <div className="flex items-center space-x-2">
-                                        <FaUserCircle className="w-6 h-6 text-gray-700" />
-                                        <span className="text-sm font-medium">
-                                            {auth.user.name}
-                                        </span>
+                                    <div className="relative">
+                                        <div
+                                            onClick={() =>
+                                                setShowDropdown((prev) => !prev)
+                                            }
+                                            className="flex items-center space-x-2 cursor-pointer"
+                                        >
+                                            <FaUserCircle className="w-6 h-6 text-gray-700" />
+                                            <span className="text-sm font-medium">
+                                                {auth.user.name}
+                                            </span>
+                                        </div>
+
+                                        {showDropdown && (
+                                            <div
+                                                className="z-50 absolute right-0 mt-2 w-64 bg-white divide-y divide-gray-100 rounded shadow-lg"
+                                                id="dropdown-user"
+                                            >
+                                                <div className="px-4 py-4 flex items-center">
+                                                    <img
+                                                        className="w-10 h-10 mr-2 rounded-full"
+                                                        src={
+                                                            auth.user
+                                                                .fotoProfile
+                                                                ? auth.user
+                                                                      .fotoProfile
+                                                                : "/images/profile/profile.png"
+                                                        }
+                                                        alt="user photo"
+                                                    />
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                                            {auth.user.name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-400 truncate">
+                                                            {auth.user.email}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="py-1">
+                                                    <Link
+                                                        href="/logout"
+                                                        method="post"
+                                                        as="button"
+                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                    >
+                                                        <IoLogOutOutline
+                                                            className="mr-2"
+                                                            size={22}
+                                                        />
+                                                        Logout
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">
@@ -138,9 +247,7 @@ export default function Navbar({auth}) {
                                         >
                                             Login
                                         </Link>
-                                        <span className="text-sm text-neutral-400">
-                                            |
-                                        </span>
+                                        <div className="w-px h-6 bg-gray-300 mx-1" />
                                         <Link
                                             href="/register"
                                             className="text-sm text-primary-600 hover:text-primary-600/90 font-medium"
