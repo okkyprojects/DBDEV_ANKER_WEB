@@ -21,7 +21,7 @@ class BrandFactory extends Factory
             'uuid' => Str::uuid(),
             'name' => $this->faker->word,
             'status' => $this->faker->boolean,
-            'img' => $this->faker->imageUrl(640, 480, 'categories', true),
+            'img' => 'https://fastly.picsum.photos/id/8/300/100.jpg?hmac=fEbCJREOWHtYm21WgwubKRUVUp7vPF2V9FY9gSJHwZs',
         ];
     }
 }
