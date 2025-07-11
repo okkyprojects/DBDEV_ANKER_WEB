@@ -42,7 +42,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = $this->repository->single($id);
+        return $this->response->index($data);
     }
 
     /**
