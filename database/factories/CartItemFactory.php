@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use App\Models\Cart;
 use App\Models\Variant;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -13,6 +14,7 @@ class CartItemFactory extends Factory
         $variant = Variant::inRandomOrder()->first();
         $cart = Cart::inRandomOrder()->first();
         return [
+            'uuid' => Str::uuid(),
             'cart_uuid' => null,        
             'variant_uuid' => null,
             'is_select'   => false,

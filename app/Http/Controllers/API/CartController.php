@@ -32,4 +32,10 @@ class CartController extends Controller
         $data = $this->cartRepository->store($request);
         return $data;
     }
+
+    public function destroy($id)
+    {
+        $data = $this->cartRepository->destroy($id);
+        return $data;
+    }
 }

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class CartItem extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
     public $incrementing = false;
-    protected $primaryKey = null;
     protected $keyType = 'string';
     protected $fillable = [
+        'uuid',
         'cart_uuid',
         'variant_uuid',
         'quantity',

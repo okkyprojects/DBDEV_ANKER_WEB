@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_items', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
             $table->uuid('cart_uuid');
             $table->uuid('variant_uuid');
             $table->unsignedInteger('quantity')->default(1);
-            $table->boolean('is_select')->default(false);
+            $table->boolean('is_select')->default(false); 
             $table->timestamps();
-            $table->primary(['cart_uuid', 'variant_uuid']);
             $table->foreign('cart_uuid')->references('uuid')->on('carts')->onDelete('cascade');
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->onDelete('cascade');
         });
