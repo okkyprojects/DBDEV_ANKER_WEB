@@ -2,10 +2,11 @@ import { Link, Head } from "@inertiajs/react";
 import HomeLayout from "@/Layouts/HomeLayout";
 import ProductCard from "@/Components/Card/ProductCard";
 import { useState } from "react";
-import { FaCartShopping, FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaPlus } from "react-icons/fa6";
 import { IoIosInformationCircle } from "react-icons/io";
 import { products } from "@/Dummy/dummy";
 import { formatRupiah } from "@/Utils/utils";
+import { IoCartOutline } from "react-icons/io5";
 
 export default function DetailProduct({ data }) {
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -95,9 +96,7 @@ export default function DetailProduct({ data }) {
                                     </p>
                                     <p className="text-2xl sm:text-3xl text-primary-600 font-medium">
                                         {formatRupiah(
-                                            Number(
-                                                selectedVariant.discount_price
-                                            )
+                                            Number(selectedVariant.price)
                                         )}
                                     </p>
                                 </div>
@@ -135,11 +134,15 @@ export default function DetailProduct({ data }) {
                                 ))}
                             </div>
 
-                            <button className="flex items-center justify-center gap-3 bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-neutral-50 shadow-md text-sm sm:text-base">
-                                <FaCartShopping className="text-base sm:text-lg" />
+                            <button className="flex items-center justify-center gap-3 bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-neutral-50 text-sm sm:text-base">
+                                <FaPlus className="text-base sm:text-lg" />
                                 <p className="font-medium">
                                     Tambah ke keranjang
                                 </p>
+                            </button>
+                            <button className="flex items-center justify-center gap-3 border border-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-primary-600 hover:text-neutral-50 text-sm sm:text-base">
+                                <IoCartOutline className="text-base sm:text-lg" />
+                                <p className="font-medium">Beli Sekarang</p>
                             </button>
                         </div>
                     </div>

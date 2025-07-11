@@ -126,6 +126,29 @@ export default function Beranda({data}) {
                     Tampilkan produk lainnya
                 </Link>
             </section>
+            <style jsx global>{`
+                .swiper-pagination {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 0;
+                    right: 0;
+                    width: 100%;
+                    text-align: center; 
+                    padding: 0; 
+                }
+                .swiper-pagination-bullet {
+                    background-color: rgba(255, 255, 255, 0.5);
+                    border-radius: 4px;
+                    height: 4px;
+                    opacity: 1;
+                }
+                .swiper-pagination-bullet-active {
+                    background-color: rgba(255, 255, 255, 1);
+                    width: 45px !important;
+                    border-radius: 4px;
+                    transition: width 0.3s ease, background-color 0.3s ease;
+                }
+            `}</style>
         </HomeLayout>
     );
 }

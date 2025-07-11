@@ -14,7 +14,8 @@ class CartItemFactory extends Factory
         $cart = Cart::inRandomOrder()->first();
         return [
             'cart_uuid' => null,        
-            'variant_uuid' => null,     
+            'variant_uuid' => null,
+            'is_select'   => false,
             'quantity' => $this->faker->numberBetween(1, 5),
         ];
     }

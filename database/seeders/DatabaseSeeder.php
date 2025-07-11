@@ -31,8 +31,12 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(5)->create();
         Category::factory()->count(50)->create();
         Brand::factory()->count(5)->create();
-        Product::factory()->count(30)->create();
-        Variant::factory()->count(60)->create();
+        Product::factory()->count(30)->create()->each(function ($product) {
+            Variant::factory()->count(rand(1, 3))->create([
+                'product_uuid' => $product->uuid,
+            ]);
+        });
+
         Cart::factory()->count(200)->create();
         // CartItem::factory()->count(500)->create();
         Transaction::factory()->count(200)->create();

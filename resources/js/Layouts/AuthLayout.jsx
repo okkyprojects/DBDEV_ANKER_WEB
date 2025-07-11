@@ -90,7 +90,7 @@ export default function AuthLayout({ children }) {
                 <style jsx global>{`
                     .swiper-pagination {
                         position: absolute;
-                        bottom: 40px;
+                        bottom: 10px;
                         left: 0;
                         width: 100%;
                         text-align: left;
@@ -114,7 +114,7 @@ export default function AuthLayout({ children }) {
                             255,
                             1
                         ); 
-                        width: 40px !important;
+                        width: 45px !important;
                         border-radius: 4px;
                         transition: width 0.3s ease, background-color 0.3s ease;
                     }
