@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        $this->call(LocationSeeder::class);
+        $this->call(UserSeeder::class);
         User::factory()->count(5)->create();
         Category::factory()->count(50)->create();
         Brand::factory()->count(5)->create();
@@ -41,9 +43,6 @@ class DatabaseSeeder extends Seeder
         // CartItem::factory()->count(500)->create();
         Transaction::factory()->count(200)->create();
         TransactionItem::factory()->count(200)->create();
-        $this->call([
-            UserSeeder::class,
-            CartItemSeeder::class,
-        ]);
+        $this->call(CartItemSeeder::class);
     }
 }

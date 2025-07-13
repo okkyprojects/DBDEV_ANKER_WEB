@@ -6,7 +6,9 @@ import { FaLocationDot, FaPlus } from "react-icons/fa6";
 import { IoIosInformationCircle } from "react-icons/io";
 import { products } from "@/Dummy/dummy";
 import { formatRupiah } from "@/Utils/utils";
+import { router } from "@inertiajs/react";
 import { IoCartOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 export default function DetailProduct({ data }) {
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -17,6 +19,26 @@ export default function DetailProduct({ data }) {
         data["product"].img,
         ...data["product"].variants.map((v) => v.img).filter(Boolean),
     ];
+    const handleAddToCart = () => {
+        router.post(
+            "/cart",
+            {
+                variant_uuid: selectedVariant.uuid,
+                quantity: 1,
+            },
+            {
+                onSuccess: () => {
+                    toast.success("Berhasil ditambahkan ke keranjang!");
+                },
+                onError: (errors) => {
+                    const msg =
+                        errors?.variant_uuid || "Gagal menambahkan produk";
+                    toast.error(msg);
+                },
+                preserveScroll: true,
+            }
+        );
+    };
 
     return (
         <HomeLayout>
@@ -60,11 +82,12 @@ export default function DetailProduct({ data }) {
                             />
                             <div className="flex flex-col gap-0.5">
                                 <p className="text-sm font-medium">
-                                    Nama Toko/Dealer
+                                    {data?.product?.seller?.seller_name}
                                 </p>
                                 <p className="flex items-center gap-1 text-[10px] sm:text-xs font-light text-neutral-400">
                                     <FaLocationDot size={14} />
-                                    Malang, Jawa Timur
+                                    {data?.product?.seller?.city?.nama},{" "}
+                                    {data?.product?.seller?.province?.nama}
                                 </p>
                             </div>
                         </div>
@@ -134,7 +157,10 @@ export default function DetailProduct({ data }) {
                                 ))}
                             </div>
 
-                            <button className="flex items-center justify-center gap-3 bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-neutral-50 text-sm sm:text-base">
+                            <button
+                                onClick={handleAddToCart}
+                                className="flex items-center justify-center gap-3 bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-3 px-4 rounded-xl text-neutral-50 text-sm sm:text-base"
+                            >
                                 <FaPlus className="text-base sm:text-lg" />
                                 <p className="font-medium">
                                     Tambah ke keranjang

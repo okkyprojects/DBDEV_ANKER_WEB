@@ -4,6 +4,8 @@ import { Link, usePage } from "@inertiajs/react";
 import { FiUser, FiMapPin, FiLogOut, FiUpload, FiTrash2 } from "react-icons/fi";
 import { PiNotePencilDuotone } from "react-icons/pi";
 import ModalEditInformasiPibadi from "@/Components/Modal/Profil/ModalEditInformasiPribadi";
+import { GoLock } from "react-icons/go";
+import { BsShopWindow } from "react-icons/bs";
 
 const InformasiPribadi = () => {
     const [showModalEdit, setShowModalEdit] = useState(false);

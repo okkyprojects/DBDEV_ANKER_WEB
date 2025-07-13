@@ -8,7 +8,6 @@ export default function Product({ products, categories, brands }) {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [sortBy, setSortBy] = useState("");
-
     const fetchFiltered = (
         category = selectedCategories,
         brand = selectedBrands,

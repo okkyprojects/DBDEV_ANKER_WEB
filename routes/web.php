@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\CartController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,8 +21,10 @@ use Inertia\Inertia;
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/product', [HomeController::class, 'product'])->name('home.product');
 Route::get('/product/{uuid}', [HomeController::class, 'product_show'])->name('home.product.show');
-Route::get('/cart', function () {
-    return Inertia::render('Cart');
+Route::middleware('auth')->group(function () {
+    Route::get('/daftar-seller', [HomeController::class, 'daftar_seller'])->name('home.seller.daftar_seller');
+    Route::post('/store-seller', [HomeController::class, 'store_seller'])->name('home.seller.store_seller');
+    Route::resource('/cart', CartController::class);
 });
 Route::get('/checkout', function () {
     return Inertia::render('Checkout');

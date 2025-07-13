@@ -9,6 +9,7 @@ import {
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
+import { BsShopWindow } from "react-icons/bs";
 
 export default function Navbar() {
     const { auth } = usePage().props;
@@ -63,6 +64,22 @@ export default function Navbar() {
                                         <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                                     </Link>
                                     <FiBell className="w-5 h-5 cursor-pointer" />
+                                    {auth?.user && (
+                                        <Link
+                                            href={
+                                                !auth.user.seller
+                                                    ? "/daftar-seller"
+                                                    : auth.user.seller
+                                                          .status !== 1
+                                                    ? "/profil/informasi-toko"
+                                                    : "/seller/dashboard"
+                                            }
+                                            className="flex items-center gap-1 text-sm"
+                                        >
+                                            <BsShopWindow className="w-5 h-5 cursor-pointer" />
+                                        </Link>
+                                    )}
+
                                     {auth?.user ? (
                                         <div className="relative">
                                             <div
@@ -74,9 +91,6 @@ export default function Navbar() {
                                                 className="flex items-center space-x-2 cursor-pointer"
                                             >
                                                 <FaUserCircle className="w-6 h-6 text-gray-700" />
-                                                <span className="text-sm font-medium">
-                                                    {auth.user.name}
-                                                </span>
                                             </div>
 
                                             {showDropdown && (
@@ -180,6 +194,26 @@ export default function Navbar() {
                             </Link>
                             <FiBell className="w-5 h-5 cursor-pointer" />
                             <div className="w-px h-6 bg-gray-300 mx-1" />
+                            {auth?.user && (
+                                <Link
+                                    href={
+                                        !auth.user.seller
+                                            ? "/daftar-seller"
+                                            : auth.user.seller.status != 1
+                                            ? "/profil/informasi-toko"
+                                            : "/dashboard"
+                                    }
+                                    className="flex items-center gap-1.5 text-sm font-medium"
+                                >
+                                    <BsShopWindow className="w-5 h-5 cursor-pointer" />
+                                    {!auth.user.seller
+                                        ? "Daftar Seller"
+                                        : auth.user.seller.status != 1
+                                        ? "Informasi Toko"
+                                        : "Lihat Toko"}
+                                </Link>
+                            )}
+
                             <div className="flex items-center space-x-2">
                                 {auth?.user ? (
                                     <div className="relative">

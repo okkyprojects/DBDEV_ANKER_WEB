@@ -17,7 +17,6 @@ class CartItemFactory extends Factory
             'uuid' => Str::uuid(),
             'cart_uuid' => null,        
             'variant_uuid' => null,
-            'is_select'   => false,
             'quantity' => $this->faker->numberBetween(1, 5),
         ];
     }

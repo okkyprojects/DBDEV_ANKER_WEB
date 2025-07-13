@@ -35,4 +35,8 @@ class Product extends Model
     {
         return $this->hasMany(Variant::class, 'product_uuid', 'uuid');
     }
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class, 'seller_uuid', 'uuid');
+    }
 }

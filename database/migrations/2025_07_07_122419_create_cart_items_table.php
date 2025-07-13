@@ -16,7 +16,6 @@ return new class extends Migration
             $table->uuid('cart_uuid');
             $table->uuid('variant_uuid');
             $table->unsignedInteger('quantity')->default(1);
-            $table->boolean('is_select')->default(false); 
             $table->timestamps();
             $table->foreign('cart_uuid')->references('uuid')->on('carts')->onDelete('cascade');
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->onDelete('cascade');

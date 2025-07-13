@@ -38,7 +38,7 @@ class CartRepository
             ->with(['variants.product']) 
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
-        $data = $query->get();
+        $data = $query->first();
         return $data;
     }
 
@@ -64,9 +64,6 @@ class CartRepository
 
         if ($existingItem) {
             $existingItem->quantity += $validated['quantity'] ?? 1;
-            if (isset($request['is_select'])) {
-                $existingItem->is_select = $request['is_select'];
-            }
             $existingItem->save();
 
             return $this->response->update($existingItem);
@@ -112,7 +109,6 @@ class CartRepository
         return [
             'variant_uuid' => 'required|exists:variants,uuid',
             'quantity'     => 'nullable|integer|min:1',
-            'is_select'  => 'nullable|boolean',
         ];
     }
 
@@ -122,7 +118,6 @@ class CartRepository
             'cart_uuid'    => $cartUuid,
             'variant_uuid' => $request['variant_uuid'],
             'quantity'     => $request['quantity'] ?? 1,
-            'is_select'  => $request['is_select'] ?? true,
         ];
     }
 }

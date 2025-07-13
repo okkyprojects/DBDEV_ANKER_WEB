@@ -1,11 +1,17 @@
-import './bootstrap';
-import '../css/app.css';
+// resources/js/app.jsx
 
-import { createRoot } from 'react-dom/client';
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import "./bootstrap";
+import "../css/app.css";
 
-const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+import { createRoot } from "react-dom/client";
+import { createInertiaApp } from "@inertiajs/react";
+import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
+import { Provider } from "react-redux";
+import store from "./Store";
+import { CartProvider } from "./Context/CartContext";
+
+const appName =
+    window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -17,7 +23,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <CartProvider>
+                <App {...props} />
+            </CartProvider>
+        );
     },
     progress: {
         color: "#28C1F5",

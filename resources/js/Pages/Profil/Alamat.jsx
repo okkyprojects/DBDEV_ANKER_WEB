@@ -4,6 +4,8 @@ import { FiUser, FiMapPin, FiLogOut } from "react-icons/fi";
 import { Link, usePage } from "@inertiajs/react";
 import { IoHome } from "react-icons/io5";
 import ModalTambahAlamat from "@/Components/Modal/Profil/ModalTambahAlamat";
+import { BsShopWindow } from "react-icons/bs";
+import { GoLock } from "react-icons/go";
 
 const Alamat = () => {
     const [showModalTambah, setShowModalTambah] = useState(false);

@@ -1,18 +1,25 @@
-import { Link, Head } from "@inertiajs/react";
+import { Link, Head, router } from "@inertiajs/react";
+import { useCart } from "@/Context/CartContext";
 import HomeLayout from "@/Layouts/HomeLayout";
 import { FiChevronDown } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { banks } from "@/Dummy/dummy";
 import Select from "react-select";
 import { styles } from "@/Config/global";
 import { IoHome } from "react-icons/io5";
 import ModalGantiAlamat from "@/Components/Modal/Checkout/ModalGantiAlamat";
 import ModalTambahAlamat from "@/Components/Modal/Profil/ModalTambahAlamat";
+import { formatRupiah } from "@/Utils/utils";
 
 export default function Checkout() {
     const [showModalGantiAlamat, setShowModalGantiAlamat] = useState(false);
     const [showModalTambahAlamat, setShowModalTambahAlamat] = useState(false);
     const [selectedBank, setSelectedBank] = useState("bca");
+    const { selectedVariants } = useCart();
+
+    if (selectedVariants.length === 0) {
+        router.visit("/cart");
+    }
     return (
         <HomeLayout>
             <Head title="Welcome" />
@@ -145,25 +152,30 @@ export default function Checkout() {
                                         Nama Toko
                                     </p>
                                 </div>
-                                {[1, 2].map((_, i) => (
+                                {selectedVariants?.map((item, i) => (
                                     <div
                                         key={i}
                                         className="flex justify-between items-center gap-4"
                                     >
-                                        <div className="w-14 h-14 bg-neutral-200 rounded-lg flex-shrink-0"></div>
+                                        <img
+                                            src={item?.img}
+                                            alt={item?.name}
+                                            className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                                        />
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-neutral-900">
-                                                Nama produk
+                                                {item?.product?.name || "-"}
                                             </p>
                                             <p className="text-sm text-neutral-500">
-                                                Varian X
+                                                Varian: {item?.name}
                                             </p>
                                             <p className="text-sm text-neutral-500">
-                                                Jumlah : 1
+                                                Jumlah:{" "}
+                                                {item?.pivot?.quantity || 1}
                                             </p>
                                         </div>
                                         <p className="text-sm text-neutral-900 font-medium whitespace-nowrap flex items-center h-full">
-                                            Rp 450.000
+                                            {formatRupiah(item?.price)}
                                         </p>
                                     </div>
                                 ))}

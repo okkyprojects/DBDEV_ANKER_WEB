@@ -27,11 +27,11 @@ class Variant extends Model
         return $this->belongsToMany(
             Cart::class,
             'cart_items',
-            'variant_uuid', 
-            'cart_uuid',   
-            'uuid',  
-            'uuid' 
-        )->withPivot('uuid', 'quantity', 'is_select', 'created_at', 'updated_at')
+            'variant_uuid',
+            'cart_uuid',
+            'uuid',
+            'uuid'
+        )->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
             ->withTimestamps();
     }
 }

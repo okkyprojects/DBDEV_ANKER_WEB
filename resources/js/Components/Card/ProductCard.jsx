@@ -22,23 +22,24 @@ export default function ProductCard({ item }) {
                     {item.category.name}
                 </p>
 
-                <div className="flex items-center gap-1 my-1.5">
+                {/* <div className="flex items-center gap-1 my-1.5">
                     <div className="flex items-center gap-1 text-warning-400">
                         {Array.from({ length: 5 }).map((_, i) => (
                             <FaStar key={i} />
                         ))}
                     </div>
                     <p className="text-neutral-500 text-sm">(80)</p>
-                </div>
+                </div> */}
 
                 <p className="text-lg sm:text-xl text-neutral-900 font-medium mb-1.5">
                     {formatRupiah(item.price)}
                 </p>
                 <p className="text-xs sm:text-sm font-light text-neutral-900">
-                    Siapa
+                    {item.seller.seller_name}
                 </p>
                 <p className="flex items-center gap-1 text-[10px] sm:text-xs text-neutral-400">
-                    <FaLocationDot size={15} /> Kota Malang
+                    <FaLocationDot size={15} />{" "}
+                    {item?.seller?.city?.nama}
                 </p>
             </div>
         </Link>

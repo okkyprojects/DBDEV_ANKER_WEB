@@ -25,7 +25,9 @@ class ProductRepository
             ->with([
                 'category:uuid,name',
                 'brand:uuid,name',
-                'variants'
+                'variants',
+                'seller.province',
+                'seller.city'
             ])
             ->select('products.*')
             ->leftJoin('categories', 'categories.uuid', '=', 'products.category_uuid')
@@ -78,7 +80,7 @@ class ProductRepository
     public function single($uuid)
     {
         $data = $this->product
-            ->with(['brand', 'category', 'variants'])
+            ->with(['brand', 'category', 'variants', 'seller.province', 'seller.city'])
             ->where('uuid', $uuid)
             ->firstOrFail();
 

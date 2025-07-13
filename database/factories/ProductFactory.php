@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Seller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -23,6 +24,7 @@ class ProductFactory extends Factory
             'uuid' => Str::uuid(),
             'name' => $this->faker->words(3, true),
             'category_uuid' => Category::inRandomOrder()->first()?->uuid,
+            'seller_uuid' => Seller::inRandomOrder()->first()?->uuid,
             'brand_uuid' => Brand::inRandomOrder()->first()?->uuid,
             'status' => $this->faker->boolean(90),
             'img' => 'https://fastly.picsum.photos/id/8/300/100.jpg?hmac=fEbCJREOWHtYm21WgwubKRUVUp7vPF2V9FY9gSJHwZs',
