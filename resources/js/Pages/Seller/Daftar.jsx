@@ -55,7 +55,7 @@ const Daftar = ({ auth }) => {
                     : `/api/provinces`
             )
             .then((res) => {
-                setProvinsi(res.data.data.data);
+                setProvinsi(res.data.data);
                 setKota([]);
             });
     }, [searchProvinsi]);
@@ -71,7 +71,7 @@ const Daftar = ({ auth }) => {
                 const response = await axios.get(
                     `/api/cities?province_id=${data.province_id}&search=${searchKota}`
                 );
-                setKota(response.data.data.data);
+                setKota(response.data.data);
                 setData("city_id", "");
             } catch (error) {
                 console.log("Error fetching kabupaten:", error);

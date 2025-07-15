@@ -35,7 +35,7 @@ class LocationRepository
             $query->where('nama', 'like', '%' . $request->input('search') . '%');
         }
 
-        return $query->orderBy('nama')->paginate(30);
+        return $query->orderBy('nama')->get();
     }
 
     public function index_city(Request $request)
@@ -50,7 +50,7 @@ class LocationRepository
             $query->where('nama', 'like', '%' . $request->input('search') . '%');
         }
 
-        return $query->orderBy('nama')->paginate(30);
+        return $query->orderBy('nama')->get();
     }
 
     public function index_district(Request $request)
@@ -65,6 +65,6 @@ class LocationRepository
             $query->where('nama', 'like', '%' . $request->input('search') . '%');
         }
 
-        return $query->orderBy('nama')->paginate(30);
+        return $query->orderBy('nama')->get();
     }
 }

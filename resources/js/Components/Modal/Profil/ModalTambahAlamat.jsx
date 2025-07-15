@@ -52,7 +52,7 @@ const ModalTambahAlamat = ({ isOpen, onClose }) => {
                     : `/api/provinces`
             )
             .then((res) => {
-                setProvinsi(res.data.data.data);
+                setProvinsi(res.data.data);
                 setKota([]);
             });
     }, [searchProvinsi]);
@@ -68,7 +68,7 @@ const ModalTambahAlamat = ({ isOpen, onClose }) => {
                 const response = await axios.get(
                     `/api/cities?province_id=${data.province_id}&search=${searchKota}`
                 );
-                setKota(response.data.data.data);
+                setKota(response.data.data);
                 setData("city_id", "");
             } catch (error) {
                 console.log("Error fetching kabupaten:", error);
@@ -90,7 +90,7 @@ const ModalTambahAlamat = ({ isOpen, onClose }) => {
                 const response = await axios.get(
                     `/api/districts?city_id=${data.city_id}&search=${searchKecamatan}`
                 );
-                setKecamatan(response.data.data.data);
+                setKecamatan(response.data.data);
                 setData("district_id", "");
             } catch (error) {
                 console.log("Error fetching kecamatan:", error);
