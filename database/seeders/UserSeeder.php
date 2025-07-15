@@ -63,6 +63,32 @@ class UserSeeder extends Seeder
                 'note' => 'Diverifikasi oleh admin.',
                 'status' => 1,
             ]);
+            Seller::create([
+                'user_id' => $sellerUser->id,
+                'id_card_number' => '5555666677778888',
+                'id_card_name' => 'Seller User 2',
+                'id_card_img' => 'ktp2.jpg',
+                'seller_name' => 'Toko Makmur Sentosa',
+                'seller_phone' => '082222222222',
+                'img' => 'store2.jpg',
+                'province_id' => $province->id,
+                'city_id' => $city->id,
+                'note' => 'Diverifikasi oleh admin.',
+                'status' => 1,
+            ]);
+            Seller::create([
+                'user_id' => $sellerUser->id,
+                'id_card_number' => '5555666677778888',
+                'id_card_name' => 'Seller User 3',
+                'id_card_img' => 'ktp2.jpg',
+                'seller_name' => 'Toko Maju Jaya',
+                'seller_phone' => '082222222222',
+                'img' => 'store2.jpg',
+                'province_id' => $province->id,
+                'city_id' => $city->id,
+                'note' => 'Diverifikasi oleh admin.',
+                'status' => 1,
+            ]);
         } else {
             $this->command->warn('Province or City not found. Please seed provinces and cities first.');
         }

@@ -51,6 +51,6 @@ class HomeController extends Controller
     public function store_seller(Request $request)
     {
         $data = $this->seller->store($request);
-        return redirect()->back()->with('success', 'Pesan sukses atau error');
+        return redirect('/')->with('success', 'Pesan sukses atau error');
     }
 }

@@ -34,13 +34,55 @@ class CartRepository
     }
     public function index()
     {
-        $query = $this->cart
+        $cart = $this->cart
             ->with(['variants.product.seller'])
             ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc');
-        $data = $query->first();
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $data = [];
+
+        if ($cart) {
+            $grouped = [];
+
+            foreach ($cart->variants as $variant) {
+                $seller = $variant->product->seller;
+
+                if (!isset($grouped[$seller->uuid])) {
+                    $grouped[$seller->uuid] = [
+                        'seller_name' => $seller->seller_name,
+                        'products'    => []
+                    ];
+                }
+
+                $grouped[$seller->uuid]['products'][] = [
+                    'itemcart_uuid'     => $variant->pivot->uuid,
+                    'variant_uuid'    => $variant->uuid,
+                    'variant_name'    => $variant->name,
+                    'quantity'        => $variant->pivot->quantity,
+                    'discount_price'  => $variant->discount_price,
+                    'product_name'    => $variant->product->name,
+                    'img'             => $variant->img
+                ];
+            }
+
+            $data = array_values($grouped);
+        }
+
         return $data;
     }
+
+
+
+    // public function index()
+    // {
+    //     $query = $this->cart
+    //         ->with(['variants.product.seller'])
+    //         ->where('user_id', Auth::id())
+    //         ->orderBy('created_at', 'desc');
+    //     $data = $query->first();
+    //     return $data;
+    // }
 
     public function store($request)
     {
