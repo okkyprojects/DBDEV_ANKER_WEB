@@ -6,7 +6,7 @@ import { FiUploadCloud } from "react-icons/fi";
 import { IoImageOutline } from "react-icons/io5";
 import Select from "react-select";
 
-const Daftar = () => {
+const Daftar = ({ auth }) => {
     const [step, setStep] = useState(1);
     const [ktp, setKtp] = useState();
     const handlektp = (e) => {
@@ -151,8 +151,8 @@ const Daftar = () => {
                                             <input
                                                 type="email"
                                                 name="email"
-                                                required
-                                                value={data.email || ""}
+                                                disabled
+                                                value={auth?.user?.email || ""}
                                                 onChange={(e) =>
                                                     setData(
                                                         "email",
@@ -589,11 +589,17 @@ const Daftar = () => {
                                                         animatedComponents
                                                     }
                                                     onInputChange={(
-                                                        inputValue
+                                                        inputValue,
+                                                        { action }
                                                     ) => {
-                                                        setSearchKota(
-                                                            inputValue
-                                                        );
+                                                        if (
+                                                            action ===
+                                                            "input-change"
+                                                        ) {
+                                                            setSearchKota(
+                                                                inputValue
+                                                            );
+                                                        }
                                                         return inputValue;
                                                     }}
                                                     className="basic-multi-select"

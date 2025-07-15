@@ -10,6 +10,7 @@ import {
 import { FaUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { BsShopWindow } from "react-icons/bs";
+import { PiUser } from "react-icons/pi";
 
 export default function Navbar() {
     const { auth } = usePage().props;
@@ -258,10 +259,21 @@ export default function Navbar() {
 
                                                 <div className="py-1">
                                                     <Link
+                                                        href="/profil/informasi-pribadi"
+                                                        as="button"
+                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                    >
+                                                        <PiUser
+                                                            className="mr-2"
+                                                            size={22}
+                                                        />
+                                                        Profil
+                                                    </Link>
+                                                    <Link
                                                         href="/logout"
                                                         method="post"
                                                         as="button"
-                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                        className="flex items-center px-4 py-3 text-sm text-error-600 hover:bg-gray-100 w-full text-start"
                                                     >
                                                         <IoLogOutOutline
                                                             className="mr-2"

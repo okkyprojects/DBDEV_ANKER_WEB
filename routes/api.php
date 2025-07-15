@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CartController;
@@ -36,9 +37,10 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
-        Route::post('/logout', [AuthController::class, 'logout']); 
+        Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('carts', CartController::class);
+    Route::apiResource('addresses', AddressController::class);
 });

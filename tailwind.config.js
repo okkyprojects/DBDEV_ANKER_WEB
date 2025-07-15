@@ -114,6 +114,18 @@ module.exports = {
         },
     },
 
-    plugins: [],
+    plugins: [
+        function ({ addUtilities }) {
+            addUtilities({
+                ".scrollbar-hidden": {
+                    "-ms-overflow-style": "none", 
+                    "scrollbar-width": "none", 
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
+                },
+            });
+        },
+    ],
     // plugins: [require("@tailwindcss/forms")],
 };

@@ -244,7 +244,10 @@ export default function Cart({ data }) {
                                     Rp 450.000
                                 </p>
                             </div>{" "}
-                            <Link href="/checkout" className="flex items-center justify-center gap-3 w-full bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-2 px-4 rounded-xl text-neutral-50 shadow-md text-sm sm:text-base">
+                            <Link
+                                href="/checkout"
+                                className="flex items-center justify-center gap-3 w-full bg-primary-600 hover:bg-primary-700 transition-colors duration-200 py-2 px-4 rounded-xl text-neutral-50 shadow-md text-sm sm:text-base"
+                            >
                                 <p className="font-medium">Checkout</p>
                             </Link>
                         </div>

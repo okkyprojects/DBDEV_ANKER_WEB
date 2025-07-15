@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\CartController;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/daftar-seller', [HomeController::class, 'daftar_seller'])->name('home.seller.daftar_seller');
     Route::post('/store-seller', [HomeController::class, 'store_seller'])->name('home.seller.store_seller');
     Route::resource('/cart', CartController::class);
+    Route::prefix('profil')->name('profil.')->group(function () {
+        Route::get('/informasi-pribadi', [ProfilController::class, 'informasiPribadi'])->name('informasi_pribadi');
+        Route::get('/informasi-toko', [ProfilController::class, 'informasiToko'])->name('informasi_toko');
+        Route::get('/ubah-kata-sandi', [ProfilController::class, 'ubahKataSandi'])->name('ubah_kata_sandi');
+        Route::get('/alamat', [ProfilController::class, 'alamat'])->name('alamat.index');
+        Route::post('/alamat', [ProfilController::class, 'store_alamat'])->name('alamat.store');
+    });
 });
 Route::get('/checkout', function () {
     return Inertia::render('Checkout');
@@ -37,18 +45,6 @@ Route::get('/payment', function () {
 });
 Route::get('/product/detail', function () {
     return Inertia::render('DetailProduct');
-});
-Route::get('/profil/informasi-pribadi', function () {
-    return Inertia::render('Profil/InformasiPribadi');
-});
-Route::get('/profil/informasi-toko', function () {
-    return Inertia::render('Profil/InformasiToko');
-});
-Route::get('/profil/ubah-kata-sandi', function () {
-    return Inertia::render('Profil/InformasiToko');
-});
-Route::get('/profil/alamat', function () {
-    return Inertia::render('Profil/Alamat');
 });
 
 

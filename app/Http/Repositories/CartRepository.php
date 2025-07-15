@@ -35,7 +35,7 @@ class CartRepository
     public function index()
     {
         $query = $this->cart
-            ->with(['variants.product']) 
+            ->with(['variants.product.seller'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
         $data = $query->first();
@@ -86,10 +86,11 @@ class CartRepository
         $updated = $item->fill($this->request($request, $item->cart_uuid))->save();
         if (!$updated) {
             return $this->response->updateError();
-        }else{
-            return $this->response->update($item);}
+        } else {
+            return $this->response->update($item);
+        }
     }
-    
+
     public function destroy($uuid)
     {
         $check = $this->cartItem->where('uuid', $uuid)->first();

@@ -2,12 +2,12 @@ import HomeLayout from "@/Layouts/HomeLayout";
 import React, { useState } from "react";
 import { FiUser, FiMapPin, FiLogOut } from "react-icons/fi";
 import { Link, usePage } from "@inertiajs/react";
-import { IoHome } from "react-icons/io5";
 import ModalTambahAlamat from "@/Components/Modal/Profil/ModalTambahAlamat";
-import { BsShopWindow } from "react-icons/bs";
+import { BsBuildingsFill, BsShopWindow } from "react-icons/bs";
 import { GoLock } from "react-icons/go";
+import { IoHome } from "react-icons/io5";
 
-const Alamat = () => {
+const Alamat = ({ data }) => {
     const [showModalTambah, setShowModalTambah] = useState(false);
     const currentUrl = usePage().url;
 
@@ -96,79 +96,87 @@ const Alamat = () => {
                                 baru
                             </button>
                         </div>
-                        <div className="border border-primary-600 bg-primary-50 p-5 rounded-xl relative">
-                            <div className="absolute top-4 right-4 bg-primary-200 text-primary-800 text-xs px-3 py-1 rounded-full">
-                                Utama
-                            </div>
-                            <div className=" text-sm text-neutral-800">
-                                <div className="flex items-center gap-3">
-                                    {" "}
-                                    <IoHome
-                                        size={20}
-                                        className="text-primary-600"
-                                    />
-                                    <p className="font-semibold ">Rumah</p>
-                                </div>
-                                <div className="text-neutral-500">
-                                    <p className="py-3">
-                                        Joan Doe{" "}
-                                        <span className="text-primary-600">
-                                            •
-                                        </span>{" "}
-                                        +62888-8888-8888
-                                    </p>
-                                    <p>
-                                        JL. Kemana saja No 99
-                                        <br />
-                                        Kecamatan Mana, Kabupaten Saja
-                                        <br />
-                                        Jawa Timur [Kode pos]
-                                    </p>
-                                    <div className="mt-3">
-                                        <button className="text-sm text-primary-600">
-                                            Ubah alamat
-                                        </button>
+                        {data?.addresses?.map((item) => (
+                            <div
+                                key={item.uuid}
+                                className={`border p-5 rounded-xl relative ${
+                                    item.is_main
+                                        ? "border-primary-600 bg-primary-50"
+                                        : ""
+                                }`}
+                            >
+                                {item.is_main == 1 && (
+                                    <div className="absolute top-4 right-4 bg-primary-200 text-primary-800 text-xs px-3 py-1 rounded-full">
+                                        Utama
+                                    </div>
+                                )}
+
+                                <div className="text-sm text-neutral-800">
+                                    <div className="flex items-center gap-3">
+                                        {item.category === "kantor" ? (
+                                            <BsBuildingsFill
+                                                size={20}
+                                                className="text-primary-600"
+                                            />
+                                        ) : (
+                                            <IoHome
+                                                size={20}
+                                                className="text-primary-600"
+                                            />
+                                        )}
+                                        <p className="font-semibold capitalize">
+                                            {item.category}
+                                        </p>
+                                    </div>
+
+                                    <div className="text-neutral-500">
+                                        <p className="py-3">
+                                            {item.name}{" "}
+                                            <span className="text-primary-600">
+                                                •
+                                            </span>{" "}
+                                            {item.phone_number}
+                                        </p>
+                                        <p>
+                                            {item.address}
+                                            <br />
+                                            {item.district
+                                                ? item.district.nama + ", "
+                                                : ""}
+                                            {item.city ? item.city.nama : ""},{" "}
+                                            {item.province
+                                                ? item.province.nama
+                                                : ""}{" "}
+                                            [{item.postal_code}]
+                                        </p>
+
+                                        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+                                            <button className="text-primary-600">
+                                                Ubah alamat
+                                            </button>
+
+                                            {!item.is_main && (
+                                                <>
+                                                    <span className="text-neutral-300">
+                                                        |
+                                                    </span>
+                                                    <button className="text-neutral-800">
+                                                        Hapus
+                                                    </button>
+                                                    <span className="text-neutral-300">
+                                                        |
+                                                    </span>
+                                                    <button className="text-primary-600">
+                                                        Jadikan sebagai alamat
+                                                        utama
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="border p-5 rounded-xl text-sm text-neutral-800">
-                            <div className="flex items-center gap-3">
-                                {" "}
-                                <IoHome
-                                    size={20}
-                                    className="text-primary-600"
-                                />
-                                <p className="font-semibold ">Rumah</p>
-                            </div>
-                            <div className="text-neutral-500">
-                                <p className="py-3">
-                                    Joan Doe{" "}
-                                    <span className="text-primary-600">•</span>{" "}
-                                    +62888-8888-8888
-                                </p>
-                                <p>
-                                    JL. Kemana saja No 99
-                                    <br />
-                                    Kecamatan Mana, Kabupaten Saja
-                                    <br />
-                                    Jawa Timur [Kode pos]
-                                </p>
-                                <div className="mt-3 flex flex-wrap text-neutral-300 gap-3 text-sm">
-                                    <button className="text-primary-600">
-                                        Ubah alamat
-                                    </button>
-                                    |
-                                    <button className="text-neutral-800">
-                                        Hapus
-                                    </button>
-                                    |
-                                    <button className="text-primary-600">
-                                        Jadikan sebagai alamat utama
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                     {showModalTambah && (
                         <div
