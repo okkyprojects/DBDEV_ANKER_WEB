@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Repositories\AddressRepository;
+use App\Http\Repositories\ProfilRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -10,9 +11,11 @@ use Inertia\Response;
 class ProfilController extends Controller
 {
     private $address;
-    public function __construct(AddressRepository $address)
+    private $profil;
+    public function __construct(AddressRepository $address, ProfilRepository $profil)
     {
         $this->address = $address;
+        $this->profil = $profil;
     }
     public function informasiPribadi()
     {
@@ -39,5 +42,10 @@ class ProfilController extends Controller
     {
         $data = $this->address->store($request);
         return redirect()->route('profil.alamat.index')->with('success', 'Alamat berhasil disimpan');
+    }
+    public function store_informasi_pribadi(Request $request)
+    {
+        $data = $this->profil->store($request);
+        return redirect()->back()->with('success', 'Alamat berhasil disimpan');
     }
 }

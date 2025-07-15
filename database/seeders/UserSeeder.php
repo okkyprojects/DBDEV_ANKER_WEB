@@ -18,34 +18,39 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Creating Admin User
         $admin = User::create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
+            'phone_number' => '081234567890',
+            'gender' => 'L',
+            'role' => 'admin',
+            'img' => 'admin.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
-            'role' => 'admin',
         ]);
 
-        // Creating Regular User
         $userBiasa = User::create([
             'name' => 'User Biasa',
             'email' => 'user@example.com',
+            'phone_number' => '082345678901',
+            'gender' => 'P',
+            'role' => 'user',
+            'img' => 'user.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
-            'role' => 'user',
         ]);
 
-        // Creating Seller User
         $sellerUser = User::create([
             'name' => 'Seller User',
             'email' => 'seller@example.com',
+            'phone_number' => '083456789012',
+            'gender' => 'L',
+            'role' => 'user',
+            'img' => 'seller.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
-            'role' => 'user',
         ]);
 
-        // Creating Seller and linking to Province and City
         $province = Province::where('nama', 'JAWA TIMUR')->first();
         $city = City::where('nama', 'KOTA SURABAYA')->first();
 
@@ -97,41 +102,41 @@ class UserSeeder extends Seeder
             'user_id' => $userBiasa->id,
             'province_id' => $province->id,
             'city_id' => $city->id,
-            'district_id' => 3578010, 
-            'category' => 'rumah', 
+            'district_id' => 3578010,
+            'category' => 'rumah',
             'name' => 'Mr Jos',
             'phone_number' => '081234567890',
             'address' => 'Jl. Arema, No. 1',
             'postal_code' => '65123',
             'note' => 'Admin Address Note',
-            'is_main' => true, 
+            'is_main' => true,
         ]);
 
         Address::create([
             'user_id' => $userBiasa->id,
-            'province_id' => $province->id, 
+            'province_id' => $province->id,
             'city_id' => $city->id,
-            'district_id' => 3578010, 
+            'district_id' => 3578010,
             'category' => 'rumah',
             'name' => 'User Biasa Address',
             'phone_number' => '082345678901',
             'address' => 'Jl. Biasa, No. 10',
             'postal_code' => '65123',
             'note' => 'User Biasa Address Note',
-            'is_main' => false, 
+            'is_main' => false,
         ]);
         Address::create([
             'user_id' => $userBiasa->id,
             'province_id' => $province->id,
-            'city_id' => $city->id, 
-            'district_id' => 3578010, 
+            'city_id' => $city->id,
+            'district_id' => 3578010,
             'category' => 'kantor',
             'name' => ' User Address',
             'phone_number' => '083456789012',
             'address' => 'Jl. Alanaa, No. 20',
             'postal_code' => '65123',
             'note' => 'Seller User Address Note',
-            'is_main' => false, 
+            'is_main' => false,
         ]);
     }
 }

@@ -4,14 +4,16 @@ import { Link, usePage } from "@inertiajs/react";
 import { FiUser, FiMapPin, FiLogOut, FiUpload, FiTrash2 } from "react-icons/fi";
 import { PiNotePencilDuotone } from "react-icons/pi";
 import ModalEditInformasiPibadi from "@/Components/Modal/Profil/ModalEditInformasiPribadi";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck, FaHourglassHalf } from "react-icons/fa6";
 import { BsShopWindow } from "react-icons/bs";
 import { GoLock } from "react-icons/go";
+import { FaTimes } from "react-icons/fa";
 
 const InformasiToko = () => {
     const [showModalEdit, setShowModalEdit] = useState(false);
     const currentUrl = usePage().url;
     const { auth } = usePage().props;
+    console.log(auth);
     return (
         <HomeLayout>
             <section className="max-w-7xl mx-auto px-5 py-10 space-y-5">
@@ -120,24 +122,26 @@ const InformasiToko = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-neutral-500">
-                                        Deskripsi Toko
-                                    </p>
-                                    <p className="text-neutral-900">
-                                        Lorem ipsum dolor sit amet consectetur.
-                                        Sed ac nisl urna ullamcorper pulvinar
-                                        cras. Diam sit elit iaculis in bibendum
-                                        augue. Tristique lacus condimentum odio
-                                        eu volutpat.
-                                    </p>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-neutral-500">
                                         Status
                                     </p>
-                                    <div className="flex gap-1.5 items-center w-fit bg-success-600 text-neutral-50 px-5 py-1.5 rounded-xl">
-                                        <FaCheck />
-                                        Terverifikasi
-                                    </div>
+                                    {auth?.user?.seller?.status === 1 ? (
+                                        <div className="flex gap-1.5 items-center w-fit bg-success-600 text-neutral-50 px-5 py-1.5 rounded-xl">
+                                            <FaCheck />
+                                            Terverifikasi
+                                        </div>
+                                    ) : auth?.user?.seller?.status === 3 ? (
+                                        <div className="flex gap-1.5 items-center w-fit bg-red-600 text-neutral-50 px-5 py-1.5 rounded-xl">
+                                            <FaTimes />
+                                            Ditolak
+                                        </div>
+                                    ) : auth?.user?.seller?.status === 0 ? (
+                                        <div className="flex gap-1.5 items-center w-fit bg-yellow-600 text-neutral-50 px-5 py-1.5 rounded-xl">
+                                            <FaHourglassHalf />
+                                            Dalam Proses
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )}
                                 </div>
                             </div>
                         </div>

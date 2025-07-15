@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ubah-kata-sandi', [ProfilController::class, 'ubahKataSandi'])->name('ubah_kata_sandi');
         Route::get('/alamat', [ProfilController::class, 'alamat'])->name('alamat.index');
         Route::post('/alamat', [ProfilController::class, 'store_alamat'])->name('alamat.store');
+        Route::post('/informasi-pribadi', [ProfilController::class, 'store_informasi_pribadi'])->name('informasi_pribadi.store');
     });
 });
 Route::get('/checkout', function () {

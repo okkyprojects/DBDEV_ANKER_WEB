@@ -7,6 +7,7 @@ use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\ProfilController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,4 +44,5 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('carts', CartController::class);
     Route::apiResource('addresses', AddressController::class);
+    Route::post('/profile', [ProfilController::class, 'store']);
 });

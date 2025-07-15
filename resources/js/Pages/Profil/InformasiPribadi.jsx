@@ -7,7 +7,7 @@ import ModalEditInformasiPibadi from "@/Components/Modal/Profil/ModalEditInforma
 import { GoLock } from "react-icons/go";
 import { BsShopWindow } from "react-icons/bs";
 
-const InformasiPribadi = () => {
+const InformasiPribadi = ({ auth }) => {
     const [showModalEdit, setShowModalEdit] = useState(false);
     const currentUrl = usePage().url;
     return (
@@ -102,38 +102,80 @@ const InformasiPribadi = () => {
                                     <p className="text-sm text-neutral-500">
                                         Nama Lengkap
                                     </p>
-                                    <p className="text-neutral-900">Joan Doe</p>
+                                    <p
+                                        className={`${
+                                            !auth?.user?.name
+                                                ? "text-gray-400 italic"
+                                                : "text-neutral-900"
+                                        }`}
+                                    >
+                                        {auth?.user?.name || "Data Belum Diset"}
+                                    </p>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-neutral-500">
                                         Email
                                     </p>
-                                    <p className="text-neutral-900">
-                                        email@example.com
+                                    <p
+                                        className={`${
+                                            !auth?.user?.email
+                                                ? "text-gray-400 italic"
+                                                : "text-neutral-900"
+                                        }`}
+                                    >
+                                        {auth?.user?.email ||
+                                            "Data Belum Diset"}
                                     </p>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-neutral-500">
                                         No. Telepon/HP
                                     </p>
-                                    <p className="text-neutral-900">
-                                        +62888-8888-8888
+                                    <p
+                                        className={`${
+                                            !auth?.user?.phone_number
+                                                ? "text-gray-400 italic"
+                                                : "text-neutral-900"
+                                        }`}
+                                    >
+                                        {auth?.user?.phone_number ||
+                                            "Data Belum Diset"}
                                     </p>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-neutral-500">
                                         Jenis Kelamin
                                     </p>
-                                    <p className="text-neutral-900">
-                                        Perempuan
+                                    <p
+                                        className={`${
+                                            !auth?.user?.gender
+                                                ? "text-gray-400 italic"
+                                                : "text-neutral-900"
+                                        }`}
+                                    >
+                                        {auth?.user?.gender === "L"
+                                            ? "Laki-laki"
+                                            : auth?.user?.gender === "P"
+                                            ? "Perempuan"
+                                            : "Data Belum Diset"}
                                     </p>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-neutral-500">
                                         Tanggal Lahir
                                     </p>
-                                    <p className="text-neutral-900">
-                                        1 Januari 1999
+                                    <p
+                                        className={`${
+                                            !auth?.user?.dob
+                                                ? "text-gray-400 italic"
+                                                : "text-neutral-900"
+                                        }`}
+                                    >
+                                        {auth?.user?.dob
+                                            ? new Date(
+                                                  auth?.user?.dob
+                                              ).toLocaleDateString()
+                                            : "Data Belum Diset"}
                                     </p>
                                 </div>
                             </div>
@@ -143,7 +185,17 @@ const InformasiPribadi = () => {
                                 Foto Profil
                             </h3>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                                <div className="w-24 h-24 bg-neutral-200 rounded-full" />
+                                <div className="w-24 h-24 bg-neutral-200 rounded-full overflow-hidden">
+                                    <img
+                                        src={
+                                            auth?.user?.img
+                                                ? `${window.location.origin}/${auth.user.img}`
+                                                : "/images/profile/profil.jpg"
+                                        }
+                                        alt="Foto Profil"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
                                 <div>
                                     {" "}
                                     <div className="space-x-2">
