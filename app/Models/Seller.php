@@ -56,4 +56,8 @@ class Seller extends Model
     {
         return $this->belongsTo(City::class, 'city_id', 'id');
     }
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
 }

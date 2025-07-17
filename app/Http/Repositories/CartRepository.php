@@ -50,6 +50,7 @@ class CartRepository
 
                 if (!isset($grouped[$seller->uuid])) {
                     $grouped[$seller->uuid] = [
+                        'seller_uuid' => $seller->uuid,
                         'seller_name' => $seller->seller_name,
                         'products'    => []
                     ];
@@ -61,6 +62,7 @@ class CartRepository
                     'variant_name'    => $variant->name,
                     'quantity'        => $variant->pivot->quantity,
                     'discount_price'  => $variant->discount_price,
+                    'price'  => $variant->price,
                     'product_name'    => $variant->product->name,
                     'img'             => $variant->img
                 ];

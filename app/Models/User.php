@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Seller::class);
     }
+    public function main_address()
+    {
+        return $this->hasOne(Address::class)->where('is_main', true)
+            ->with(['province', 'city', 'district']);
+    }
 }

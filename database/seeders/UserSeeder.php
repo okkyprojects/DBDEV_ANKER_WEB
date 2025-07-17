@@ -3,13 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\Address;
+use App\Models\Bill;
 use App\Models\City;
 use App\Models\Province;
 use App\Models\Seller;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -24,7 +25,6 @@ class UserSeeder extends Seeder
             'phone_number' => '081234567890',
             'gender' => 'L',
             'role' => 'admin',
-            'img' => 'admin.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -35,7 +35,6 @@ class UserSeeder extends Seeder
             'phone_number' => '082345678901',
             'gender' => 'P',
             'role' => 'user',
-            'img' => 'user.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -46,7 +45,6 @@ class UserSeeder extends Seeder
             'phone_number' => '083456789012',
             'gender' => 'L',
             'role' => 'user',
-            'img' => 'seller.jpg',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -62,7 +60,7 @@ class UserSeeder extends Seeder
                 'id_card_img' => 'ktp.jpg',
                 'seller_name' => 'Toko Jaya Abadi',
                 'seller_phone' => '087712345678',
-                'img' => 'store.jpg',
+                'img' => null,
                 'province_id' => $province->id,
                 'city_id' => $city->id,
                 'note' => 'Diverifikasi oleh admin.',
@@ -75,7 +73,7 @@ class UserSeeder extends Seeder
                 'id_card_img' => 'ktp2.jpg',
                 'seller_name' => 'Toko Makmur Sentosa',
                 'seller_phone' => '082222222222',
-                'img' => 'store2.jpg',
+                'img' => null,
                 'province_id' => $province->id,
                 'city_id' => $city->id,
                 'note' => 'Diverifikasi oleh admin.',
@@ -88,12 +86,26 @@ class UserSeeder extends Seeder
                 'id_card_img' => 'ktp2.jpg',
                 'seller_name' => 'Toko Maju Jaya',
                 'seller_phone' => '082222222222',
-                'img' => 'store2.jpg',
+                'img' => null,
                 'province_id' => $province->id,
                 'city_id' => $city->id,
                 'note' => 'Diverifikasi oleh admin.',
                 'status' => 1,
             ]);
+
+            $allSellers = Seller::all();
+            foreach ($allSellers as $seller) {
+                for ($i = 1; $i <= 3; $i++) {
+                    Bill::create([
+                        'uuid' => Str::uuid(),
+                        'seller_uuid' => $seller->uuid,
+                        'account_number' => '1234567890' . $i,
+                        'bank_name' => 'Bank Contoh ' . $i,
+                        'account_holder_name' => 'Pemilik Rekening ' . $i,
+                        'is_main' => $i === 1,
+                    ]);
+                }
+            }
         } else {
             $this->command->warn('Province or City not found. Please seed provinces and cities first.');
         }
@@ -125,13 +137,14 @@ class UserSeeder extends Seeder
             'note' => 'User Biasa Address Note',
             'is_main' => false,
         ]);
+
         Address::create([
             'user_id' => $userBiasa->id,
             'province_id' => $province->id,
             'city_id' => $city->id,
             'district_id' => 3578010,
             'category' => 'kantor',
-            'name' => ' User Address',
+            'name' => 'User Address',
             'phone_number' => '083456789012',
             'address' => 'Jl. Alanaa, No. 20',
             'postal_code' => '65123',

@@ -43,6 +43,16 @@ class ProductRepository
                     $q->where('categories.name', 'like', '%' . $category . '%');
                 });
             })
+            ->when($request->filled('seller'), function ($q) use ($request) {
+                $seller = $request->input('seller');
+                $q->whereHas('seller', function ($q) use ($seller) {
+                    $q->when(is_array($seller), function ($q) use ($seller) {
+                        $q->whereIn('name', $seller);
+                    }, function ($q) use ($seller) {
+                        $q->where('name', 'like', '%' . $seller . '%');
+                    });
+                });
+            })
             ->when($request->filled('brand'), function ($q) use ($request) {
                 $brand = $request->input('brand');
                 $q->when(is_array($brand), function ($q) use ($brand) {
@@ -64,7 +74,7 @@ class ProductRepository
             if ($request->input('sort_by') == 'lowest_price') {
                 $query->orderBy('variants_min_price', 'asc');
             } else {
-                $query->orderBy('variants_max_price', 'desc');
+                $query->orderBy('variants_min_price', 'desc');
             }
         } else {
             $query->orderBy('products.created_at', 'desc');
