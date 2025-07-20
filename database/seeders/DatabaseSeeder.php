@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
-        Cart::factory()->count(200)->create();
+        // Cart::factory()->count(200)->create();
         // CartItem::factory()->count(500)->create();
         Transaction::factory()->count(200)->create();
         TransactionItem::factory()->count(200)->create();
