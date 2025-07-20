@@ -11,7 +11,7 @@ class Bill extends Model
 
     protected $fillable = [
         'uuid',
-        'seller_uuid',
+        'user_id',
         'account_number',
         'bank_name',
         'account_holder_name',
@@ -21,8 +21,8 @@ class Bill extends Model
     /**
      * Relationship: a bill belongs to a user.
      */
-    public function seller()
+    public function user()
     {
-        return $this->belongsTo(Seller::class, 'seller_uuid', 'uuid');
+        return $this->belongsTo(User::class);
     }
 }

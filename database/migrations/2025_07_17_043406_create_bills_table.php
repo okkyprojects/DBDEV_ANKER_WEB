@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->uuid('seller_uuid')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('account_number')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('account_holder_name')->nullable();
             $table->boolean('is_main')->default(false);
             $table->timestamps();
-            $table->foreign('seller_uuid')->references('uuid')->on('sellers')->nullOnDelete();;
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

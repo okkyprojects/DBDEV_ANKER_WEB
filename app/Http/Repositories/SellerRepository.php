@@ -91,14 +91,10 @@ class SellerRepository
 
     public function show($uuid)
     {
-        $data = $this->seller->where('uuid', $uuid)->first();
-
-        if (!$data) {
-            return $this->response->notFound();
-        }
-
-        return $this->response->show($data);
+        $data = $this->seller->where('uuid', $uuid)->firstOrFail();
+        return $data;
     }
+
 
     public function store(Request $request)
     {

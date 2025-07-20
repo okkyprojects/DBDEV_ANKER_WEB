@@ -187,8 +187,9 @@ export default function Cart({ data }) {
                                                                     updateQuantity(
                                                                         item.itemcart_uuid,
                                                                         item.variant_uuid,
-                                                                        item.quantity -
-                                                                            1
+                                                                        parseInt(
+                                                                            item.quantity
+                                                                        ) - 1
                                                                     )
                                                                 }
                                                                 disabled={
@@ -207,8 +208,9 @@ export default function Cart({ data }) {
                                                                     updateQuantity(
                                                                         item.itemcart_uuid,
                                                                         item.variant_uuid,
-                                                                        item.quantity +
-                                                                            1
+                                                                        parseInt(
+                                                                            item.quantity
+                                                                        ) + 1
                                                                     )
                                                                 }
                                                             >

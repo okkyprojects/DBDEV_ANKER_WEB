@@ -45,12 +45,10 @@ class ProductRepository
             })
             ->when($request->filled('seller'), function ($q) use ($request) {
                 $seller = $request->input('seller');
-                $q->whereHas('seller', function ($q) use ($seller) {
-                    $q->when(is_array($seller), function ($q) use ($seller) {
-                        $q->whereIn('name', $seller);
-                    }, function ($q) use ($seller) {
-                        $q->where('name', 'like', '%' . $seller . '%');
-                    });
+                $q->when(is_array($seller), function ($q) use ($seller) {
+                    $q->whereIn('products.seller_uuid', $seller);
+                }, function ($q) use ($seller) {
+                    $q->where('products.seller_uuid', $seller);
                 });
             })
             ->when($request->filled('brand'), function ($q) use ($request) {

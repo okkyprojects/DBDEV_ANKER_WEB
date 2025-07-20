@@ -93,18 +93,17 @@ class UserSeeder extends Seeder
                 'status' => 1,
             ]);
 
-            $allSellers = Seller::all();
-            foreach ($allSellers as $seller) {
-                for ($i = 1; $i <= 3; $i++) {
-                    Bill::create([
-                        'uuid' => Str::uuid(),
-                        'seller_uuid' => $seller->uuid,
-                        'account_number' => '1234567890' . $i,
-                        'bank_name' => 'Bank Contoh ' . $i,
-                        'account_holder_name' => 'Pemilik Rekening ' . $i,
-                        'is_main' => $i === 1,
-                    ]);
-                }
+            $bankList = ['BCA', 'Mandiri', 'BNI', 'BRI', 'Muamalat', 'CIMB Niaga', 'BTN', 'Danamon', 'Permata'];
+
+            for ($i = 0; $i < 3; $i++) {
+                Bill::create([
+                    'uuid' => Str::uuid(),
+                    'user_id' => $admin->id,
+                    'account_number' => '9876543210' . $i,
+                    'bank_name' => $bankList[$i],
+                    'account_holder_name' => 'Admin Holder ' . ($i + 1),
+                    'is_main' => $i === 0,
+                ]);
             }
         } else {
             $this->command->warn('Province or City not found. Please seed provinces and cities first.');
