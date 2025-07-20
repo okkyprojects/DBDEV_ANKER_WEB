@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Repositories\billrepository;
+use App\Http\Repositories\Billrepository;
 use App\Traits\Response;
 use Illuminate\Http\Request;
 
