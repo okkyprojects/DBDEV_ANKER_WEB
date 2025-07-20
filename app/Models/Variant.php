@@ -34,4 +34,14 @@ class Variant extends Model
         )->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
             ->withTimestamps();
     }
+    public function stocks()
+    {
+        return $this->hasMany(VariantStock::class, 'variant_uuid', 'uuid');
+    }
+    public function total_stock()
+    {
+        return $this->hasOne(VariantStock::class, 'variant_uuid', 'uuid')
+            ->selectRaw('variant_uuid, SUM(quantity) as total_stock')
+            ->groupBy('variant_uuid');
+    }
 }

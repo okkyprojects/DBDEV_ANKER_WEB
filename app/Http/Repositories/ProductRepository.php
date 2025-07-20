@@ -88,9 +88,16 @@ class ProductRepository
     public function single($uuid)
     {
         $data = $this->product
-            ->with(['brand', 'category', 'variants', 'seller.province', 'seller.city'])
+            ->with([
+                'brand',
+                'category',
+                'variants.total_stock',
+                'seller.province',
+                'seller.city'
+            ])
             ->where('uuid', $uuid)
             ->firstOrFail();
+
 
         return $data;
     }

@@ -127,10 +127,36 @@ export default function DetailProduct({ data }) {
 
                             <div className="flex gap-2 items-center text-sm">
                                 <p>Stok :</p>
-                                <div className="text-warning-500 flex items-center gap-1">
-                                    <IoIosInformationCircle size={16} />
-                                    <p>Tersisa 1 lagi</p>
-                                </div>
+                                {Number(
+                                    selectedVariant?.total_stock?.total_stock ||
+                                        0
+                                ) === 0 ? (
+                                    <div className="text-red-500 flex items-center gap-1">
+                                        <IoIosInformationCircle size={16} />
+                                        <p>Stok habis</p>
+                                    </div>
+                                ) : Number(
+                                      selectedVariant?.total_stock?.total_stock
+                                  ) < 5 ? (
+                                    <div className="text-red-500 flex items-center gap-1">
+                                        <IoIosInformationCircle size={16} />
+                                        <p>
+                                            Tersisa{" "}
+                                            {
+                                                selectedVariant?.total_stock
+                                                    ?.total_stock
+                                            }{" "}
+                                            lagi
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <p className="font-semibold">
+                                        {
+                                            selectedVariant?.total_stock
+                                                ?.total_stock
+                                        }
+                                    </p>
+                                )}
                             </div>
 
                             <div className="flex gap-2 items-center text-sm">
