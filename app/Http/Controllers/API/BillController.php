@@ -9,33 +9,33 @@ use Illuminate\Http\Request;
 
 class BillController extends Controller
 {
-    private $billrepository;
+    private $billRepository;
     private $response;
 
 
     public function __construct(
         Response $response,
-        Billrepository $billrepository
+        BillRepository $billRepository
     ) {
         $this->response = $response;
-        $this->billrepository = $billrepository;
+        $this->billRepository = $billRepository;
     }
 
     public function index(Request $request)
     {
-        $data = $this->billrepository->index($request);
+        $data = $this->billRepository->index($request);
         return $this->response->index($data);
     }
 
     public function store(Request $request)
     {
-        $data = $this->billrepository->store($request);
+        $data = $this->billRepository->store($request);
         return $data;
     }
 
     public function destroy($id)
     {
-        $data = $this->billrepository->destroy($id);
+        $data = $this->billRepository->destroy($id);
         return $data;
     }
 }
