@@ -89,19 +89,16 @@ class CartRepository
     public function store($request)
     {
         $validator = Validator::make($request->all(), $this->validate());
-
         if ($validator->fails()) {
             return $this->response->validationError($validator->errors());
         }
-
         $validated = $validator->validated();
         $userId = Auth::id();
         $cart = $this->cart->firstOrCreate(
             ['user_id' => $userId],
             ['uuid' => Str::uuid()]
         );
-
-        if ($request->filled('uuid')) {
+        if (!empty($request['uuid'])) {
             return $this->update($request);
         }
         $existingItem = $this->cartItem
@@ -119,7 +116,6 @@ class CartRepository
             ['uuid' => Str::uuid()],
             $this->request($request, $cart->uuid)
         ));
-
         return $data
             ? $this->response->store($data)
             : $this->response->storeError();
@@ -127,17 +123,16 @@ class CartRepository
 
     private function update($request)
     {
-        $item = $this->cartItem->where('uuid', $request->input('uuid'))->first();
-
+        $item = $this->cartItem->where('uuid', $request['uuid'])->first();
         if (!$item) {
             return $this->response->notFound();
         }
-
         $updated = $item->fill($this->request($request, $item->cart_uuid))->save();
-
-        return $updated
-            ? $this->response->update($item)
-            : $this->response->updateError();
+        if (!$updated) {
+            return $this->response->updateError();
+        } else {
+            return $this->response->update($item);
+        }
     }
 
     public function destroy($uuid)
