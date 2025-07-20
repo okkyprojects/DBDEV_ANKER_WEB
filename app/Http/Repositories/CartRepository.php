@@ -64,7 +64,8 @@ class CartRepository
                     'discount_price'  => $variant->discount_price,
                     'price'  => $variant->price,
                     'product_name'    => $variant->product->name,
-                    'img'             => $variant->img
+                    'img'             => $variant->img,
+                    'total_stock'     => $variant->total_stock,
                 ];
             }
 
