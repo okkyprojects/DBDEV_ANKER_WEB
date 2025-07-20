@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BillController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\CategoryController;
@@ -47,4 +48,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('addresses', AddressController::class);
     Route::post('/profile', [ProfilController::class, 'store']);
     Route::get('/sellers/{id}', [SellerController::class, 'show']);
+    Route::get('/bills', [BillController::class, 'index']);
 });

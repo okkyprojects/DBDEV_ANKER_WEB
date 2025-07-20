@@ -95,7 +95,7 @@ class UserSeeder extends Seeder
 
             $bankList = ['BCA', 'Mandiri', 'BNI', 'BRI', 'Muamalat', 'CIMB Niaga', 'BTN', 'Danamon', 'Permata'];
 
-            for ($i = 0; $i < 3; $i++) {
+            for ($i = 0; $i < count($bankList); $i++) {
                 Bill::create([
                     'uuid' => Str::uuid(),
                     'user_id' => $admin->id,
