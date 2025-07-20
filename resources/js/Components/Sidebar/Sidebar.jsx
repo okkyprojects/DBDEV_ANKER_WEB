@@ -52,6 +52,20 @@ const sidebarMenu = {
             url: "/pesanan/manajemen-pesanan",
         },
     ],
+    MASTER: [
+        {
+            id: 6,
+            icon: <PiCirclesFourLight size={21} className="mr-4" />,
+            text: "Kategori",
+            url: "/master/category",
+        },
+        {
+            id: 7,
+            icon: <PiCirclesFourLight size={21} className="mr-4" />,
+            text: "Brand",
+            url: "/master/brand",
+        },
+    ],
 };
 
 const Sidebar = ({ isOpen, onToggle }) => {

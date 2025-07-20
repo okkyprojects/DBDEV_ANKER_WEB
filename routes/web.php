@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
@@ -33,6 +35,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/alamat', [ProfilController::class, 'alamat'])->name('alamat.index');
         Route::post('/alamat', [ProfilController::class, 'store_alamat'])->name('alamat.store');
         Route::post('/informasi-pribadi', [ProfilController::class, 'store_informasi_pribadi'])->name('informasi_pribadi.store');
+    });
+
+    Route::prefix('master')->name('master.')->middleware('auth')->group(function () {
+        // Category
+        Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
+        Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+        Route::delete('/category/{uuid}', [CategoryController::class, 'destroy'])->name('category.destroy');
+
+        // Product
+        Route::get('/brand', [BrandController::class, 'index'])->name('brand.index');
+        Route::post('/brand', [BrandController::class, 'store'])->name('brand.store');
+        Route::delete('/brand/{uuid}', [BrandController::class, 'destroy'])->name('brand.destroy');
+
     });
 });
 Route::get('/checkout', function () {

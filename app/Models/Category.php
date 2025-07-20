@@ -14,6 +14,9 @@ class Category extends Model
         'status',
         'img',
     ];
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     public function products()
     {
         return $this->hasMany(Product::class, 'category_uuid', 'uuid');

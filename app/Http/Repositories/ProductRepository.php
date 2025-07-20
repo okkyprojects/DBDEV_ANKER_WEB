@@ -5,6 +5,9 @@ namespace App\Http\Repositories;
 use App\Models\Product;
 use App\Traits\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ProductRepository
 {
@@ -18,7 +21,37 @@ class ProductRepository
         $this->response = $response;
         $this->product = $product;
     }
+    private function validate()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'category_uuid' => 'required|exists:categories,uuid',
+            'brand_uuid' => 'required|exists:brands,uuid',
+            'seller_uuid' => 'required|exists:sellers,uuid',
+            'status' => 'required|boolean',
+            'img' => 'nullable|string',
+            'description' => 'nullable|string',
+        ];
+    }
 
+
+    private function request(Request $request): array
+    {
+        return [
+            'uuid' => $request->input('uuid', Str::uuid()),
+            'name' => $request->input('name'),
+            'category_uuid' => $request->input('category_uuid'),
+            'brand_uuid' => $request->input('brand_uuid'),
+            'seller_uuid' => $request->input('seller_uuid'),
+            'status' => $request->input('status', true),
+        ];
+        if ($request->hasFile('img')) {
+            $file = $request->file('img');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $path = $file->storeAs('product-images', $filename, 'public');
+            $data['img'] = 'storage/' . $path;
+        }
+    }
     public function index(Request $request)
     {
         $query = $this->product
@@ -100,5 +133,39 @@ class ProductRepository
 
 
         return $data;
+    }
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->validate());
+        if ($validator->fails()) {
+            return $this->response->validationError($validator->errors());
+        }
+
+        $data = $this->request($request);
+
+        $product = $this->product->updateOrCreate(
+            ['uuid' => $request->input('uuid')],
+            $data
+        );
+
+        return $request->filled('uuid')
+            ? $this->response->update($product)
+            : $this->response->store($product);
+    }
+
+
+    public function destroy($uuid)
+    {
+        $product = $this->product->where('uuid', $uuid)->first();
+
+        if (!$product) {
+            return $this->response->notFound();
+        }
+        if ($product->img && Storage::disk('public')->exists(str_replace('storage/', '', $product->img))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $product->img));
+        }
+
+        $product->delete();
+        return $this->response->destroy($product);
     }
 }
