@@ -13,7 +13,7 @@ class BrandRepository
 {
     public function __construct(private Response $response, private Brand $brand) {}
 
-    private function rules(): array
+    private function validate(): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -22,7 +22,7 @@ class BrandRepository
         ];
     }
 
-    private function extractData(Request $request): array
+    private function request(Request $request): array
     {
         $data = [
             'uuid' => $request->input('uuid', Str::uuid()),
@@ -31,35 +31,56 @@ class BrandRepository
         ];
 
         if ($request->hasFile('img')) {
-            $filename = time() . '-' . $request->file('img')->getClientOriginalName();
-            $path = $request->file('img')->storeAs('brand-images', $filename, 'public');
+            $file = $request->file('img');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $path = $file->storeAs('brand-images', $filename, 'public');
             $data['img'] = 'storage/' . $path;
         }
 
         return $data;
     }
 
+    public function index_pagination(Request $request)
+    {
+        $query = $this->brand->query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        }
+
+        if ($request->has('status') && in_array($request->input('status'), ['0', '1'])) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $data = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        return $data;
+    }
     public function index(Request $request)
     {
         $query = $this->brand->query();
 
-        if ($search = $request->input('search')) {
-            $query->where('name', 'like', "%$search%");
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
         }
 
-        if ($request->has('status') && in_array($request->status, ['0', '1'])) {
-            $query->where('status', $request->status);
+        if ($request->has('status') && in_array($request->input('status'), ['0', '1'])) {
+            $query->where('status', $request->input('status'));
         }
 
-        return $query->orderByDesc('created_at')->get();
+        $data = $query->orderBy('created_at', 'desc')->get();
+
+        return $data;
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules());
-        if ($validator->fails()) return $this->response->validationError($validator->errors());
+        $validator = Validator::make($request->all(), $this->validate());
+        if ($validator->fails()) {
+            return $this->response->validationError($validator->errors());
+        }
 
-        $data = $this->extractData($request);
+        $data = $this->request($request);
 
         if ($request->filled('uuid')) {
             $existing = $this->brand->where('uuid', $request->uuid)->first();
@@ -68,7 +89,10 @@ class BrandRepository
             }
         }
 
-        $brand = $this->brand->updateOrCreate(['uuid' => $request->uuid], $data);
+        $brand = $this->brand->updateOrCreate(
+            ['uuid' => $request->input('uuid')],
+            $data
+        );
 
         return $request->filled('uuid')
             ? $this->response->update($brand)
@@ -79,7 +103,9 @@ class BrandRepository
     {
         $brand = $this->brand->where('uuid', $uuid)->first();
 
-        if (!$brand) return $this->response->notFound();
+        if (!$brand) {
+            return $this->response->notFound();
+        }
 
         if ($brand->img && Storage::disk('public')->exists(str_replace('storage/', '', $brand->img))) {
             Storage::disk('public')->delete(str_replace('storage/', '', $brand->img));

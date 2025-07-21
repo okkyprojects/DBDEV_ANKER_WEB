@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\API\BrandController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
@@ -43,10 +44,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
         Route::delete('/category/{uuid}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
-        // Product
+        // Brand
         Route::get('/brand', [BrandController::class, 'index'])->name('brand.index');
         Route::post('/brand', [BrandController::class, 'store'])->name('brand.store');
         Route::delete('/brand/{uuid}', [BrandController::class, 'destroy'])->name('brand.destroy');
+
+        // Banner
+        Route::get('/banner', [BannerController::class, 'index'])->name('banner.index');
+        Route::post('/banner', [BannerController::class, 'store'])->name('banner.store');
+        Route::delete('/banner/{uuid}', [BannerController::class, 'destroy'])->name('banner.destroy');
 
     });
 });

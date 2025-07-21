@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useForm, router } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import { toast } from "react-toastify";
-import { IoImageOutline } from "react-icons/io5";
+import { IoClose, IoImageOutline } from "react-icons/io5";
 
-const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
+const ModalTambahBrand = ({ isOpen, onClose }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
-        uuid: kategori?.uuid || "",
-        name: kategori?.name || "",
-        status: kategori?.status?.toString() || "1",
+        name: "",
+        status: "1",
         img: null,
     });
 
@@ -27,32 +26,17 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        post(route("master.category.store"), {
+        post(route("master.brand.store"), {
             preserveScroll: true,
-            forceFormData: true,
             onSuccess: () => {
-                toast.success("Berhasil mengubah data!");
                 onClose();
                 reset();
+                toast.success("Berhasil menambah data!");
             },
             onError: () => {
-                toast.error("Gagal megnubah data.");
+                toast.error("Gagal menambah data.");
             },
         });
-    };
-
-    const handleDelete = () => {
-        if (confirm("Yakin ingin menghapus data?")) {
-            router.delete(route("master.category.destroy", kategori?.uuid), {
-                onSuccess: () => {
-                    toast.success("Berhasil menghapus data!");
-                    onClose();
-                },
-                onError: () => {
-                    toast.error("Gagal menghapus data.");
-                },
-            });
-        }
     };
 
     const handleFileChange = (e) => {
@@ -62,13 +46,13 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 transition-opacity duration-200 ease-in-out ${
+            className={`fixed inset-0 z-50 flex items-center justify-center overflow-y-scroll xl:overflow-y-hidden bg-black bg-opacity-20 shadow-default transition-opacity duration-200 ease-in-out ${
                 isOpen ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
         >
-            <div className="absolute inset-0 flex items-center justify-center px-4">
+            <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-0">
                 <div
-                    className={`mx-auto w-full max-w-xl transform rounded-xl bg-white shadow-lg transition-all duration-200 ${
+                    className={`mx-auto w-full max-w-xl transform rounded-xl bg-white shadow-lg transition-transform duration-200 ease-in-out ${
                         isOpen
                             ? "translate-y-0 scale-100"
                             : "translate-y-10 scale-95"
@@ -77,25 +61,29 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                     <div className="px-6 py-4 text-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-black text-base font-semibold">
-                                Edit Kategori
+                                Tambah Brand
                             </h3>
                             <button
                                 onClick={onClose}
-                                className="text-gray-600 hover:text-gray-800"
+                                className="text-gray-600 hover:text-gray-800 focus:outline-none"
                             >
                                 <IoIosClose size={25} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Nama */}
+                        <form
+                            onSubmit={handleSubmit}
+                            className="py-4 space-y-5"
+                        >
+                            {/* Nama brand */}
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm">Nama Kategori</label>
+                                <label className="text-sm">Nama Brand</label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
+                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:ring-0 focus:outline-none placeholder:text-neutral-300 py-2 px-3"
                                     value={data.name}
+                                    placeholder="Masukkan nama brand"
                                     onChange={(e) =>
                                         setData("name", e.target.value)
                                     }
@@ -105,9 +93,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                         {errors.name}
                                     </span>
                                 )}
-                            </div>
-
-                            {/* Gambar */}
+                            </div>{" "}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Gambar</label>
                                 {data.img ? (
@@ -162,12 +148,11 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                     </span>
                                 )}
                             </div>
-
                             {/* Status */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Status</label>
                                 <select
-                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
+                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:ring-0 focus:outline-none py-2 px-3"
                                     value={data.status}
                                     onChange={(e) =>
                                         setData("status", e.target.value)
@@ -182,38 +167,13 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                     </span>
                                 )}
                             </div>
-
-                            {/* Action buttons */}
-                            <div className="flex items-center justify-between pt-4 border-t mt-4">
-                                {/* Hapus (kiri) */}
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="text-red-600 text-sm font-medium hover:underline"
-                                >
-                                    Hapus
-                                </button>
-
-                                <div className="flex gap-3">
-                                    {/* Batal */}
-                                    <button
-                                        type="button"
-                                        onClick={onClose}
-                                        className="rounded-xl border text-sm px-4 py-2 text-neutral-700 border-neutral-300 hover:bg-neutral-100"
-                                    >
-                                        Batal
-                                    </button>
-
-                                    {/* Simpan */}
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
-                                    >
-                                        {processing ? "Menyimpan..." : "Simpan"}
-                                    </button>
-                                </div>
-                            </div>
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full justify-center rounded-xl bg-primary-600 text-white p-2 font-medium hover:bg-primary-600/90"
+                            >
+                                {processing ? "Menyimpan..." : "Simpan"}
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -222,4 +182,4 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     );
 };
 
-export default ModalEditKategori;
+export default ModalTambahBrand;

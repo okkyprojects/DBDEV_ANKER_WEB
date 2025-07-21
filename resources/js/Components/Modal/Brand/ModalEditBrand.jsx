@@ -4,11 +4,11 @@ import { useForm, router } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
-const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
+const ModalEditBrand = ({ isOpen, onClose, brand }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
-        uuid: kategori?.uuid || "",
-        name: kategori?.name || "",
-        status: kategori?.status?.toString() || "1",
+        uuid: brand?.uuid || "",
+        name: brand?.name || "",
+        status: brand?.status?.toString() || "1",
         img: null,
     });
 
@@ -27,7 +27,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        post(route("master.category.store"), {
+        post(route("master.brand.store"), {
             preserveScroll: true,
             forceFormData: true,
             onSuccess: () => {
@@ -43,7 +43,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
 
     const handleDelete = () => {
         if (confirm("Yakin ingin menghapus data?")) {
-            router.delete(route("master.category.destroy", kategori?.uuid), {
+            router.delete(route("master.brand.destroy", brand?.uuid), {
                 onSuccess: () => {
                     toast.success("Berhasil menghapus data!");
                     onClose();
@@ -77,7 +77,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                     <div className="px-6 py-4 text-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-black text-base font-semibold">
-                                Edit Kategori
+                                Edit Brand
                             </h3>
                             <button
                                 onClick={onClose}
@@ -90,7 +90,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {/* Nama */}
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm">Nama Kategori</label>
+                                <label className="text-sm">Nama Brand</label>
                                 <input
                                     type="text"
                                     required
@@ -222,4 +222,4 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     );
 };
 
-export default ModalEditKategori;
+export default ModalEditBrand;

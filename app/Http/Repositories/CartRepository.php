@@ -52,6 +52,7 @@ class CartRepository
                     $grouped[$seller->uuid] = [
                         'seller_uuid' => $seller->uuid,
                         'seller_name' => $seller->seller_name,
+                        'img' => $seller->img,
                         'products'    => []
                     ];
                 }

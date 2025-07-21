@@ -4,11 +4,9 @@ import { useForm, router } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
-const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
+const ModalEditBanner = ({ isOpen, onClose, banner }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
-        uuid: kategori?.uuid || "",
-        name: kategori?.name || "",
-        status: kategori?.status?.toString() || "1",
+        uuid: banner?.uuid || "",
         img: null,
     });
 
@@ -27,7 +25,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        post(route("master.category.store"), {
+        post(route("master.banner.store"), {
             preserveScroll: true,
             forceFormData: true,
             onSuccess: () => {
@@ -43,7 +41,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
 
     const handleDelete = () => {
         if (confirm("Yakin ingin menghapus data?")) {
-            router.delete(route("master.category.destroy", kategori?.uuid), {
+            router.delete(route("master.banner.destroy", banner?.uuid), {
                 onSuccess: () => {
                     toast.success("Berhasil menghapus data!");
                     onClose();
@@ -77,7 +75,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                     <div className="px-6 py-4 text-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-black text-base font-semibold">
-                                Edit Kategori
+                                Edit Banner
                             </h3>
                             <button
                                 onClick={onClose}
@@ -88,24 +86,6 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Nama */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm">Nama Kategori</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData("name", e.target.value)
-                                    }
-                                />
-                                {errors.name && (
-                                    <span className="text-xs text-red-500">
-                                        {errors.name}
-                                    </span>
-                                )}
-                            </div>
 
                             {/* Gambar */}
                             <div className="flex flex-col gap-2">
@@ -163,26 +143,6 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                 )}
                             </div>
 
-                            {/* Status */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm">Status</label>
-                                <select
-                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
-                                    value={data.status}
-                                    onChange={(e) =>
-                                        setData("status", e.target.value)
-                                    }
-                                >
-                                    <option value="1">Aktif</option>
-                                    <option value="0">Tidak Aktif</option>
-                                </select>
-                                {errors.status && (
-                                    <span className="text-xs text-red-500">
-                                        {errors.status}
-                                    </span>
-                                )}
-                            </div>
-
                             {/* Action buttons */}
                             <div className="flex items-center justify-between pt-4 border-t mt-4">
                                 {/* Hapus (kiri) */}
@@ -222,4 +182,4 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
     );
 };
 
-export default ModalEditKategori;
+export default ModalEditBanner;
