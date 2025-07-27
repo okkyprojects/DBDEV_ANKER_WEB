@@ -12,50 +12,52 @@ import {
     PiXCircleLight,
 } from "react-icons/pi";
 import { formatRupiah } from "@/Utils/utils";
+import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 
-export default function ManajemenPesanan() {
-    const data = [
-        {
-            namaPemesan: "Ilham Arkan",
-            nomorHp: "081234567890",
-            alamat: "Jl. Ikan Paus No. 21",
-            provinsi: "Jawa Timur",
-            kota: "Malang",
-            kodePos: "65145",
-            nominal: 250000,
-            status: "Menunggu Pembayaran",
-        },
-        {
-            namaPemesan: "Ayu Lestari",
-            nomorHp: "085678912345",
-            alamat: "Jl. Kenanga Raya No. 8",
-            provinsi: "DKI Jakarta",
-            kota: "Jakarta Selatan",
-            kodePos: "12420",
-            nominal: 500000,
-            status: "Selesai",
-        },
-        {
-            namaPemesan: "Budi Santoso",
-            nomorHp: "089876543210",
-            alamat: "Jl. Cendrawasih No. 3",
-            provinsi: "Jawa Barat",
-            kota: "Bandung",
-            kodePos: "40291",
-            nominal: 350000,
-            status: "Dikirim",
-        },
-        {
-            namaPemesan: "Rina Wulandari",
-            nomorHp: "082233445566",
-            alamat: "Jl. Merpati No. 10",
-            provinsi: "Bali",
-            kota: "Denpasar",
-            kodePos: "80235",
-            nominal: 420000,
-            status: "Dibatalkan",
-        },
-    ];
+export default function ManajemenPesanan({ data }) {
+    console.log(data);
+    // const data = [
+    //     {
+    //         namaPemesan: "Ilham Arkan",
+    //         nomorHp: "081234567890",
+    //         alamat: "Jl. Ikan Paus No. 21",
+    //         provinsi: "Jawa Timur",
+    //         kota: "Malang",
+    //         kodePos: "65145",
+    //         nominal: 250000,
+    //         status: "Menunggu Pembayaran",
+    //     },
+    //     {
+    //         namaPemesan: "Ayu Lestari",
+    //         nomorHp: "085678912345",
+    //         alamat: "Jl. Kenanga Raya No. 8",
+    //         provinsi: "DKI Jakarta",
+    //         kota: "Jakarta Selatan",
+    //         kodePos: "12420",
+    //         nominal: 500000,
+    //         status: "Selesai",
+    //     },
+    //     {
+    //         namaPemesan: "Budi Santoso",
+    //         nomorHp: "089876543210",
+    //         alamat: "Jl. Cendrawasih No. 3",
+    //         provinsi: "Jawa Barat",
+    //         kota: "Bandung",
+    //         kodePos: "40291",
+    //         nominal: 350000,
+    //         status: "Dikirim",
+    //     },
+    //     {
+    //         namaPemesan: "Rina Wulandari",
+    //         nomorHp: "082233445566",
+    //         alamat: "Jl. Merpati No. 10",
+    //         provinsi: "Bali",
+    //         kota: "Denpasar",
+    //         kodePos: "80235",
+    //         nominal: 420000,
+    //         status: "Dibatalkan",
+    //     },
+    // ];
 
     const dataCard = [
         {
@@ -184,53 +186,60 @@ export default function ManajemenPesanan() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                        className="hover:bg-gray-50 text-sm text-neutral-700"
-                                    >
-                                        <td className="px-4 py-5 pl-9 xl:pl-11">
-                                            {index + 1}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.namaPemesan}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.nomorHp}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.alamat}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.provinsi}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.kota}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.kodePos}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {formatRupiah(item.nominal)}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.status}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            <button
-                                                onClick={() =>
-                                                    toggleDropdown(index)
-                                                }
-                                                className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
-                                            >
-                                                Aksi <FaChevronDown size={14} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {data?.transactions?.data?.map(
+                                    (item, index) => (
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-gray-50 text-sm text-neutral-700"
+                                        >
+                                            <td className="px-4 py-5 pl-9 xl:pl-11">
+                                                {index + 1}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.user.name}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.user.phone_number}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.address.address}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.address.province.nama}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.address.city.nama}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.address.postal_code}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {formatRupiah(item.total_price)}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.status}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                <button
+                                                    onClick={() =>
+                                                        toggleDropdown(index)
+                                                    }
+                                                    className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
+                                                >
+                                                    Aksi{" "}
+                                                    <FaChevronDown size={14} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )
+                                )}
                             </tbody>
-                        </table>
-                    </div>
+                        </table>{" "}
+                    </div>{" "}
+                    <PaginationDashboard
+                        links={data?.transactions?.links}
+                        meta={data?.transactions}
+                    />
                 </div>
             </div>
         </DefaultLayout>

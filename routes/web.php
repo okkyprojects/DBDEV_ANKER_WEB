@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
@@ -55,6 +56,9 @@ Route::middleware('auth')->group(function () {
         // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); // 👈 tambah update
         Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
+    Route::prefix('pesanan')->name('pesanan.')->group(function () {
+        Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
+    });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
 
     Route::prefix('master')->name('master.')->middleware('auth')->group(function () {
@@ -97,10 +101,6 @@ Route::middleware('auth')->group(function () {
 Route::prefix('reporting')->group(function () {
     Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));
     Route::get('/item', fn() => Inertia::render('Reporting/Item'));
-});
-
-Route::prefix('pesanan')->group(function () {
-    Route::get('/manajemen-pesanan', fn() => Inertia::render('Pesanan/ManajemenPesanan'));
 });
 
 Route::get('/dashboard', function () {

@@ -52,9 +52,15 @@ class TransactionRepository
     public function index(Request $request)
     {
         $query = $this->transaction
-            ->with(['items', 'address', 'bill'])
+            ->with([
+                'user',
+                'items',
+                'address.province',
+                'address.city',
+                'address.district',
+                'bill'
+            ])
             ->orderBy('created_at', 'desc');
-
         if (Auth::user()->role !== 'admin') {
             $query->where('user_id', Auth::id());
         }

@@ -233,12 +233,12 @@ export default function StokPage({ data }) {
                                 />
                             </div>
                         </div>
-                    )}
+                    )}{" "}
+                    <PaginationDashboard
+                        links={data?.products?.links}
+                        meta={data?.products}
+                    />
                 </div>
-                <PaginationDashboard
-                    links={data?.products?.links}
-                    meta={data?.products}
-                />
             </div>
         </DefaultLayout>
     );

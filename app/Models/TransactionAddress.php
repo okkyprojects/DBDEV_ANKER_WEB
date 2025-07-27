@@ -30,4 +30,18 @@ class TransactionAddress extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
 }
