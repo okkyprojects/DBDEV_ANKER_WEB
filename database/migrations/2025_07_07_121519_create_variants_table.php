@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('img')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->decimal('discount_price', 12, 2)->nullable();
-            $table->boolean('status')->default(1);
             $table->timestamps();
             $table->foreign('product_uuid')->references('uuid')->on('products')->nullOnDelete();
         });

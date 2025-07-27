@@ -51,6 +51,7 @@ class CartRepository
                     'quantity'        => $variant->pivot->quantity,
                     'discount_price'  => $variant->discount_price,
                     'price'           => $variant->price,
+                    'product_uuid'    => $variant->product->uuid,
                     'product_name'    => $variant->product->name,
                     'img'             => $variant->img,
                     'total_stock'     => $variant->total_stock,
@@ -60,6 +61,7 @@ class CartRepository
 
         return $data;
     }
+
 
 
 

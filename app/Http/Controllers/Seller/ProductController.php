@@ -35,26 +35,31 @@ class ProductController extends Controller
         $data['brands'] = $this->brand->index($request);
         return Inertia::render('Stok/ManajemenStok/Create', compact('data'));
     }
+    public function edit(Request $request, $uuid)
+    {
+        $data['categories'] = $this->category->index($request);
+        $data['brands'] = $this->brand->index($request);
+        $data['product'] = $this->product->single($uuid);
+        $variant_request = new Request(['product_uuid' => $uuid]);
+        $data['variants'] = $this->variant->index($variant_request);
+        return Inertia::render('Stok/ManajemenStok/Edit', compact('data'));
+    }
+
     public function store(Request $request)
     {
-        DB::beginTransaction();
-
-        try {
-            $product = $this->product->store($request);
-
-            dd($request->variants); // untuk ngecek isi variants
-
-            if ($request->has('variants')) {
-                $this->variant->store($request->variants, $product->uuid);
-            }
-
-            DB::commit();
-            return redirect()->route('products.index')->with('success', 'Produk dan varian berhasil disimpan!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        $product = $this->product->store($request);
+        if ($request->has('variants')) {
+            $cleanVariants = collect($request->variants)->map(function ($variant) {
+                unset($variant['isOpen']);
+                return $variant;
+            })->toArray();
+            $variant = $this->variant->store($cleanVariants, $product->uuid);
         }
+
+        return redirect()->route('produk.product.index')->with('success', 'Produk dan varian berhasil disimpan!');
     }
+
+
 
 
     public function destroy($uuid)

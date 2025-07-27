@@ -27,9 +27,7 @@ class ProductRepository
             'name' => 'required|string|max:255',
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
-            'seller_uuid' => 'required|exists:sellers,uuid',
-            'status' => 'required|boolean',
-            'img' => 'nullable|string',
+            'img' => 'nullable',
             'description' => 'nullable|string',
         ];
     }
@@ -37,21 +35,24 @@ class ProductRepository
 
     private function request(Request $request): array
     {
-        return [
-            'uuid' => $request->input('uuid', Str::uuid()),
+        $data = [
+            'uuid' => $request->filled('uuid') ? $request->input('uuid') : Str::uuid(),
             'name' => $request->input('name'),
             'category_uuid' => $request->input('category_uuid'),
             'brand_uuid' => $request->input('brand_uuid'),
-            'seller_uuid' => $request->input('seller_uuid'),
-            'status' => $request->input('status', true),
+            'description' => $request->input('description'),
         ];
+
         if ($request->hasFile('img')) {
             $file = $request->file('img');
             $filename = time() . '-' . $file->getClientOriginalName();
             $path = $file->storeAs('product-images', $filename, 'public');
             $data['img'] = 'storage/' . $path;
         }
+
+        return $data;
     }
+
     public function index(Request $request)
     {
         $query = $this->product
@@ -82,11 +83,7 @@ class ProductRepository
                         $q->where('name', 'like', '%' . $brand . '%');
                     });
                 });
-            })
-            ->when(
-                $request->has('status') && in_array($request->input('status'), ['0', '1']),
-                fn($q) => $q->where('status', $request->input('status'))
-            );
+            });
         if (in_array($request->input('sort_by'), ['lowest_price', 'highest_price'])) {
             $query->withMin('variants', 'price')->withMax('variants', 'price');
 
@@ -122,19 +119,27 @@ class ProductRepository
 
         return $data;
     }
-    public function store(Request $request)
+public function store($request)
     {
         $validator = Validator::make($request->all(), $this->validate());
+
         if ($validator->fails()) {
             return $this->response->validationError($validator->errors());
         }
 
         $data = $this->request($request);
 
-        $product = $this->product->updateOrCreate(
-            ['uuid' => $request->input('uuid')],
-            $data
-        );
+        if ($request->filled('uuid')) {
+            $product = $this->product->where('uuid', $request->input('uuid'))->first();
+
+            if (!$product) {
+                return $this->response->notFound();
+            }
+
+            $product->update($data);
+        } else {
+            $product = $this->product->create($data);
+        }
 
         return $product;
     }

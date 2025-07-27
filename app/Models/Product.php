@@ -16,8 +16,6 @@ class Product extends Model
         'name',
         'category_uuid',
         'brand_uuid',
-        'seller_uuid',
-        'status',
         'img',
         'description',
     ];

@@ -29,7 +29,6 @@ class VariantFactory extends Factory
             'price' => $price,
             'img' => 'https://fastly.picsum.photos/id/8/300/100.jpg?hmac=fEbCJREOWHtYm21WgwubKRUVUp7vPF2V9FY9gSJHwZs',
             'discount_price' => $discount,
-            'status' => $this->faker->boolean(90),
         ];
     }
 }

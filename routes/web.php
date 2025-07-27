@@ -4,12 +4,14 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\User\CartController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,9 +26,15 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home.index');
-Route::get('/product', [HomeController::class, 'product'])->name('home.product');
-Route::get('/product/{uuid}', [HomeController::class, 'product_show'])->name('home.product.show');
+// Route::get('/', [HomeController::class, 'index'])->name('home.index');
+// Route::get('/product', [HomeController::class, 'product'])->name('home.product');
+// Route::get('/product/{uuid}', [HomeController::class, 'product_show'])->name('home.product.show');
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/daftar-seller', [HomeController::class, 'daftar_seller'])->name('home.seller.daftar_seller');
     Route::post('/store-seller', [HomeController::class, 'store_seller'])->name('home.seller.store_seller');
@@ -43,8 +51,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-produk', [ProductController::class, 'index'])->name('product.index');
         Route::get('/data-produk/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/data-produk', [ProductController::class, 'store'])->name('product.store');
+        Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); // 👈 tambah edit
+        // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); // 👈 tambah update
         Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
+    Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
+
     Route::prefix('master')->name('master.')->middleware('auth')->group(function () {
         // Category
         Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
@@ -67,18 +79,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/bill/{uuid}', [BillController::class, 'destroy'])->name('bill.destroy');
     });
 });
-Route::get('/checkout', function () {
-    return Inertia::render('Checkout');
-});
-Route::get('/riwayat-transaksi', function () {
-    return Inertia::render('RiwayatTransaksi');
-});
-Route::get('/payment', function () {
-    return Inertia::render('Payment');
-});
-Route::get('/product/detail', function () {
-    return Inertia::render('DetailProduct');
-});
+// Route::get('/checkout', function () {
+//     return Inertia::render('Checkout');
+// });
+// Route::get('/riwayat-transaksi', function () {
+//     return Inertia::render('RiwayatTransaksi');
+// });
+// Route::get('/payment', function () {
+//     return Inertia::render('Payment');
+// });
+// Route::get('/product/detail', function () {
+//     return Inertia::render('DetailProduct');
+// });
 
 
 

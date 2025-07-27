@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->uuid('category_uuid')->nullable();
             $table->uuid('brand_uuid')->nullable();
-            $table->boolean('status')->default(1);
             $table->string('img')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();

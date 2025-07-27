@@ -4,13 +4,18 @@ import { HiOutlinePrinter } from "react-icons/hi2";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
+import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 
 export default function StokPage({ data }) {
     const [showModalFilter, setShowModalFilter] = useState(false);
-
+    const dropdownRef = useRef(null);
+    const [dropdownOpen, setDropdownOpen] = useState(null);
+    const toggleDropdown = (index) => {
+        setDropdownOpen((prev) => (prev === index ? null : index));
+    };
     console.log(data);
     const dataCard = [
         {
@@ -32,11 +37,25 @@ export default function StokPage({ data }) {
             iconColor: "text-red-500",
         },
     ];
-
-    const [dropdownOpen, setDropdownOpen] = useState(null);
-    const toggleDropdown = (index) => {
-        setDropdownOpen(dropdownOpen === index ? null : index);
+    const handleClickOutside = (event) => {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target)
+        ) {
+            setDropdownOpen(null);
+        }
     };
+
+    useEffect(() => {
+        if (dropdownOpen !== null) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     return (
         <DefaultLayout>
@@ -122,9 +141,6 @@ export default function StokPage({ data }) {
                                     <th className="min-w-[200px] px-4 py-4 ">
                                         Jumlah Varian
                                     </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
-                                        Status
-                                    </th>
                                     <th className="px-4 py-4 ">Aksi</th>
                                 </tr>
                             </thead>
@@ -135,7 +151,7 @@ export default function StokPage({ data }) {
                                         className="hover:bg-gray-50 text-sm text-neutral-700"
                                     >
                                         <td className=" px-4 py-5 pl-9 xl:pl-11">
-                                            {index + 1}
+                                            {data?.products?.from + index}
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item.name}
@@ -149,12 +165,7 @@ export default function StokPage({ data }) {
                                         <td className=" px-4 py-5">
                                             {item.variant_count}
                                         </td>
-                                        <td className=" px-4 py-5">
-                                            {item.status
-                                                ? "Aktif"
-                                                : "Tidak Aktif"}
-                                        </td>
-                                        <td className=" px-4 py-5">
+                                        <td className="relative px-4 py-5">
                                             <button
                                                 onClick={() =>
                                                     toggleDropdown(index)
@@ -164,11 +175,46 @@ export default function StokPage({ data }) {
                                                 Aksi <FaChevronDown size={14} />
                                             </button>
                                         </td>
+                                        {dropdownOpen === index && (
+                                            <div
+                                                ref={dropdownRef}
+                                                className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out lg:right-18 ${
+                                                    dropdownOpen === index
+                                                        ? "opacity-100"
+                                                        : "pointer-events-none opacity-0"
+                                                }`}
+                                            >
+                                                <div className="py-1">
+                                                    <Link
+                                                        href={route(
+                                                            "produk.product.edit",
+                                                            item.uuid
+                                                        )}
+                                                        className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                    >
+                                                        Detail
+                                                    </Link>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            toggleModalDetail(
+                                                                bookingItem.booking_id,
+                                                                bookingItem.tipe,
+                                                                bookingItem.statusPembayaran
+                                                            )
+                                                        }
+                                                        className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>{" "}
+                    </div>
                     {showModalFilter && (
                         <div
                             className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
@@ -189,6 +235,10 @@ export default function StokPage({ data }) {
                         </div>
                     )}
                 </div>
+                <PaginationDashboard
+                    links={data?.products?.links}
+                    meta={data?.products}
+                />
             </div>
         </DefaultLayout>
     );

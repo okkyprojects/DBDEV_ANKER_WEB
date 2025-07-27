@@ -7,25 +7,26 @@ import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, router, useForm } from "@inertiajs/react";
 
-export default function Create({ data: initial_data }) {
+export default function Edit({ data: initial_data }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: "",
-        category_uuid: "",
-        brand_uuid: "",
-        seller_uuid: "",
-        status: "",
-        img: null,
-        description: "",
-        variants: [
-            {
-                name: "",
-                price: "",
-                discount_price: "",
-                img: null,
-                status: "1",
+        uuid: initial_data.product.uuid,
+        name: initial_data.product.name,
+        category_uuid: initial_data.product.category_uuid,
+        brand_uuid: initial_data.product.brand_uuid,
+        seller_uuid: initial_data.product.seller_uuid,
+        status: initial_data.product.status,
+        img: initial_data.product.img || null,
+        description: initial_data.product.description,
+        variants:
+            initial_data.variants?.map((v) => ({
+                uuid: v.uuid || "",
+                name: v.name,
+                price: v.price,
+                discount_price: v.discount_price,
+                img: v.img || null,
+                status: v.status || "1",
                 isOpen: true,
-            },
-        ],
+            })) || [],
     });
     const [thumbnail, setThumbnail] = useState();
     const handlethumbnail = (e) => {
@@ -51,6 +52,23 @@ export default function Create({ data: initial_data }) {
         const updated = [...data.variants];
         updated.splice(index, 1);
         setData("variants", updated);
+    };
+    const handleDeleteVarian = (index, uuid = null) => {
+        console.log(uuid)
+        if (uuid) {
+            if (confirm("Yakin ingin menghapus varian ini?")) {
+                router.delete(route("variant.destroy", uuid), {
+                    preserveState: true,
+                    onSuccess: () => {
+                        const updated = [...data.variants];
+                        updated.splice(index, 1);
+                        setData("variants", updated);
+                    },
+                });
+            }
+        } else {
+            removeVarian(index);
+        }
     };
 
     const toggleVarian = (index) => {
@@ -202,7 +220,11 @@ export default function Create({ data: initial_data }) {
                                         <img
                                             src={
                                                 typeof data.img === "string"
-                                                    ? data.img
+                                                    ? data.img.startsWith(
+                                                          "http"
+                                                      )
+                                                        ? data.img
+                                                        : `${window.location.origin}/${data.img}`
                                                     : URL.createObjectURL(
                                                           data.img
                                                       )
@@ -292,9 +314,7 @@ export default function Create({ data: initial_data }) {
                                 <div className="flex justify-between items-center flex-wrap gap-3">
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            toggleVarian(index)
-                                        }
+                                        onClick={() => toggleVarian(index)}
                                         className="flex gap-2.5 items-center"
                                     >
                                         <FaChevronUp
@@ -307,8 +327,12 @@ export default function Create({ data: initial_data }) {
                                         <p>Varian {index + 1}</p>
                                     </button>
                                     <button
-                                        type="button"
-                                        onClick={() => removeVarian(index)}
+                                        onClick={() =>
+                                            handleDeleteVarian(
+                                                index,
+                                                varian.uuid
+                                            )
+                                        }
                                     >
                                         <IoClose />
                                     </button>
@@ -451,7 +475,11 @@ export default function Create({ data: initial_data }) {
                                                                 src={
                                                                     typeof varian.img ===
                                                                     "string"
-                                                                        ? varian.img
+                                                                        ? varian.img.startsWith(
+                                                                              "http"
+                                                                          )
+                                                                            ? varian.img
+                                                                            : `${window.location.origin}/${varian.img}`
                                                                         : URL.createObjectURL(
                                                                               varian.img
                                                                           )
