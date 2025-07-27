@@ -53,8 +53,11 @@ class TransactionRepository
     {
         $query = $this->transaction
             ->with(['items', 'address', 'bill'])
-            ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
+
+        if (Auth::user()->role !== 'admin') {
+            $query->where('user_id', Auth::id());
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -81,6 +84,7 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+
     public function show($transaction_code)
     {
         $transaction = $this->transaction
