@@ -51,7 +51,7 @@ class TransactionRepository
     public function index(Request $request)
     {
         $query = $this->transaction
-            ->with(['items', 'address'])
+            ->with(['items', 'address','bill'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
 
@@ -80,6 +80,25 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+    public function show($transaction_code)
+    {
+        $transaction = $this->transaction
+            ->with([
+                'items',
+                'address',
+                'bill',
+            ])
+            ->where('transaction_code', $transaction_code)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        if (!$transaction) {
+            return $this->response->notFound('Data transaksi tidak ditemukan');
+        }
+
+        return $transaction;
+    }
+
     protected function generateTransactionCode(): string
     {
         do {

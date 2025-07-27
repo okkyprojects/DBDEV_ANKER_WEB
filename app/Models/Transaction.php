@@ -40,4 +40,8 @@ class Transaction extends Model
     {
         return $this->hasOne(TransactionAddress::class);
     }
+    public function bill()
+    {
+        return $this->hasOne(TransactionBill::class);
+    }
 }

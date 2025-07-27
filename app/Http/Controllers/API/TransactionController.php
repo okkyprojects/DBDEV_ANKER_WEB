@@ -26,7 +26,11 @@ class TransactionController extends Controller
         $data = $this->transactionRepository->index($request);
         return $this->response->index($data);
     }
-
+    public function show(string $id)
+    {
+        $data = $this->transactionRepository->show($id);
+        return $this->response->index($data);
+    }
     public function store(Request $request)
     {
         $data = $this->transactionRepository->store($request);
