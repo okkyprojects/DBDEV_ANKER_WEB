@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionRepository
 {
@@ -51,7 +52,7 @@ class TransactionRepository
     public function index(Request $request)
     {
         $query = $this->transaction
-            ->with(['items', 'address','bill'])
+            ->with(['items', 'address', 'bill'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
 
@@ -116,103 +117,102 @@ class TransactionRepository
             return $this->response->validationError($validator->errors());
         }
 
-        DB::beginTransaction();
-
-        try {
-            if (!empty($request['uuid'])) {
-                return $this->update($request);
-            }
-
-            $uuid = (string) Str::uuid();
-            $items = [];
-            $total_price = 0;
-
-            foreach ($request['items'] as $item) {
-                $variant = $this->variant->with('product')->where('uuid', $item['variant_uuid'])->first();
-
-                if (!$variant) {
-                    DB::rollBack();
-                    return $this->response->validationError([
-                        'items' => ['Variant tidak ditemukan untuk salah satu item.']
-                    ]);
-                }
-
-                $price = $variant->price;
-                $quantity = $item['quantity'];
-                $total_price += $price * $quantity;
-
-                $items[] = [
-                    'uuid'             => Str::uuid(),
-                    'transaction_uuid' => $uuid,
-                    'transaction_code' => $this->generateTransactionCode(),
-                    'variant_uuid'     => $variant->uuid,
-                    'product_name'     => $variant->product->name,
-                    'variant_name'     => $variant->name,
-                    'quantity'         => $quantity,
-                    'price'            => $price,
-                ];
-            }
-
-            $transaction_code = $this->generateTransactionCode();
-            $admin_fee = 0;
-            $grand_total = $total_price + $admin_fee;
-
-            $transaction = $this->transaction->create([
-                'uuid'             => $uuid,
-                'transaction_code' => $transaction_code,
-                'user_id'          => Auth::id(),
-                'total_price'      => $total_price,
-                'admin_fee'        => $admin_fee,
-                'grand_total'      => $grand_total,
-                'unpaid_at'        => now(),
-                'expired_at'       => now()->addMinutes(15),
-                'note'             => $request['note'] ?? null,
-            ]);
-            $address = $this->address->where('uuid', $request['address_uuid'])->first();
-            if (!$address) {
-                DB::rollBack();
-                return $this->response->validationError(['address_uuid' => ['Alamat tidak ditemukan.']]);
-            }
-
-            $this->transactionAddress->create([
-                'uuid'              => Str::uuid(),
-                'transaction_uuid'  => $transaction->uuid,
-                'user_id'           => $address->user_id,
-                'province_id'       => $address->province_id,
-                'city_id'           => $address->city_id,
-                'district_id'       => $address->district_id,
-                'category'          => $address->category,
-                'name'              => $address->name,
-                'phone_number'      => $address->phone_number,
-                'is_main'           => $address->is_main,
-                'address'           => $address->address,
-                'postal_code'       => $address->postal_code,
-                'note'              => $address->note,
-            ]);
-            $bill = $this->bill->where('uuid', $request['bill_uuid'])->first();
-            if (!$bill) {
-                DB::rollBack();
-                return $this->response->validationError(['bill_uuid' => ['Data rekening tidak ditemukan.']]);
-            }
-
-            $this->transactionBill->create([
-                'uuid'              => Str::uuid(),
-                'transaction_uuid'  => $transaction->uuid,
-                'account_number'    => $bill->account_number,
-                'bank_name'         => $bill->bank_name,
-                'account_holder_name' => $bill->account_holder_name,
-                'is_main'           => $bill->is_main,
-            ]);
-            foreach ($items as $itemData) {
-                $this->transactionItem->create($itemData);
-            }
-
-            DB::commit();
-            return $this->response->store($transaction);
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return $this->response->storeError($e->getMessage());
+        if (!empty($request['uuid'])) {
+            return $this->update($request);
         }
+
+        $uuid = (string) Str::uuid();
+        $transaction_code = $this->generateTransactionCode();
+        $total_price = 0;
+        $items = [];
+
+        foreach ($request['items'] as $item) {
+            $variant = $this->variant->with('product')->where('uuid', $item['variant_uuid'])->first();
+
+            if (!$variant) {
+                return $this->response->validationError([
+                    'items' => ['Variant tidak ditemukan untuk salah satu item.']
+                ]);
+            }
+
+            $price = $variant->price;
+            $quantity = $item['quantity'];
+            $total_price += $price * $quantity;
+
+            $items[] = [
+                'uuid'             => Str::uuid(),
+                'transaction_uuid' => $uuid,
+                'transaction_code' => $transaction_code,
+                'variant_uuid'     => $variant->uuid,
+                'product_name'     => $variant->product->name,
+                'variant_name'     => $variant->name,
+                'quantity'         => $quantity,
+                'price'            => $price,
+            ];
+        }
+
+        $admin_fee = 0;
+        $grand_total = $total_price + $admin_fee;
+
+        $trxData = $this->request($request);
+        $trxData['uuid'] = $uuid;
+        $trxData['transaction_code'] = $transaction_code;
+        $trxData['total_price'] = $total_price;
+        $trxData['admin_fee'] = $admin_fee;
+        $trxData['grand_total'] = $grand_total;
+
+        $transaction = $this->transaction->create($trxData);
+
+        $address = $this->address->where('uuid', $request['address_uuid'])->first();
+        $this->transactionAddress->create([
+            'uuid'              => Str::uuid(),
+            'transaction_uuid'  => $uuid,
+            'user_id'           => $address->user_id,
+            'province_id'       => $address->province_id,
+            'city_id'           => $address->city_id,
+            'district_id'       => $address->district_id,
+            'category'          => $address->category,
+            'name'              => $address->name,
+            'phone_number'      => $address->phone_number,
+            'is_main'           => $address->is_main,
+            'address'           => $address->address,
+            'postal_code'       => $address->postal_code,
+            'note'              => $address->note,
+        ]);
+
+        $bill = $this->bill->where('uuid', $request['bill_uuid'])->first();
+        $this->transactionBill->create([
+            'uuid'                 => Str::uuid(),
+            'transaction_uuid'     => $uuid,
+            'account_number'       => $bill->account_number,
+            'bank_name'            => $bill->bank_name,
+            'account_holder_name'  => $bill->account_holder_name,
+            'is_main'              => $bill->is_main,
+        ]);
+
+        foreach ($items as $itemData) {
+            $this->transactionItem->create($itemData);
+        }
+
+        return $this->response->store($transaction);
+    }
+    private function update($request)
+    {
+        $trx = $this->transaction->where('uuid', $request['uuid'])->first();
+
+        if (!$trx) {
+            return $this->response->notFound('Transaksi tidak ditemukan berdasarkan kode transaksi.');
+        }
+
+        $updateData = $this->request($request);
+        if (isset($updateData['file']) && $trx->file) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $trx->file));
+        }
+
+        $trx->fill($updateData);
+        $trx->save();
+
+        return $this->response->update($trx);
     }
 
 
@@ -233,29 +233,43 @@ class TransactionRepository
             : $this->response->destroyError();
     }
 
-    private function update($request)
+
+    private function request(Request $request): array
     {
-        $trx = $this->transaction->where('uuid', $request['uuid'])->first();
-        if (!$trx) {
-            return $this->response->notFound();
+        $data = [
+            'uuid'             => $request->input('uuid', (string) Str::uuid()),
+            'transaction_code' => $request->input('transaction_code', $this->generateTransactionCode()),
+            'user_id'          => Auth::id(),
+            'total_price'      => $request->input('total_price', 0),
+            'admin_fee'        => $request->input('admin_fee', 0),
+            'grand_total'      => $request->input('grand_total', 0),
+            'status'           => $request->input('status', 0),
+            'paid_at'        => $request->input('paid_at'),
+            'unpaid_at'        => $request->input('unpaid_at'),
+            'expired_at'       => $request->input('expired_at'),
+            'note'             => $request->input('note'),
+        ];
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $path = $file->storeAs('transaction-files', $filename, 'public');
+            $data['file'] = 'storage/' . $path;
         }
 
-        $trx->fill([
-            'status'    => $request['status'] ?? $trx->status,
-            'note'      => $request['note'] ?? $trx->note,
-        ])->save();
-
-        return $this->response->update($trx);
+        return $data;
     }
 
-    public function validate()
+    private function validate(): array
     {
         return [
-            'items' => 'required|array|min:1',
-            'items.*.variant_uuid' => 'required|exists:variants,uuid',
-            'items.*.quantity' => 'required|integer|min:1',
-            'address_uuid' => 'required|exists:addresses,uuid',
+            'items' => 'nullable|array|min:1',
+            'items.*.variant_uuid' => 'nullable|exists:variants,uuid',
+            'items.*.quantity' => 'nullable|integer|min:1',
+            'address_uuid' => 'nullable|exists:addresses,uuid',
+            'bill_uuid' => 'nullable|exists:bills,uuid',
             'note' => 'nullable|string',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
         ];
     }
 }

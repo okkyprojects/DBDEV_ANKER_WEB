@@ -18,14 +18,16 @@ return new class extends Migration
             $table->decimal('total_price', 16, 2);
             $table->decimal('admin_fee', 16, 2)->default(0);
             $table->decimal('grand_total', 16, 2);
-            $table->unsignedTinyInteger('status')->default(0); // 0=unpaid, 1=processing, 2=shipping, 3=completed, 4=failed, 5=expired
+            $table->unsignedTinyInteger('status')->default(0); // 0=unpaid, 1=paid, 2=processing, 3=shipping, 4=completed, 5=failed, 6=expired
             $table->timestamp('unpaid_at')->nullable();
+            $table->timestamp('paid_at')->nullable();
             $table->timestamp('processing_at')->nullable();
             $table->timestamp('shipping_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('failed_at')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->text('note')->nullable();
+            $table->string('file')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
         });

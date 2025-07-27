@@ -19,6 +19,7 @@ class Transaction extends Model
         'admin_fee',
         'grand_total',
         'status',
+        'paid_at',
         'unpaid_at',
         'processing_at',
         'shipping_at',
@@ -26,6 +27,7 @@ class Transaction extends Model
         'failed_at',
         'expired_at',
         'note',
+        'file',
     ];
 
     public function user()
