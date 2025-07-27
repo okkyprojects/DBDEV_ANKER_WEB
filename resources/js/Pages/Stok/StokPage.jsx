@@ -8,47 +8,10 @@ import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 
-export default function StokPage() {
+export default function StokPage({ data }) {
     const [showModalFilter, setShowModalFilter] = useState(false);
-    const data = [
-        {
-            nama: "Sabun Cuci Piring Lemon 500ml",
-            kategori: "Kebutuhan Rumah Tangga",
-            brand: "Anker",
-            jumlahVarian: 2,
-            stok: 12,
-            status: "Active",
-            keyProduk: "P001",
-        },
-        {
-            nama: "Minyak Goreng 1L",
-            kategori: "Sembako",
-            brand: "Anker",
-            jumlahVarian: 1,
-            stok: 3,
-            status: "Inactive",
-            keyProduk: "P002",
-        },
-        {
-            nama: "Gula Pasir 1kg",
-            kategori: "Sembako",
-            brand: "Anker",
-            jumlahVarian: 1,
-            stok: 0,
-            status: "Rejected",
-            keyProduk: "P003",
-        },
-        {
-            nama: "Susu Kental Manis",
-            kategori: "Minuman",
-            brand: "Anker",
-            jumlahVarian: 3,
-            stok: 50,
-            status: "Inreview",
-            keyProduk: "P004",
-        },
-    ];
 
+    console.log(data);
     const dataCard = [
         {
             title: "Produk Aktif",
@@ -135,7 +98,7 @@ export default function StokPage() {
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Produk</p>
                         <Link
-                            href="/stok/manajemen-stok/create"
+                            href="/produk/data-produk/create"
                             className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
                         >
                             <FaPlus />
@@ -160,16 +123,13 @@ export default function StokPage() {
                                         Jumlah Varian
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
-                                        Stok
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Status
                                     </th>
                                     <th className="px-4 py-4 ">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
+                                {data?.products?.data?.map((item, index) => (
                                     <tr
                                         key={index}
                                         className="hover:bg-gray-50 text-sm text-neutral-700"
@@ -178,39 +138,21 @@ export default function StokPage() {
                                             {index + 1}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.nama}
+                                            {item.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.kategori}
+                                            {item.category.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.brand}
+                                            {item.brand.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.jumlahVarian}
+                                            {item.variant_count}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.stok}
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            <span
-                                                className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${
-                                                    item.status === "Active"
-                                                        ? "bg-green-300 text-green-600"
-                                                        : item.status ===
-                                                          "Inactive"
-                                                        ? "bg-yellow-300 text-yellow-600"
-                                                        : item.status ===
-                                                          "Rejected"
-                                                        ? "bg-red-300 text-red-600"
-                                                        : item.status ===
-                                                          "Inreview"
-                                                        ? "bg-blue-300 text-blue-600"
-                                                        : ""
-                                                }`}
-                                            >
-                                                {item.status}
-                                            </span>
+                                            {item.status
+                                                ? "Aktif"
+                                                : "Tidak Aktif"}
                                         </td>
                                         <td className=" px-4 py-5">
                                             <button

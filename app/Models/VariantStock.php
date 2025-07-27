@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class VariantStock extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'uuid',
         'variant_uuid',

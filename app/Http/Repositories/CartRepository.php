@@ -35,7 +35,7 @@ class CartRepository
     public function index()
     {
         $cart = $this->cart
-            ->with(['variants.product.seller'])
+            ->with(['variants.product'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->first();
@@ -43,38 +43,24 @@ class CartRepository
         $data = [];
 
         if ($cart) {
-            $grouped = [];
-
             foreach ($cart->variants as $variant) {
-                $seller = $variant->product->seller;
-
-                if (!isset($grouped[$seller->uuid])) {
-                    $grouped[$seller->uuid] = [
-                        'seller_uuid' => $seller->uuid,
-                        'seller_name' => $seller->seller_name,
-                        'img' => $seller->img,
-                        'products'    => []
-                    ];
-                }
-
-                $grouped[$seller->uuid]['products'][] = [
-                    'itemcart_uuid'     => $variant->pivot->uuid,
+                $data[] = [
+                    'itemcart_uuid'   => $variant->pivot->uuid,
                     'variant_uuid'    => $variant->uuid,
                     'variant_name'    => $variant->name,
                     'quantity'        => $variant->pivot->quantity,
                     'discount_price'  => $variant->discount_price,
-                    'price'  => $variant->price,
+                    'price'           => $variant->price,
                     'product_name'    => $variant->product->name,
                     'img'             => $variant->img,
                     'total_stock'     => $variant->total_stock,
                 ];
             }
-
-            $data = array_values($grouped);
         }
 
         return $data;
     }
+
 
 
 

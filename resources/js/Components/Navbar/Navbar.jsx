@@ -64,7 +64,6 @@ export default function Navbar() {
                                     <Link href="/cart">
                                         <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                                     </Link>
-                                    <FiBell className="w-5 h-5 cursor-pointer" />
                                     {auth?.user && (
                                         <Link
                                             href={
@@ -129,7 +128,7 @@ export default function Navbar() {
                                                             href="/logout"
                                                             method="post"
                                                             as="button"
-                                                            className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                            className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start text-red-600"
                                                         >
                                                             <IoLogOutOutline
                                                                 className="mr-2"
@@ -193,7 +192,6 @@ export default function Navbar() {
                             <Link href="/cart">
                                 <FiShoppingCart className="w-5 h-5 cursor-pointer" />
                             </Link>
-                            <FiBell className="w-5 h-5 cursor-pointer" />
                             <div className="w-px h-6 bg-gray-300 mx-1" />
                             {auth?.user && (
                                 <Link
@@ -273,7 +271,7 @@ export default function Navbar() {
                                                         href="/logout"
                                                         method="post"
                                                         as="button"
-                                                        className="flex items-center px-4 py-3 text-sm text-error-600 hover:bg-gray-100 w-full text-start"
+                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start text-red-600"
                                                     >
                                                         <IoLogOutOutline
                                                             className="mr-2"

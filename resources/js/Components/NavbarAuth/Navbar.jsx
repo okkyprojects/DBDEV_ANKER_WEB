@@ -131,16 +131,18 @@ const Navbar = () => {
 
                                             <div className="py-1">
                                                 {isAuthenticated ? (
-                                                    <button
-                                                        onClick={toggleModal}
-                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start"
+                                                    <Link
+                                                        href="/logout"
+                                                        method="post"
+                                                        as="button"
+                                                        className="flex items-center px-4 py-3 text-sm text-danger hover:bg-gray-100 w-full text-start text-red-600"
                                                     >
                                                         <IoLogOutOutline
                                                             className="mr-2"
                                                             size={22}
-                                                        />{" "}
+                                                        />
                                                         Logout
-                                                    </button>
+                                                    </Link>
                                                 ) : (
                                                     <Link
                                                         to="/login"

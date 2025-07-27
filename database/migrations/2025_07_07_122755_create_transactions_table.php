@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('transaction_code')->unique();
             $table->decimal('total_price', 16, 2);
             $table->decimal('admin_fee', 16, 2)->default(0);
             $table->decimal('grand_total', 16, 2);

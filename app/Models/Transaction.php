@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'uuid',
+        'transaction_code',
         'user_id',
         'total_price',
         'admin_fee',
@@ -28,12 +32,12 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-
-    /**
-     * Relasi ke transaction_items (jika nanti ditambahkan)
-     */
     public function items()
     {
         return $this->hasMany(TransactionItem::class, 'transaction_uuid', 'uuid');
+    }
+    public function address()
+    {
+        return $this->hasOne(TransactionAddress::class);
     }
 }

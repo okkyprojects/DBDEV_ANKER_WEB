@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction_items', function (Blueprint $table) {
-            $table->id();
+        Schema::create('transaction_bills', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
             $table->uuid('transaction_uuid')->nullable();
-            $table->uuid('variant_uuid')->nullable();
-            $table->string('product_name');
-            $table->string('variant_name');
-            $table->integer('quantity')->default(1);
-            $table->decimal('price', 16, 2);    
+            $table->string('account_number')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('account_holder_name')->nullable();
+            $table->boolean('is_main')->default(false);
             $table->timestamps();
             $table->foreign('transaction_uuid')->references('uuid')->on('transactions')->nullOnDelete();
-            $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions_items');
+        Schema::dropIfExists('transaction_bills');
     }
 };

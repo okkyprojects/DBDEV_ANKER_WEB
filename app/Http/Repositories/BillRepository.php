@@ -41,6 +41,24 @@ class BillRepository
         ];
     }
 
+    public function index_pagination(Request $request)
+    {
+        $query = $this->bill->query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('account_number', 'like', "%$search%")
+                    ->orWhere('bank_name', 'like', "%$search%")
+                    ->orWhere('account_holder_name', 'like', "%$search%");
+            });
+        }
+
+        $data = $query->orderByDesc('is_main')->orderBy('created_at', 'desc')->paginate(10);
+        return $data;
+    }
+    
     public function index(Request $request)
     {
         $query = $this->bill->query();

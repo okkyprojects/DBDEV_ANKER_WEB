@@ -22,12 +22,12 @@ const sidebarMenu = {
             url: "/dashboard",
         },
     ],
-    STOK: [
+    PRODUK: [
         {
             id: 2,
             icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Manajemen Stok",
-            url: "/stok/manajemen-stok",
+            text: "Data Produk",
+            url: "/produk/data-produk",
         },
     ],
     REPORTING: [
@@ -70,6 +70,12 @@ const sidebarMenu = {
             icon: <PiCirclesFourLight size={21} className="mr-4" />,
             text: "Banner",
             url: "/master/banner",
+        },
+        {
+            id: 9,
+            icon: <PiCirclesFourLight size={21} className="mr-4" />,
+            text: "Rekening",
+            url: "/master/bill",
         },
     ],
 };

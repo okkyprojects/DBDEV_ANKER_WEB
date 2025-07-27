@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\User\CartController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +39,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/alamat', [ProfilController::class, 'store_alamat'])->name('alamat.store');
         Route::post('/informasi-pribadi', [ProfilController::class, 'store_informasi_pribadi'])->name('informasi_pribadi.store');
     });
-
+    Route::prefix('produk')->name('produk.')->middleware('auth')->group(function () {
+        Route::get('/data-produk', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/data-produk/create', [ProductController::class, 'create'])->name('product.create');
+        Route::post('/data-produk', [ProductController::class, 'store'])->name('product.store');
+        Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
+    });
     Route::prefix('master')->name('master.')->middleware('auth')->group(function () {
         // Category
         Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
@@ -54,6 +61,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/banner', [BannerController::class, 'store'])->name('banner.store');
         Route::delete('/banner/{uuid}', [BannerController::class, 'destroy'])->name('banner.destroy');
 
+        // Bill
+        Route::get('/bill', [BillController::class, 'index'])->name('bill.index');
+        Route::post('/bill', [BillController::class, 'store'])->name('bill.store');
+        Route::delete('/bill/{uuid}', [BillController::class, 'destroy'])->name('bill.destroy');
     });
 });
 Route::get('/checkout', function () {
@@ -70,11 +81,6 @@ Route::get('/product/detail', function () {
 });
 
 
-//Auth
-Route::prefix('stok')->group(function () {
-    Route::get('/manajemen-stok', fn() => Inertia::render('Stok/StokPage'));
-    Route::get('/manajemen-stok/create', fn() => Inertia::render('Stok/ManajemenStok/Create'));
-});
 
 Route::prefix('reporting')->group(function () {
     Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));

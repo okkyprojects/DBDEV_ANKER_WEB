@@ -21,7 +21,6 @@ class TransactionItemFactory extends Factory
         $variant = Variant::inRandomOrder()->first();
         $quantity = $this->faker->numberBetween(1, 5);
         $price = $variant?->price ?? $this->faker->randomFloat(2, 10000, 500000);
-        $subtotal = $price * $quantity;
 
         return [
             'transaction_uuid' => Transaction::inRandomOrder()->first()?->uuid,
@@ -30,7 +29,6 @@ class TransactionItemFactory extends Factory
             'variant_name' => $variant?->name ?? $this->faker->word(),
             'quantity' => $quantity,
             'price' => $price,
-            'subtotal' => $subtotal,
         ];
     }
 }

@@ -23,35 +23,43 @@ class VariantRepository
     private function validate(): array
     {
         return [
-            'product_uuid' => 'required|exists:products,uuid',
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'discount_price' => 'nullable|numeric',
-            'status' => 'required|boolean',
-            'img' => 'nullable|image|max:2048',
+            // 'product_uuid' => 'required|exists:products,uuid',
+            // 'name' => 'required|string|max:255',
+            // 'price' => 'required|numeric',
+            // 'discount_price' => 'nullable|numeric',
+            // 'status' => 'required|boolean',
+            // 'img' => 'nullable|image|max:2048',
+
+            'variants' => 'required|array',
+            'variants.*.product_uuid' => 'required|exists:products,uuid',
+            'variants.*.name' => 'required|string|max:255',
+            'variants.*.price' => 'required|numeric',
+            'variants.*.discount_price' => 'nullable|numeric',
+            'variants.*.status' => 'required|boolean',
+            'variants.*.img' => 'nullable|image|max:2048',
         ];
     }
 
-    private function request(Request $request): array
-    {
-        $data = [
-            'uuid' => $request->input('uuid', Str::uuid()),
-            'product_uuid' => $request->input('product_uuid'),
-            'name' => $request->input('name'),
-            'price' => $request->input('price'),
-            'discount_price' => $request->input('discount_price'),
-            'status' => $request->input('status', true),
-        ];
+    // private function request(Request $request): array
+    // {
+    //     $data = [
+    //         'uuid' => $request->input('uuid', Str::uuid()),
+    //         'product_uuid' => $request->input('product_uuid'),
+    //         'name' => $request->input('name'),
+    //         'price' => $request->input('price'),
+    //         'discount_price' => $request->input('discount_price'),
+    //         'status' => $request->input('status', true),
+    //     ];
 
-        if ($request->hasFile('img')) {
-            $file = $request->file('img');
-            $filename = time() . '-' . $file->getClientOriginalName();
-            $path = $file->storeAs('variant-images', $filename, 'public');
-            $data['img'] = 'storage/' . $path;
-        }
+    //     if ($request->hasFile('img')) {
+    //         $file = $request->file('img');
+    //         $filename = time() . '-' . $file->getClientOriginalName();
+    //         $path = $file->storeAs('variant-images', $filename, 'public');
+    //         $data['img'] = 'storage/' . $path;
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
     public function index(Request $request)
     {
@@ -68,31 +76,88 @@ class VariantRepository
         return $variants;
     }
 
-    public function store(Request $request)
+    // public function store(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), $this->validate());
+    //     if ($validator->fails()) {
+    //         return $this->response->validationError($validator->errors());
+    //     }
+
+    //     $data = $this->request($request);
+
+    //     if ($request->filled('uuid')) {
+    //         $existing = $this->variant->where('uuid', $request->uuid)->first();
+    //         if ($existing && $existing->img && $request->hasFile('img')) {
+    //             Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
+    //         }
+    //     }
+
+    //     $variant = $this->variant->updateOrCreate(
+    //         ['uuid' => $request->input('uuid')],
+    //         $data
+    //     );
+
+    //     return $request->filled('uuid')
+    //         ? $this->response->update($variant)
+    //         : $this->response->store($variant);
+    // }
+
+    public function store(array $variants, $productUuid)
     {
-        $validator = Validator::make($request->all(), $this->validate());
-        if ($validator->fails()) {
-            return $this->response->validationError($validator->errors());
-        }
+        $results = [];
 
-        $data = $this->request($request);
+        foreach ($variants as $item) {
+            $data = $this->request($item);
+            $data['product_uuid'] = $productUuid;
 
-        if ($request->filled('uuid')) {
-            $existing = $this->variant->where('uuid', $request->uuid)->first();
-            if ($existing && $existing->img && $request->hasFile('img')) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
+            // Hapus gambar lama jika upload baru
+            if (!empty($item['uuid'])) {
+                $existing = $this->variant->where('uuid', $item['uuid'])->first();
+
+                if (
+                    $existing &&
+                    $existing->img &&
+                    isset($item['img']) &&
+                    $item['img'] instanceof \Illuminate\Http\UploadedFile
+                ) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
+                }
             }
+
+            $variant = $this->variant->updateOrCreate(
+                ['uuid' => $data['uuid'] ?? null],
+                $data
+            );
+
+            $results[] = $variant;
         }
 
-        $variant = $this->variant->updateOrCreate(
-            ['uuid' => $request->input('uuid')],
-            $data
-        );
-
-        return $request->filled('uuid')
-            ? $this->response->update($variant)
-            : $this->response->store($variant);
+        return $results;
     }
+
+
+
+    private function request(array $item): array
+    {
+        $data = [
+            'uuid' => $item['uuid'] ?? (string) Str::uuid(),
+            'product_uuid' => $item['product_uuid'],
+            'name' => $item['name'],
+            'price' => $item['price'],
+            'discount_price' => $item['discount_price'] ?? null,
+            'status' => $item['status'],
+        ];
+
+        if (isset($item['img']) && $item['img'] instanceof \Illuminate\Http\UploadedFile) {
+            $file = $item['img'];
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $path = $file->storeAs('variant-images', $filename, 'public');
+            $data['img'] = 'storage/' . $path;
+        }
+
+        return $data;
+    }
+
 
     public function destroy($uuid)
     {

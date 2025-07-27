@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionItem extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'transaction_uuid',
         'variant_uuid',
@@ -15,7 +18,6 @@ class TransactionItem extends Model
         'variant_name',
         'quantity',
         'price',
-        'subtotal',
     ];
 
     public function transaction()

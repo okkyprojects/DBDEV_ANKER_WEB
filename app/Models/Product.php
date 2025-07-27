@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'uuid',
         'name',
@@ -35,9 +38,5 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(Variant::class, 'product_uuid', 'uuid');
-    }
-    public function seller()
-    {
-        return $this->belongsTo(Seller::class, 'seller_uuid', 'uuid');
     }
 }

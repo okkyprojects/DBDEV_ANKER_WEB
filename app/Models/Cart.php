@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'uuid',
         'user_id',
@@ -25,11 +28,11 @@ class Cart extends Model
     {
         return $this->belongsToMany(
             Variant::class,
-            'cart_items',   
-            'cart_uuid',  
-            'variant_uuid',  
-            'uuid',       
-            'uuid'         
+            'cart_items',
+            'cart_uuid',
+            'variant_uuid',
+            'uuid',
+            'uuid'
         )
             ->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
             ->withTimestamps();

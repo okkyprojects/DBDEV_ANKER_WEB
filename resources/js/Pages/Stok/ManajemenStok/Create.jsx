@@ -5,8 +5,29 @@ import { FaChevronUp } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useForm } from "@inertiajs/react";
 
-export default function Create() {
+export default function Create({ data: initial_data }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        uuid: "",
+        name: "",
+        category_uuid: "",
+        brand_uuid: "",
+        seller_uuid: "",
+        status: "",
+        img: "",
+        description: "",
+        variants: [
+            {
+                name: "",
+                price: "",
+                discount_price: "",
+                img: null,
+                status: "1",
+                isOpen: true,
+            },
+        ],
+    });
     const [thumbnail, setThumbnail] = useState();
     const handlethumbnail = (e) => {
         const uploadedFile = e.target.files[0];
@@ -15,95 +36,176 @@ export default function Create() {
     const [varians, setVarians] = useState([{ id: Date.now(), isOpen: true }]);
 
     const addVarian = () => {
-        setVarians([...varians, { id: Date.now(), isOpen: true }]);
+        setData("variants", [
+            ...data.variants,
+            {
+                name: "",
+                price: "",
+                discount_price: "",
+                img: null,
+                isOpen: true,
+            },
+        ]);
     };
 
-    const removeVarian = (id) => {
-        setVarians(varians.filter((v) => v.id !== id));
+    const removeVarian = (index) => {
+        const updated = [...data.variants];
+        updated.splice(index, 1);
+        setData("variants", updated);
     };
 
-    const toggleVarian = (id) => {
-        setVarians((prev) =>
-            prev.map((v) => (v.id === id ? { ...v, isOpen: !v.isOpen } : v))
-        );
+    const toggleVarian = (index) => {
+        const updated = [...data.variants];
+        updated[index].isOpen = !updated[index].isOpen;
+        setData("variants", updated);
     };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) setData("img", file);
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        for (const key in data) {
+            if (key === "variants") {
+                data.variants.forEach((variant, i) => {
+                    for (const field in variant) {
+                        if (variant[field] !== null && variant[field] !== "") {
+                            formData.append(
+                                `variants[${i}][${field}]`,
+                                variant[field]
+                            );
+                        }
+                    }
+                });
+            } else {
+                formData.append(key, data[key]);
+            }
+        }
+
+        post(route("produk.product.store"), {
+            data: formData,
+            forceFormData: true,
+        });
+    };
+
     return (
         <DefaultLayout>
-            <div className="flex flex-col gap-5">
-                {" "}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="bg-white p-5 rounded-xl">
                         <h2 className="text-lg">Informasi Produk</h2>
                         <div className="mt-5 space-y-5">
+                            {/* Product Name */}
                             <div className="flex flex-col gap-2 text-sm">
-                                <label htmlFor="namaProduk">Nama Produk</label>
+                                <label htmlFor="name">Nama Produk</label>
                                 <input
-                                    id="namaProduk"
+                                    id="name"
                                     type="text"
                                     placeholder="Masukkan nama produk"
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.name}
+                                    onChange={(e) =>
+                                        setData("name", e.target.value)
+                                    }
                                 />
                             </div>
 
+                            {/* Category */}
                             <div className="flex flex-col gap-2 text-sm">
-                                <label htmlFor="kategoriProduk">Brand</label>
-                                <select
-                                    id="kategoriProduk"
-                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                >
-                                    <option value="">Pilih Brand</option>
-                                    <option value="makanan">Makanan</option>
-                                    <option value="minuman">Minuman</option>
-                                    <option value="alat-rumah-tangga">
-                                        Alat Rumah Tangga
-                                    </option>
-                                </select>
-                            </div>
-                            <div className="flex flex-col gap-2 text-sm">
-                                <label htmlFor="kategoriProduk">
+                                <label htmlFor="category_uuid">
                                     Kategori Produk
                                 </label>
                                 <select
-                                    id="kategoriProduk"
+                                    id="category_uuid"
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.category_uuid}
+                                    onChange={(e) =>
+                                        setData("category_uuid", e.target.value)
+                                    }
                                 >
                                     <option value="">Pilih Kategori</option>
-                                    <option value="makanan">Makanan</option>
-                                    <option value="minuman">Minuman</option>
-                                    <option value="alat-rumah-tangga">
-                                        Alat Rumah Tangga
-                                    </option>
+                                    {initial_data.categories.map((category) => (
+                                        <option
+                                            key={category.uuid}
+                                            value={category.uuid}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
                                 </select>
+                                {errors.category_uuid && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.category_uuid}
+                                    </span>
+                                )}
                             </div>
 
+                            {/* Brand */}
                             <div className="flex flex-col gap-2 text-sm">
-                                <label htmlFor="deskripsiProduk">
+                                <label htmlFor="brand_uuid">Brand</label>
+                                <select
+                                    id="brand_uuid"
+                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.brand_uuid}
+                                    onChange={(e) =>
+                                        setData("brand_uuid", e.target.value)
+                                    }
+                                >
+                                    <option value="">Pilih Brand</option>
+                                    {initial_data.brands.map((brand) => (
+                                        <option
+                                            key={brand.uuid}
+                                            value={brand.uuid}
+                                        >
+                                            {brand.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.brand_uuid && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.brand_uuid}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Description */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                <label htmlFor="description">
                                     Deskripsi Produk
                                 </label>
                                 <textarea
-                                    id="deskripsiProduk"
+                                    id="description"
                                     placeholder="Masukkan deskripsi produk"
                                     rows={6}
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none resize-none"
+                                    value={data.description}
+                                    onChange={(e) =>
+                                        setData("description", e.target.value)
+                                    }
                                 ></textarea>
                             </div>
                         </div>
                     </div>
+
                     <div className="bg-white p-5 rounded-xl">
                         <h2 className="text-lg">Foto Utama Produk</h2>
                         <div className="mt-5 space-y-5">
                             <div className="flex flex-col gap-2 text-sm">
-                                <label htmlFor="thumbnail">
+                                <label htmlFor="img">
                                     Unggah foto utama produk anda
                                 </label>
-                                {thumbnail ? (
+                                {data.img ? (
                                     <div className="relative group">
                                         <img
                                             src={
-                                                typeof thumbnail === "string"
-                                                    ? thumbnail
+                                                typeof data.img === "string"
+                                                    ? data.img
                                                     : URL.createObjectURL(
-                                                          thumbnail
+                                                          data.img
                                                       )
                                             }
                                             alt="Uploaded"
@@ -113,18 +215,18 @@ export default function Create() {
                                         />
                                         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                             <label
-                                                htmlFor="thumbnail"
+                                                htmlFor="img"
                                                 className="bg-primary-600 text-sm text-white px-4 py-2 rounded-md shadow hover:bg-primary-600/90 transition cursor-pointer"
                                             >
                                                 Pilih Gambar Lain
                                             </label>
                                         </div>
                                         <input
-                                            id="thumbnail"
+                                            id="img"
                                             type="file"
                                             accept="image/*"
                                             className="hidden"
-                                            onChange={handlethumbnail}
+                                            onChange={handleFileChange}
                                         />
                                     </div>
                                 ) : (
@@ -142,18 +244,25 @@ export default function Create() {
                                             </p>
                                         </div>
                                         <input
-                                            id="thumbnail"
+                                            id="img"
                                             type="file"
                                             accept="image/*"
                                             className="hidden"
-                                            onChange={handlethumbnail}
+                                            onChange={handleFileChange}
                                         />
                                     </label>
+                                )}
+                                {errors.img && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.img}
+                                    </span>
                                 )}
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Variants Section */}
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center flex-wrap gap-3">
                         <h2 className="text-lg">Varian Produk</h2>
@@ -167,7 +276,7 @@ export default function Create() {
                     </div>
 
                     <div className="mt-5 space-y-5">
-                        {varians.map((varian, index) => (
+                        {data?.variants?.map((varian, index) => (
                             <motion.div
                                 key={varian.id}
                                 layout
@@ -218,14 +327,29 @@ export default function Create() {
                                                     {/* Nama Varian */}
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label
-                                                            htmlFor={`namaVarian-${varian.id}`}
+                                                            htmlFor={`varianName-${varian.id}`}
                                                         >
                                                             Nama Varian
                                                         </label>
                                                         <input
-                                                            id={`namaVarian-${varian.id}`}
+                                                            id={`varianName-${varian.id}`}
                                                             type="text"
                                                             placeholder="Masukkan nama varian"
+                                                            value={varian.name}
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].name =
+                                                                    e.target.value;
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
                                                             className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                                         />
                                                     </div>
@@ -233,45 +357,86 @@ export default function Create() {
                                                     {/* Harga */}
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label
-                                                            htmlFor={`hargaVarian-${varian.id}`}
+                                                            htmlFor={`varianPrice-${varian.id}`}
                                                         >
-                                                            Harga
+                                                            Harga Diskon
                                                         </label>
                                                         <div className="relative">
                                                             <div className="absolute inset-y-0 left-0 flex items-center px-3 bg-neutral-100 text-neutral-600 rounded-l-xl border-r border-neutral-300">
                                                                 Rp
                                                             </div>
                                                             <input
-                                                                id={`hargaVarian-${varian.id}`}
+                                                                id={`varianPrice-${varian.id}`}
                                                                 type="number"
                                                                 placeholder="0"
                                                                 min={0}
+                                                                value={
+                                                                    varian.discount_price
+                                                                }
+                                                                onChange={(
+                                                                    e
+                                                                ) => {
+                                                                    const updated =
+                                                                        [
+                                                                            ...data.variants,
+                                                                        ];
+                                                                    updated[
+                                                                        index
+                                                                    ].discount_price =
+                                                                        e.target.value;
+                                                                    setData(
+                                                                        "variants",
+                                                                        updated
+                                                                    );
+                                                                }}
                                                                 className="w-full pl-12 pr-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                                             />
                                                         </div>
                                                     </div>
-
-                                                    {/* Stok */}
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label
-                                                            htmlFor={`stokVarian-${varian.id}`}
+                                                            htmlFor={`varianPrice-${varian.id}`}
                                                         >
-                                                            Stok
+                                                            Harga Asli
                                                         </label>
-                                                        <input
-                                                            id={`stokVarian-${varian.id}`}
-                                                            type="number"
-                                                            min={0}
-                                                            placeholder="Masukkan stok varian"
-                                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                                        />
+                                                        <div className="relative">
+                                                            <div className="absolute inset-y-0 left-0 flex items-center px-3 bg-neutral-100 text-neutral-600 rounded-l-xl border-r border-neutral-300">
+                                                                Rp
+                                                            </div>
+                                                            <input
+                                                                id={`varianPrice-${varian.id}`}
+                                                                type="number"
+                                                                placeholder="0"
+                                                                min={0}
+                                                                value={
+                                                                    varian.price
+                                                                }
+                                                                onChange={(
+                                                                    e
+                                                                ) => {
+                                                                    const updated =
+                                                                        [
+                                                                            ...data.variants,
+                                                                        ];
+                                                                    updated[
+                                                                        index
+                                                                    ].price =
+                                                                        e.target.value;
+                                                                    setData(
+                                                                        "variants",
+                                                                        updated
+                                                                    );
+                                                                }}
+                                                                className="w-full pl-12 pr-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Kolom kanan - Gambar */}
                                                 <div className="flex flex-col gap-2 text-sm">
                                                     <label
-                                                        htmlFor={`thumbnail-${varian.id}`}
+                                                        htmlFor={`varianImage-${varian.id}`}
                                                     >
                                                         Unggah foto utama produk
                                                         anda
@@ -292,10 +457,24 @@ export default function Create() {
                                                             </p>
                                                         </div>
                                                         <input
-                                                            id={`thumbnail-${varian.id}`}
+                                                            id={`varianImage-${varian.id}`}
                                                             type="file"
                                                             accept="image/*"
                                                             className="hidden"
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].img =
+                                                                    e.target.files[0];
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
                                                         />
                                                     </label>
                                                 </div>
@@ -307,7 +486,11 @@ export default function Create() {
                         ))}
                     </div>
                 </div>
-            </div>
+                <div className="flex justify-end gap-3 items-center text-sm">
+                    <Link href="/produk/data-produk" className="px-5">Batal</Link>
+                    <button type="submit" className="px-5 py-2 rounded-lg hover:bg-primary-600/90 text-white bg-primary-600">Simpan</button>
+                </div>
+            </form>
         </DefaultLayout>
     );
 }

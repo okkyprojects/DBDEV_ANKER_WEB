@@ -50,8 +50,8 @@ class DatabaseSeeder extends Seeder
 
         // Cart::factory()->count(200)->create();
         // CartItem::factory()->count(500)->create();
-        Transaction::factory()->count(200)->create();
-        TransactionItem::factory()->count(200)->create();
+        // Transaction::factory()->count(200)->create();
+        // TransactionItem::factory()->count(200)->create();
         // $this->call(CartItemSeeder::class);
     }
 }
