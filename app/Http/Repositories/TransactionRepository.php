@@ -13,10 +13,9 @@ use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
+use Illuminate\Http\Request;
 
 class TransactionRepository
 {
@@ -61,6 +60,7 @@ class TransactionRepository
                 'bill'
             ])
             ->orderBy('created_at', 'desc');
+
         if (Auth::user()->role !== 'admin') {
             $query->where('user_id', Auth::id());
         }
@@ -94,11 +94,7 @@ class TransactionRepository
     public function show($transaction_code)
     {
         $transaction = $this->transaction
-            ->with([
-                'items',
-                'address',
-                'bill',
-            ])
+            ->with(['items', 'address', 'bill'])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -119,6 +115,7 @@ class TransactionRepository
 
         return $code;
     }
+
     public function store($request)
     {
         $validator = Validator::make($request->all(), $this->validate());
@@ -206,6 +203,7 @@ class TransactionRepository
 
         return $this->response->store($transaction);
     }
+
     private function update($request)
     {
         $trx = $this->transaction->where('uuid', $request['uuid'])->first();
@@ -214,7 +212,7 @@ class TransactionRepository
             return $this->response->notFound('Transaksi tidak ditemukan berdasarkan kode transaksi.');
         }
 
-        $updateData = $this->request($request);
+        $updateData = $this->request($request, $trx);
         if (isset($updateData['file']) && $trx->file) {
             Storage::disk('public')->delete(str_replace('storage/', '', $trx->file));
         }
@@ -224,8 +222,6 @@ class TransactionRepository
 
         return $this->response->update($trx);
     }
-
-
 
     public function destroy($uuid)
     {
@@ -243,21 +239,20 @@ class TransactionRepository
             : $this->response->destroyError();
     }
 
-
-    private function request(Request $request): array
+    private function request(Request $request, $trx = null): array
     {
         $data = [
-            'uuid'             => $request->input('uuid', (string) Str::uuid()),
-            'transaction_code' => $request->input('transaction_code', $this->generateTransactionCode()),
-            'user_id'          => Auth::id(),
-            'total_price'      => $request->input('total_price', 0),
-            'admin_fee'        => $request->input('admin_fee', 0),
-            'grand_total'      => $request->input('grand_total', 0),
-            'status'           => $request->input('status', 0),
-            'paid_at'        => $request->input('paid_at'),
-            'unpaid_at'        => $request->input('unpaid_at'),
-            'expired_at'       => $request->input('expired_at'),
-            'note'             => $request->input('note'),
+            'uuid'             => $request->input('uuid', $trx?->uuid ?? (string) Str::uuid()),
+            'transaction_code' => $request->input('transaction_code', $trx?->transaction_code ?? $this->generateTransactionCode()),
+            'user_id'          => $trx?->user_id ?? Auth::id(),
+            'total_price'      => $request->input('total_price', $trx?->total_price),
+            'admin_fee'        => $request->input('admin_fee', $trx?->admin_fee),
+            'grand_total'      => $request->input('grand_total', $trx?->grand_total),
+            'status'           => $request->input('status', $trx?->status),
+            'paid_at'          => $request->input('paid_at', $trx?->paid_at),
+            'unpaid_at'        => $request->input('unpaid_at', $trx?->unpaid_at),
+            'expired_at'       => $request->input('expired_at', $trx?->expired_at),
+            'note'             => $request->input('note', $trx?->note),
         ];
 
         if ($request->hasFile('file')) {
