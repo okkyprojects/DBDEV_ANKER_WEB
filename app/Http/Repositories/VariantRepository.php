@@ -62,14 +62,14 @@ class VariantRepository
             if ($isUpdate) {
                 $existing = $this->variant->where('uuid', $uuid)->first();
 
-                if (
-                    $existing &&
-                    $existing->img &&
-                    isset($item['img']) &&
-                    $item['img'] instanceof \Illuminate\Http\UploadedFile
-                ) {
-                    Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
-                }
+                // if (
+                //     $existing &&
+                //     $existing->img &&
+                //     isset($item['img']) &&
+                //     $item['img'] instanceof \Illuminate\Http\UploadedFile
+                // ) {
+                //     Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
+                // }
             }
 
             $variant = $this->variant->updateOrCreate(
@@ -114,9 +114,9 @@ class VariantRepository
             return $this->response->notFound();
         }
 
-        if ($variant->img && Storage::disk('public')->exists(str_replace('storage/', '', $variant->img))) {
-            Storage::disk('public')->delete(str_replace('storage/', '', $variant->img));
-        }
+        // if ($variant->img && Storage::disk('public')->exists(str_replace('storage/', '', $variant->img))) {
+        //     Storage::disk('public')->delete(str_replace('storage/', '', $variant->img));
+        // }
 
         $variant->delete();
         return $this->response->destroy($variant);

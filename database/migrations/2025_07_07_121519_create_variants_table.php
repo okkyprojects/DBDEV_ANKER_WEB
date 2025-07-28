@@ -16,8 +16,8 @@ return new class extends Migration
             $table->uuid('product_uuid')->nullable();
             $table->string('name');
             $table->string('img')->nullable();
-            $table->decimal('price', 12, 2)->default(0);
-            $table->decimal('discount_price', 12, 2)->nullable();
+            $table->bigInteger('price')->default(0);
+            $table->bigInteger('discount_price')->nullable();
             $table->timestamps();
             $table->foreign('product_uuid')->references('uuid')->on('products')->nullOnDelete();
         });

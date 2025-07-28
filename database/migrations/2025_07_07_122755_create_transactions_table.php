@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid('uuid')->primary();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('transaction_code')->unique();
-            $table->decimal('total_price', 16, 2);
-            $table->decimal('admin_fee', 16, 2)->default(0);
-            $table->decimal('grand_total', 16, 2);
+            $table->bigInteger('total_price');
+            $table->bigInteger('admin_fee')->default(0);
+            $table->bigInteger('grand_total');
             $table->unsignedTinyInteger('status')->default(0); // 0=unpaid, 1=paid, 2=processing, 3=shipping, 4=completed, 5=failed, 6=expired
             $table->timestamp('unpaid_at')->nullable();
             $table->timestamp('paid_at')->nullable();

@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('pesanan')->name('pesanan.')->group(function () {
         Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
+        Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
     });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
 

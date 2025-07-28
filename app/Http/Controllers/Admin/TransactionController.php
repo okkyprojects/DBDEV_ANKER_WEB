@@ -25,4 +25,9 @@ class TransactionController extends Controller
         $data['transactions'] = $this->repository->index($request);
         return Inertia::render('Pesanan/ManajemenPesanan', compact('data'));
     }
+    public function destroy($uuid)
+    {
+        $data = $this->repository->destroy($uuid);
+        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+    }
 }

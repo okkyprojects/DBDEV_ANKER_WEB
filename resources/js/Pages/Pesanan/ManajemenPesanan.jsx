@@ -4,7 +4,7 @@ import { HiOutlinePrinter } from "react-icons/hi2";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     PiCheckCircleLight,
     PiClockLight,
@@ -13,52 +13,39 @@ import {
 } from "react-icons/pi";
 import { formatRupiah } from "@/Utils/utils";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
+import ModalDetailPesanan from "@/Components/Modal/Pesanan/ModalDetailPesanan";
+import ModalDeletePesanan from "@/Components/Modal/Pesanan/ModalDeletePesanan";
 
 export default function ManajemenPesanan({ data }) {
     console.log(data);
-    // const data = [
-    //     {
-    //         namaPemesan: "Ilham Arkan",
-    //         nomorHp: "081234567890",
-    //         alamat: "Jl. Ikan Paus No. 21",
-    //         provinsi: "Jawa Timur",
-    //         kota: "Malang",
-    //         kodePos: "65145",
-    //         nominal: 250000,
-    //         status: "Menunggu Pembayaran",
-    //     },
-    //     {
-    //         namaPemesan: "Ayu Lestari",
-    //         nomorHp: "085678912345",
-    //         alamat: "Jl. Kenanga Raya No. 8",
-    //         provinsi: "DKI Jakarta",
-    //         kota: "Jakarta Selatan",
-    //         kodePos: "12420",
-    //         nominal: 500000,
-    //         status: "Selesai",
-    //     },
-    //     {
-    //         namaPemesan: "Budi Santoso",
-    //         nomorHp: "089876543210",
-    //         alamat: "Jl. Cendrawasih No. 3",
-    //         provinsi: "Jawa Barat",
-    //         kota: "Bandung",
-    //         kodePos: "40291",
-    //         nominal: 350000,
-    //         status: "Dikirim",
-    //     },
-    //     {
-    //         namaPemesan: "Rina Wulandari",
-    //         nomorHp: "082233445566",
-    //         alamat: "Jl. Merpati No. 10",
-    //         provinsi: "Bali",
-    //         kota: "Denpasar",
-    //         kodePos: "80235",
-    //         nominal: 420000,
-    //         status: "Dibatalkan",
-    //     },
-    // ];
+    const [dropdownOpen, setDropdownOpen] = useState(null);
+    const toggleDropdown = (index) => {
+        setDropdownOpen(dropdownOpen === index ? null : index);
+    };
+    const dropdownRef = useRef(null);
+    const [pesanan, setPesanan] = useState();
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const handleClickOutside = (event) => {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target)
+        ) {
+            setDropdownOpen(null);
+        }
+    };
 
+    useEffect(() => {
+        if (dropdownOpen !== null) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropdownOpen]);
     const dataCard = [
         {
             title: "Pesanan Selesai",
@@ -90,11 +77,6 @@ export default function ManajemenPesanan({ data }) {
         },
     ];
 
-    const [dropdownOpen, setDropdownOpen] = useState(null);
-    const toggleDropdown = (index) => {
-        setDropdownOpen(dropdownOpen === index ? null : index);
-    };
-
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -123,7 +105,6 @@ export default function ManajemenPesanan({ data }) {
                         </button>
                     </div>
                 </div>
-
                 {/* KARTU STATISTIK */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                     {dataCard.map((item, index) => (
@@ -147,7 +128,6 @@ export default function ManajemenPesanan({ data }) {
                         </div>
                     ))}
                 </div>
-
                 {/* TABEL PRODUK */}
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
@@ -219,7 +199,7 @@ export default function ManajemenPesanan({ data }) {
                                             <td className="px-4 py-5">
                                                 {item.status}
                                             </td>
-                                            <td className="px-4 py-5">
+                                            <td className="relative px-4 py-5">
                                                 <button
                                                     onClick={() =>
                                                         toggleDropdown(index)
@@ -230,6 +210,45 @@ export default function ManajemenPesanan({ data }) {
                                                     <FaChevronDown size={14} />
                                                 </button>
                                             </td>
+                                            {dropdownOpen === index && (
+                                                <div
+                                                    ref={dropdownRef}
+                                                    className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out lg:right-18 ${
+                                                        dropdownOpen === index
+                                                            ? "opacity-100"
+                                                            : "pointer-events-none opacity-0"
+                                                    }`}
+                                                >
+                                                    <div className="py-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                setPesanan(
+                                                                    item
+                                                                );
+                                                                setShowDetailModal(
+                                                                    true
+                                                                );
+                                                            }}
+                                                            className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                        >
+                                                            Detail Pesanan
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setPesanan(
+                                                                    item
+                                                                );
+                                                                setShowDeleteModal(
+                                                                    true
+                                                                );
+                                                            }}
+                                                            className="text-error-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                        >
+                                                            Hapus Pesanan
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </tr>
                                     )
                                 )}
@@ -240,7 +259,45 @@ export default function ManajemenPesanan({ data }) {
                         links={data?.transactions?.links}
                         meta={data?.transactions}
                     />
-                </div>
+                </div>{" "}
+                {showDetailModal && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showDetailModal
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalDetailPesanan
+                                isOpen={showDetailModal}
+                                onClose={() => {
+                                    setShowDetailModal(!showDetailModal);
+                                }}
+                                item={pesanan}
+                            />
+                        </div>
+                    </div>
+                )}
+                {showDeleteModal && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showDeleteModal
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalDeletePesanan
+                                isOpen={showDeleteModal}
+                                onClose={() => {
+                                    setShowDeleteModal(!showDeleteModal);
+                                }}
+                                item={pesanan}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </DefaultLayout>
     );

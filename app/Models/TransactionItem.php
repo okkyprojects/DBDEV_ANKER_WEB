@@ -18,6 +18,7 @@ class TransactionItem extends Model
         'variant_name',
         'quantity',
         'price',
+        'img',
     ];
 
     public function transaction()

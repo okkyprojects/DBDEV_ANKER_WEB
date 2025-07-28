@@ -17,8 +17,9 @@ return new class extends Migration
             $table->uuid('variant_uuid')->nullable();
             $table->string('product_name');
             $table->string('variant_name');
+            $table->string('img');
             $table->integer('quantity')->default(1);
-            $table->decimal('price', 16, 2);    
+            $table->bigInteger('price');
             $table->timestamps();
             $table->foreign('transaction_uuid')->references('uuid')->on('transactions')->nullOnDelete();
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();

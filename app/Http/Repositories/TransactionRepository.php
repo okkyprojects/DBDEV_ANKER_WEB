@@ -94,7 +94,13 @@ class TransactionRepository
     public function show($transaction_code)
     {
         $transaction = $this->transaction
-            ->with(['items', 'address', 'bill'])
+            ->with([
+            'user',
+            'items',
+            'address.province',
+            'address.city',
+            'address.district',
+            'bill'])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -153,6 +159,7 @@ class TransactionRepository
                 'variant_uuid'     => $variant->uuid,
                 'product_name'     => $variant->product->name,
                 'variant_name'     => $variant->name,
+                'img'              => $variant->img,
                 'quantity'         => $quantity,
                 'price'            => $price,
             ];
