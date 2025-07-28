@@ -248,7 +248,7 @@ class TransactionRepository
             'total_price'      => $request->input('total_price', $trx?->total_price),
             'admin_fee'        => $request->input('admin_fee', $trx?->admin_fee),
             'grand_total'      => $request->input('grand_total', $trx?->grand_total),
-            'status'           => $request->input('status', $trx?->status),
+            'status' => $request->input('status', $trx?->status ?? 0),
             'paid_at'          => $request->input('paid_at', $trx?->paid_at),
             'unpaid_at'        => $request->input('unpaid_at', $trx?->unpaid_at),
             'expired_at'       => $request->input('expired_at', $trx?->expired_at),
