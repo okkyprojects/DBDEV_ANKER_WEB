@@ -8,15 +8,17 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
+import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
 
 export default function StokPage({ data }) {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [produk, setProduk] = useState();
     const [showModalFilter, setShowModalFilter] = useState(false);
     const dropdownRef = useRef(null);
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const toggleDropdown = (index) => {
         setDropdownOpen((prev) => (prev === index ? null : index));
     };
-    console.log(data);
     const dataCard = [
         {
             title: "Produk Aktif",
@@ -196,13 +198,12 @@ export default function StokPage({ data }) {
                                                     </Link>
 
                                                     <button
-                                                        onClick={() =>
-                                                            toggleModalDetail(
-                                                                bookingItem.booking_id,
-                                                                bookingItem.tipe,
-                                                                bookingItem.statusPembayaran
-                                                            )
-                                                        }
+                                                        onClick={() => {
+                                                            setProduk(item);
+                                                            setShowDeleteModal(
+                                                                true
+                                                            );
+                                                        }}
                                                         className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
                                                     >
                                                         Hapus
@@ -233,7 +234,26 @@ export default function StokPage({ data }) {
                                 />
                             </div>
                         </div>
-                    )}{" "}
+                    )}
+                    {showDeleteModal && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showDeleteModal
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalDeleteProduk
+                                    isOpen={showDeleteModal}
+                                    onClose={() => {
+                                        setShowDeleteModal(!showDeleteModal);
+                                    }}
+                                    item={produk}
+                                />
+                            </div>
+                        </div>
+                    )}
                     <PaginationDashboard
                         links={data?.products?.links}
                         meta={data?.products}

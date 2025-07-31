@@ -9,6 +9,8 @@ use App\Models\TransactionItem;
 use App\Models\TransactionAddress;
 use App\Models\TransactionBill;
 use App\Models\Variant;
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +29,7 @@ class TransactionRepository
     private $bill;
     private $address;
     private $variant;
+    private $cartItem;
 
     public function __construct(
         Response $response,
@@ -37,6 +40,7 @@ class TransactionRepository
         Bill $bill,
         Address $address,
         Variant $variant,
+        CartItem $cartItem,
     ) {
         $this->response = $response;
         $this->transaction = $transaction;
@@ -46,6 +50,7 @@ class TransactionRepository
         $this->bill = $bill;
         $this->address = $address;
         $this->variant = $variant;
+        $this->cartItem = $cartItem;
     }
 
     public function index(Request $request)
@@ -164,7 +169,13 @@ class TransactionRepository
                 'price'            => $price,
             ];
         }
-
+        $variantUuids = collect($request['items'])->pluck('variant_uuid')->toArray();
+        $this->cartItem
+            ->whereHas('cart', function ($q) use ($request) {
+                $q->where('user_id', $request['user_id']);
+            })
+            ->whereIn('variant_uuid', $variantUuids)
+            ->delete();
         $admin_fee = 0;
         $grand_total = $total_price + $admin_fee;
 

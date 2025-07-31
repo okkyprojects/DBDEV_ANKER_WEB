@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\VariantController;
+use App\Http\Controllers\Admin\VariantStockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfileController;
@@ -56,6 +57,13 @@ Route::middleware('auth')->group(function () {
         // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); // 👈 tambah update
         Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
+    Route::prefix('reporting')->name('reporting.')->middleware('auth')->group(function () {
+        Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));
+        // Route::get('/item', fn() => Inertia::render('Reporting/Item'));
+        Route::get('/item', [VariantStockController::class, 'index'])->name('item.index');
+        Route::post('/item', [VariantStockController::class, 'store'])->name('item.store');
+        Route::delete('/item/{uuid}', [VariantStockController::class, 'destroy'])->name('item.destroy');
+    });
     Route::prefix('pesanan')->name('pesanan.')->group(function () {
         Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
         Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
@@ -98,11 +106,6 @@ Route::middleware('auth')->group(function () {
 // });
 
 
-
-Route::prefix('reporting')->group(function () {
-    Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));
-    Route::get('/item', fn() => Inertia::render('Reporting/Item'));
-});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard/Dashboard');

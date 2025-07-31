@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BannerController;
 use App\Http\Controllers\API\BillController;
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\LocationController;
+use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfilController;
 use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\VariantController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,9 +34,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('brands', BrandController::class);
 Route::apiResource('products', ProductController::class);
+Route::apiResource('variants', VariantController::class);
 Route::get('/provinces', [LocationController::class, 'indexProvince']);
 Route::get('/cities', [LocationController::class, 'indexCity']);
 Route::get('/districts', [LocationController::class, 'indexDistrict']);
+Route::get('/banners', [BannerController::class, 'index']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -42,6 +47,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/change-password', [PasswordController::class, 'store']);
     });
 });
 Route::middleware('auth:sanctum')->group(function () {

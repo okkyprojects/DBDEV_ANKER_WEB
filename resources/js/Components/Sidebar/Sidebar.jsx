@@ -40,7 +40,7 @@ const sidebarMenu = {
         {
             id: 4,
             icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Item",
+            text: "Barang Masuk",
             url: "/reporting/item",
         },
     ],
