@@ -14,9 +14,16 @@ import moment from "moment";
 import ModalTambahVariantStock from "@/Components/Modal/VarianStock/ModalTambahVariantStock";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import ModalEditVariantStock from "@/Components/Modal/VarianStock/ModalEditVariantStock";
+import Pagination from "@/Components/Pagination/Pagination";
+import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
+import { useRef } from "react";
+import { useEffect } from "react";
+import { router } from "@inertiajs/react";
 
 export default function Item({ data }) {
-    console.log(data);
+    const debounceRef = useRef(null);
+    const searchParams = new URLSearchParams(window.location.search);
+    const [search, setSearch] = useState(searchParams.get("search") || "");
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [variantStock, setVariantStock] = useState();
@@ -41,7 +48,21 @@ export default function Item({ data }) {
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
 
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { search },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -57,6 +78,8 @@ export default function Item({ data }) {
                             />
                             <input
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari produk"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
@@ -173,6 +196,10 @@ export default function Item({ data }) {
                             </tbody>
                         </table>
                     </div>
+                    <PaginationDashboard
+                        links={data?.variant_stocks?.links}
+                        meta={data?.variant_stocks}
+                    />
                     {showAddModal && (
                         <div
                             className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${

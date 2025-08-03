@@ -10,35 +10,18 @@ import {
     PiShoppingCartLight,
     PiCubeLight,
 } from "react-icons/pi";
+import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
+import { useEffect } from "react";
+import { useRef } from "react";
+import { router } from "@inertiajs/react";
+import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
 
-export default function Penjualan() {
-    const data = [
-        {
-            nama: "Produk A",
-            kuantitas: 150,
-            terjual: 100,
-            pendapatan: 5000000,
-        },
-        {
-            nama: "Produk B",
-            kuantitas: 200,
-            terjual: 180,
-            pendapatan: 9000000,
-        },
-        {
-            nama: "Produk C",
-            kuantitas: 120,
-            terjual: 90,
-            pendapatan: 3500000,
-        },
-        {
-            nama: "Produk D",
-            kuantitas: 300,
-            terjual: 250,
-            pendapatan: 15000000,
-        },
-    ];
-
+export default function Penjualan({ data }) {
+    console.log(data);
+    const [showModalFilter, setShowModalFilter] = useState(false);
+    const debounceRef = useRef(null);
+    const searchParams = new URLSearchParams(window.location.search);
+    const [search, setSearch] = useState(searchParams.get("search") || "");
     const dataCard = [
         {
             title: "Pendapatan Kotor",
@@ -67,6 +50,35 @@ export default function Penjualan() {
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        const currentParams = new URLSearchParams(window.location.search);
+        const page = currentParams.get("page") || 1;
+
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { search, page },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
+    const handleApplyFilter = (filters) => {
+        const params = {
+            search,
+            ...filters,
+        };
+
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
 
     return (
         <DefaultLayout>
@@ -83,16 +95,28 @@ export default function Penjualan() {
                             />
                             <input
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari produk"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        <button
+                            onClick={() => setShowModalFilter(true)}
+                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                        >
                             <GrFilter size={20} />
                         </button>
-                        <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
+                        <a
+                            href={route("reporting.penjualan.export", {
+                                search: searchParams.get("search") || "",
+                                brand: searchParams.get("brand") || "",
+                                category: searchParams.get("category") || "",
+                            })}
+                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                        >
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -133,7 +157,7 @@ export default function Penjualan() {
                                         Produk
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
-                                        Kuantitas
+                                        Stok Masuk
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
                                         Terjual
@@ -145,43 +169,70 @@ export default function Penjualan() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                        className="hover:bg-gray-50 text-sm text-neutral-700"
-                                    >
-                                        <td className="px-4 py-5 pl-9 xl:pl-11">
-                                            {index + 1}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.nama}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.kuantitas}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.terjual}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {formatRupiah(item.pendapatan)}
-                                        </td>
+                                {data?.transactions?.data?.map(
+                                    (item, index) => (
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-gray-50 text-sm text-neutral-700"
+                                        >
+                                            <td className="px-4 py-5 pl-9 xl:pl-11">
+                                                {index + 1}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.product_name}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.kuantitas}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item.terjual}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {formatRupiah(item.pendapatan)}
+                                            </td>
 
-                                        <td className="px-4 py-5">
-                                            <button
-                                                onClick={() =>
-                                                    toggleDropdown(index)
-                                                }
-                                                className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
-                                            >
-                                                Aksi <FaChevronDown size={14} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            <td className="px-4 py-5">
+                                                <button
+                                                    onClick={() =>
+                                                        toggleDropdown(index)
+                                                    }
+                                                    className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
+                                                >
+                                                    Aksi{" "}
+                                                    <FaChevronDown size={14} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )
+                                )}
                             </tbody>
                         </table>
                     </div>
+                    <PaginationDashboard
+                        links={data?.transactions?.links}
+                        meta={data?.transactions}
+                    />
                 </div>
+                {showModalFilter && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showModalFilter
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalFilter
+                                isOpen={showModalFilter}
+                                onClose={() => {
+                                    setShowModalFilter(!showModalFilter);
+                                }}
+                                data={data}
+                                onApplyFilter={handleApplyFilter}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </DefaultLayout>
     );

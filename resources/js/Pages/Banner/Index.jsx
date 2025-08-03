@@ -20,7 +20,7 @@ export default function Index({ data }) {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">Banner</p>
                     <div className="flex items-center gap-2 w-full sm:max-w-sm">
-                        <div className="relative w-full">
+                        {/* <div className="relative w-full">
                             <FiSearch
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                 size={16}
@@ -36,7 +36,7 @@ export default function Index({ data }) {
                         </button>
                         <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-5">

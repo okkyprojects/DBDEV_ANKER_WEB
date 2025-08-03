@@ -15,9 +15,17 @@ import { formatRupiah } from "@/Utils/utils";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDetailPesanan from "@/Components/Modal/Pesanan/ModalDetailPesanan";
 import ModalDeletePesanan from "@/Components/Modal/Pesanan/ModalDeletePesanan";
+import ModalFilter from "@/Components/Modal/Pesanan/ModalFilter";
+import { router } from "@inertiajs/react";
+import { statusBadge } from "@/Config/const";
+import moment from "moment";
 
 export default function ManajemenPesanan({ data }) {
     console.log(data);
+    const debounceRef = useRef(null);
+    const searchParams = new URLSearchParams(window.location.search);
+    const [search, setSearch] = useState(searchParams.get("search") || "");
+    const [showModalFilter, setShowModalFilter] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
@@ -46,6 +54,23 @@ export default function ManajemenPesanan({ data }) {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [dropdownOpen]);
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        const currentParams = new URLSearchParams(window.location.search);
+        const page = currentParams.get("page") || 1;
+
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { search, page },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
     const dataCard = [
         {
             title: "Pesanan Selesai",
@@ -76,7 +101,18 @@ export default function ManajemenPesanan({ data }) {
             icon: <PiXCircleLight size={24} />,
         },
     ];
+    const handleApplyFilter = (filters) => {
+        const params = {
+            search,
+            ...filters,
+        };
 
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -93,16 +129,29 @@ export default function ManajemenPesanan({ data }) {
                             />
                             <input
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari produk"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        <button
+                            onClick={() => setShowModalFilter(true)}
+                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                        >
                             <GrFilter size={20} />
                         </button>
-                        <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
+                        <a
+                            href={route("pesanan.manajemen.export", {
+                                search: searchParams.get("search") || "",
+                                brand: searchParams.get("brand") || "",
+                                category: searchParams.get("category") || "",
+                                status: searchParams.get("status") || "",
+                            })}
+                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                        >
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </a>
                     </div>
                 </div>
                 {/* KARTU STATISTIK */}
@@ -138,7 +187,13 @@ export default function ManajemenPesanan({ data }) {
                             <thead>
                                 <tr className="text-left text-sm">
                                     <th className="min-w-[25px] px-4 py-4 xl:pl-11 " />
-                                    <th className="min-w-[280px] px-4 py-4 ">
+                                    <th className="min-w-[200px] px-4 py-4 ">
+                                        Kode Pesanan
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
+                                        Tanggal
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Nama pemesan
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -176,6 +231,14 @@ export default function ManajemenPesanan({ data }) {
                                                 {index + 1}
                                             </td>
                                             <td className="px-4 py-5">
+                                                {item.transaction_code}
+                                            </td>{" "}
+                                            <td className="px-4 py-5">
+                                                {moment(item.created_at).format(
+                                                    "DD/MM/YYYY, HH:mm"
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-5">
                                                 {item.user.name}
                                             </td>
                                             <td className="px-4 py-5">
@@ -197,7 +260,16 @@ export default function ManajemenPesanan({ data }) {
                                                 {formatRupiah(item.total_price)}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.status}
+                                                <span
+                                                    className={`px-2 py-1 text-xs font-semibold rounded-full text-green-800 ${
+                                                        statusBadge[item.status]
+                                                            ?.className
+                                                    }`}
+                                                >
+                                                    {statusBadge[item.status]
+                                                        ?.label ??
+                                                        "Tidak Diketahui"}
+                                                </span>
                                             </td>
                                             <td className="relative px-4 py-5">
                                                 <button
@@ -294,6 +366,26 @@ export default function ManajemenPesanan({ data }) {
                                     setShowDeleteModal(!showDeleteModal);
                                 }}
                                 item={pesanan}
+                            />
+                        </div>
+                    </div>
+                )}
+                {showModalFilter && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showModalFilter
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalFilter
+                                isOpen={showModalFilter}
+                                onClose={() => {
+                                    setShowModalFilter(!showModalFilter);
+                                }}
+                                data={data}
+                                onApplyFilter={handleApplyFilter}
                             />
                         </div>
                     </div>

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\VariantStockController;
@@ -51,6 +52,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('produk')->name('produk.')->middleware('auth')->group(function () {
         Route::get('/data-produk', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/export-data-produk', [ProductController::class, 'export'])->name('product.export');
         Route::get('/data-produk/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/data-produk', [ProductController::class, 'store'])->name('product.store');
         Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); // 👈 tambah edit
@@ -58,7 +60,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
     Route::prefix('reporting')->name('reporting.')->middleware('auth')->group(function () {
-        Route::get('/penjualan', fn() => Inertia::render('Reporting/Penjualan'));
+        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+        Route::get('/export-penjualan', [PenjualanController::class, 'export'])->name('penjualan.export');
         // Route::get('/item', fn() => Inertia::render('Reporting/Item'));
         Route::get('/item', [VariantStockController::class, 'index'])->name('item.index');
         Route::post('/item', [VariantStockController::class, 'store'])->name('item.store');
@@ -66,6 +69,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('pesanan')->name('pesanan.')->group(function () {
         Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
+        Route::get('/export-pesanan', [TransactionController::class, 'export'])->name('manajemen.export');
         Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
     });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');

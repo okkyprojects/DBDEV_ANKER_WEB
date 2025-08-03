@@ -5,12 +5,15 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
 
 export default function StokPage({ data }) {
+    const debounceRef = useRef(null);
+    const searchParams = new URLSearchParams(window.location.search);
+    const [search, setSearch] = useState(searchParams.get("search") || "");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [produk, setProduk] = useState();
     const [showModalFilter, setShowModalFilter] = useState(false);
@@ -47,7 +50,18 @@ export default function StokPage({ data }) {
             setDropdownOpen(null);
         }
     };
+    const handleApplyFilter = (filters) => {
+        const params = {
+            search,
+            ...filters,
+        };
 
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
     useEffect(() => {
         if (dropdownOpen !== null) {
             document.addEventListener("mousedown", handleClickOutside);
@@ -58,6 +72,27 @@ export default function StokPage({ data }) {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [dropdownOpen]);
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+
+        debounceRef.current = setTimeout(() => {
+            const currentParams = new URLSearchParams(window.location.search);
+            const page = currentParams.get("page") || 1;
+
+            router.get(
+                route(route().current()),
+                {
+                    search,
+                    page,
+                },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
 
     return (
         <DefaultLayout>
@@ -74,6 +109,8 @@ export default function StokPage({ data }) {
                             />
                             <input
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari produk"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
@@ -86,9 +123,16 @@ export default function StokPage({ data }) {
                         >
                             <GrFilter size={20} />
                         </button>
-                        <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
+                        <a
+                            href={route("produk.product.export", {
+                                search: searchParams.get("search") || "",
+                                brand: searchParams.get("brand") || "",
+                                category: searchParams.get("category") || "",
+                            })}
+                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                        >
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -230,7 +274,8 @@ export default function StokPage({ data }) {
                                     onClose={() => {
                                         setShowModalFilter(!showModalFilter);
                                     }}
-                                    onApplyFilter={() => {}}
+                                    data={data}
+                                    onApplyFilter={handleApplyFilter}
                                 />
                             </div>
                         </div>

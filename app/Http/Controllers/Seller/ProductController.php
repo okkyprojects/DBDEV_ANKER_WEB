@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Seller;
 
+use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\BrandRepository;
 use App\Http\Repositories\CategoryRepository;
@@ -10,6 +11,7 @@ use App\Http\Repositories\VariantRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -26,6 +28,8 @@ class ProductController extends Controller
     }
     public function index(Request $request)
     {
+        $data['categories'] = $this->category->index($request);
+        $data['brands'] = $this->brand->index($request);
         $data['products'] = $this->product->index($request);
         return Inertia::render('Stok/StokPage', compact('data'));
     }
@@ -34,6 +38,13 @@ class ProductController extends Controller
         $data['categories'] = $this->category->index($request);
         $data['brands'] = $this->brand->index($request);
         return Inertia::render('Stok/ManajemenStok/Create', compact('data'));
+    }
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new ProductExport($request, $this->product),
+            'produk.xlsx'
+        );
     }
     public function edit(Request $request, $uuid)
     {

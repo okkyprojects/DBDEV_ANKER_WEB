@@ -3,9 +3,10 @@ import { IoIosClose } from "react-icons/io";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
 
-const ModalFilter = ({ isOpen, onClose, onApplyFilter }) => {
+const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [status, setStatus] = useState();
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedBrand, setSelectedBrand] = useState("");
     const [dateValue, setDateValue] = useState({
         startDate: null,
         endDate: null,
@@ -25,13 +26,8 @@ const ModalFilter = ({ isOpen, onClose, onApplyFilter }) => {
     }, [isOpen]);
     const handleApplyFilter = () => {
         onApplyFilter({
-            startDate: dateValue.startDate
-                ? moment(dateValue.startDate).format("YYYY-MM-DD")
-                : null,
-            endDate: dateValue.endDate
-                ? moment(dateValue.endDate).format("YYYY-MM-DD")
-                : null,
-            status,
+            category: selectedCategory,
+            brand: selectedBrand,
         });
         onClose();
     };
@@ -76,48 +72,64 @@ const ModalFilter = ({ isOpen, onClose, onApplyFilter }) => {
                                     <div className=" space-y-5">
                                         <div className="flex flex-col gap-2 text-sm">
                                             <label htmlFor="kategoriProduk">
-                                                Kategori Produk
+                                                Kategori
                                             </label>
                                             <select
                                                 id="kategoriProduk"
+                                                value={selectedCategory}
+                                                onChange={(e) =>
+                                                    setSelectedCategory(
+                                                        e.target.value
+                                                    )
+                                                }
                                                 className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                             >
                                                 <option value="">
                                                     Pilih kategori
                                                 </option>
-                                                <option value="makanan">
-                                                    Makanan
-                                                </option>
-                                                <option value="minuman">
-                                                    Minuman
-                                                </option>
-                                                <option value="alat-rumah-tangga">
-                                                    Alat Rumah Tangga
-                                                </option>
+                                                {data?.categories?.map(
+                                                    (category) => (
+                                                        <option
+                                                            key={category.id}
+                                                            value={
+                                                                category.name
+                                                            }
+                                                        >
+                                                            {category.name}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
+
                                         <div className="flex flex-col gap-2 text-sm">
-                                            <label htmlFor="status">
-                                                Status
+                                            <label htmlFor="brandProduk">
+                                                Brand
                                             </label>
                                             <select
-                                                id="status"
+                                                id="brandProduk"
+                                                value={selectedBrand}
+                                                onChange={(e) =>
+                                                    setSelectedBrand(
+                                                        e.target.value
+                                                    )
+                                                }
                                                 className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                             >
                                                 <option value="">
-                                                    Pilih Status
+                                                    Pilih brand
                                                 </option>
-                                                <option value="makanan">
-                                                    Aktif
-                                                </option>
-                                                <option value="minuman">
-                                                    Tidak Aktif
-                                                </option>
-                                                <option value="alat-rumah-tangga">
-                                                    Pending
-                                                </option>
+                                                {data?.brands?.map((brand) => (
+                                                    <option
+                                                        key={brand.id}
+                                                        value={brand.name}
+                                                    >
+                                                        {brand.name}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
+
                                         <button
                                             type="button"
                                             onClick={handleApplyFilter}

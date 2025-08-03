@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionRepository
 {
@@ -52,6 +53,56 @@ class TransactionRepository
         $this->variant = $variant;
         $this->cartItem = $cartItem;
     }
+    public function index_penjualan(Request $request)
+    {
+        $query = DB::table('products')
+            ->select([
+                'products.name as product_name',
+                'categories.name as category_name',
+                'brands.name as brand_name',
+                DB::raw('COALESCE((
+                SELECT SUM(vs.quantity)
+                FROM variants v
+                JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
+                WHERE v.product_uuid = products.uuid
+            ), 0) as kuantitas'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan'),
+            ])
+            ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
+            ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
+            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
+            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
+            ->where('transactions.status', '>=', 1)
+            ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('transactions.created_at', [$start, $end]);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('categories.name', 'LIKE', '%' . $request->category . '%');
+        }
+
+        if ($request->filled('brand')) {
+            $query->where('brands.name', 'LIKE', '%' . $request->brand . '%');
+        }
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('products.name', 'LIKE', $search)
+                    ->orWhere('categories.name', 'LIKE', $search)
+                    ->orWhere('brands.name', 'LIKE', $search);
+            });
+        }
+
+        return $query->paginate(10);
+    }
+
 
     public function index(Request $request)
     {
@@ -95,17 +146,108 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+    public function export_pesanan(Request $request)
+    {
+        $query = $this->transaction
+            ->with([
+                'user',
+                'items',
+                'address.province',
+                'address.city',
+                'address.district',
+                'bill'
+            ])
+            ->orderBy('created_at', 'desc');
 
+        if (Auth::user()->role !== 'admin') {
+            $query->where('user_id', Auth::id());
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('uuid', 'like', "%$search%")
+                    ->orWhere('transaction_code', 'like', "%$search%")
+                    ->orWhere('note', 'like', "%$search%")
+                    ->orWhere('total_price', 'like', "%$search%")
+                    ->orWhere('grand_total', 'like', "%$search%")
+                    ->orWhere('admin_fee', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        return $query->get();
+    }
+    public function export_penjualan(Request $request)
+    {
+        $query = DB::table('products')
+            ->select([
+                'products.name as product_name',
+                'categories.name as category_name',
+                'brands.name as brand_name',
+                DB::raw('COALESCE((
+                SELECT SUM(vs.quantity)
+                FROM variants v
+                JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
+                WHERE v.product_uuid = products.uuid
+            ), 0) as kuantitas'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan'),
+            ])
+            ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
+            ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
+            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
+            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
+            ->where('transactions.status', '>=', 1)
+            ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('transactions.created_at', [$start, $end]);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('categories.name', 'LIKE', '%' . $request->category . '%');
+        }
+
+        if ($request->filled('brand')) {
+            $query->where('brands.name', 'LIKE', '%' . $request->brand . '%');
+        }
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('products.name', 'LIKE', $search)
+                    ->orWhere('categories.name', 'LIKE', $search)
+                    ->orWhere('brands.name', 'LIKE', $search);
+            });
+        }
+
+        return $query->get();
+    }
     public function show($transaction_code)
     {
         $transaction = $this->transaction
             ->with([
-            'user',
-            'items',
-            'address.province',
-            'address.city',
-            'address.district',
-            'bill'])
+                'user',
+                'items',
+                'address.province',
+                'address.city',
+                'address.district',
+                'bill'
+            ])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();

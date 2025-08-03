@@ -104,6 +104,56 @@ class ProductRepository
 
         return $products;
     }
+    public function export(Request $request)
+    {
+        $query = $this->product
+            ->with([
+                'category:uuid,name',
+                'brand:uuid,name',
+                'variants',
+            ])
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('search') . '%');
+            })
+            ->when($request->filled('category'), function ($q) use ($request) {
+                $category = $request->input('category');
+                $q->whereHas('category', function ($subQuery) use ($category) {
+                    $subQuery->when(is_array($category), function ($q) use ($category) {
+                        $q->whereIn('name', $category);
+                    }, function ($q) use ($category) {
+                        $q->where('name', 'like', '%' . $category . '%');
+                    });
+                });
+            })
+            ->when($request->filled('brand'), function ($q) use ($request) {
+                $brand = $request->input('brand');
+                $q->whereHas('brand', function ($subQuery) use ($brand) {
+                    $subQuery->when(is_array($brand), function ($q) use ($brand) {
+                        $q->whereIn('name', $brand);
+                    }, function ($q) use ($brand) {
+                        $q->where('name', 'like', '%' . $brand . '%');
+                    });
+                });
+            });
+        if (in_array($request->input('sort_by'), ['lowest_price', 'highest_price'])) {
+            $query->withMin('variants', 'price')->withMax('variants', 'price');
+
+            $query->orderBy(
+                'variants_min_price',
+                $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
+            );
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->get();
+        $products->transform(function ($product) {
+            $product->price = $product->variants->min('price');
+            $product->variant_count = $product->variants->count();
+            return $product;
+        });
+        return $products;
+    }
 
     public function single($uuid)
     {

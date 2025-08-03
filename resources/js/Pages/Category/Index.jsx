@@ -8,12 +8,34 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import ModalTambahKategori from "@/Components/Modal/Category/ModalTambahKategori";
 import ModalEditKategori from "@/Components/Modal/Category/ModalEditKategori";
+import { useRef } from "react";
+import { router } from "@inertiajs/react";
+import { useEffect } from "react";
 
 export default function Index({ data }) {
+    const debounceRef = useRef(null);
+    const searchParams = new URLSearchParams(window.location.search);
+    const [search, setSearch] = useState(searchParams.get("search") || "");
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [category, setCategory] = useState();
-    console.log(data);
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        const currentParams = new URLSearchParams(window.location.search);
+        const page = currentParams.get("page") || 1;
+
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { search, page },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -30,16 +52,18 @@ export default function Index({ data }) {
                             />
                             <input
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari produk"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        {/* <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
                             <GrFilter size={20} />
                         </button>
                         <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-5">
