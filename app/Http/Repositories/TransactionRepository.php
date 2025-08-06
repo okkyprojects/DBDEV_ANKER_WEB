@@ -58,6 +58,7 @@ class TransactionRepository
         $query = DB::table('products')
             ->select([
                 'products.name as product_name',
+                'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
                 DB::raw('COALESCE((
@@ -101,6 +102,112 @@ class TransactionRepository
         }
 
         return $query->paginate(10);
+    }
+    public function get_summary_detail_by_product(Request $request, $productUuid)
+    {
+        $subKuantitas = DB::table('variant_stocks')
+            ->select('variant_uuid', DB::raw('SUM(quantity) as total_stok'))
+            ->groupBy('variant_uuid');
+
+        $rekap = DB::table('variants')
+            ->leftJoinSub($subKuantitas, 'vs', function ($join) {
+                $join->on('variants.uuid', '=', 'vs.variant_uuid');
+            })
+            ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
+            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->where('variants.product_uuid', $productUuid)
+            ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
+                $start = Carbon::parse($request->startDate)->startOfDay();
+                $end = Carbon::parse($request->endDate)->endOfDay();
+                $q->whereBetween('transactions.created_at', [$start, $end]);
+            })
+            ->where(function ($q) {
+                $q->whereNull('transactions.status')
+                    ->orWhere('transactions.status', '>=', 1);
+            })
+            ->selectRaw('
+            COALESCE(SUM(vs.total_stok), 0) as total_stok,
+            COALESCE(SUM(transaction_items.quantity), 0) as total_terjual,
+            COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as total_pendapatan
+        ')
+            ->first();
+
+        return [
+            'total_stok' => (int) $rekap->total_stok,
+            'total_terjual' => (int) $rekap->total_terjual,
+            'total_pendapatan' => (int) $rekap->total_pendapatan,
+            'stok_tersisa' => (int) $rekap->total_stok - (int) $rekap->total_terjual,
+        ];
+    }
+    public function export_penjualan_by_product(Request $request, $productUuid)
+    {
+        $query = DB::table('variants')
+            ->select([
+                'variants.name as variant_name',
+                'variants.img as variant_img',
+                'categories.name as category_name',
+                'brands.name as brand_name',
+                DB::raw('COALESCE((
+                SELECT SUM(vs.quantity)
+                FROM variant_stocks vs
+                WHERE vs.variant_uuid = variants.uuid
+            ), 0) as kuantitas'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan')
+            ])
+            ->leftJoin('products', 'variants.product_uuid', '=', 'products.uuid')
+            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
+            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
+            ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
+            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->where('variants.product_uuid', $productUuid)
+            ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
+                $start = Carbon::parse($request->startDate)->startOfDay();
+                $end = Carbon::parse($request->endDate)->endOfDay();
+                $q->whereBetween('transactions.created_at', [$start, $end]);
+            })
+            ->where(function ($q) {
+                $q->whereNull('transactions.status')
+                    ->orWhere('transactions.status', '>=', 1);
+            })
+            ->groupBy('variants.uuid', 'variants.name', 'categories.name', 'brands.name')->get();
+
+        return $query;
+    }
+    public function show_penjualan_by_product(Request $request, $productUuid)
+    {
+        $query = DB::table('variants')
+            ->select([
+                'variants.name as variant_name',
+                'variants.img as variant_img',
+                'categories.name as category_name',
+                'brands.name as brand_name',
+                DB::raw('COALESCE((
+                SELECT SUM(vs.quantity)
+                FROM variant_stocks vs
+                WHERE vs.variant_uuid = variants.uuid
+            ), 0) as kuantitas'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
+                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan')
+            ])
+            ->leftJoin('products', 'variants.product_uuid', '=', 'products.uuid')
+            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
+            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
+            ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
+            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->where('variants.product_uuid', $productUuid)
+            ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
+                $start = Carbon::parse($request->startDate)->startOfDay();
+                $end = Carbon::parse($request->endDate)->endOfDay();
+                $q->whereBetween('transactions.created_at', [$start, $end]);
+            })
+            ->where(function ($q) {
+                $q->whereNull('transactions.status')
+                    ->orWhere('transactions.status', '>=', 1);
+            })
+            ->groupBy('variants.uuid', 'variants.name', 'categories.name', 'brands.name')->paginate(10);
+
+        return $query;
     }
 
 
@@ -193,6 +300,7 @@ class TransactionRepository
         $query = DB::table('products')
             ->select([
                 'products.name as product_name',
+                'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
                 DB::raw('COALESCE((

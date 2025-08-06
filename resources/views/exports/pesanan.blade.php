@@ -26,7 +26,7 @@
             <td>{{ $item->address->province->nama }}</td>
             <td>{{ $item->address->city->nama }}</td>
             <td>{{ $item->address->postal_code }}</td>
-            <td>{{ number_format($item->total_price, 0, ',', '.') }}</td>
+            <td>Rp {{ number_format($item->total_price, 0, ',', '.') }}</td>
             <td>
                 {{
                     [

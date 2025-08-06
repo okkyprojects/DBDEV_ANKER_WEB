@@ -1,58 +1,21 @@
 <table>
     <thead>
         <tr>
-            <th>No</th>
-            <th>Produk</th>
-            <th>Stok Masuk</th>
-            <th>Terjual</th>
-            <th>Jumlah Pendapatan</th>
+            <th style="text-align:left;">No</th>
+            <th style="text-align:left;">Produk</th>
+            <th style="text-align:left;">Stok Masuk</th>
+            <th style="text-align:left;">Terjual</th>
+            <th style="text-align:left;">Jumlah Pendapatan</th>
         </tr>
     </thead>
     <tbody>
         @foreach($data as $i => $item)
         <tr>
             <td>{{ $i + 1 }}</td>
-        <td className="px-4 py-5">
-                                                {item.transaction_code}
-                                            </td>{" "}
-                                            <td className="px-4 py-5">
-                                                {moment(item.created_at).format(
-                                                    "DD/MM/YYYY, HH:mm"
-                                                )}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.user.name}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.user.phone_number}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.address.address}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.address.province.nama}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.address.city.nama}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.address.postal_code}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {formatRupiah(item.total_price)}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                <span
-                                                    className={`px-2 py-1 text-xs font-semibold rounded-full text-green-800 ${
-                                                        statusBadge[item.status]
-                                                            ?.className
-                                                    }`}
-                                                >
-                                                    {statusBadge[item.status]
-                                                        ?.label ??
-                                                        "Tidak Diketahui"}
-                                                </span>
-                                            </td>
+            <td>{{ $item->product_name }}</td>
+            <td>{{ $item->kuantitas }}</td>
+            <td>{{ $item->terjual }}</td>
+            <td>Rp {{ number_format($item->pendapatan, 0, ',', '.') }}</td>
         </tr>
         @endforeach
     </tbody>

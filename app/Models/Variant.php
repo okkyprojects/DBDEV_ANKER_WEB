@@ -43,7 +43,15 @@ class Variant extends Model
     public function total_stock()
     {
         return $this->hasOne(VariantStock::class, 'variant_uuid', 'uuid')
-            ->selectRaw('variant_uuid, SUM(quantity) as total_stock')
-            ->groupBy('variant_uuid');
+            ->selectRaw('variant_uuid,
+            SUM(quantity) - (
+                SELECT COALESCE(SUM(quantity), 0)
+                FROM transaction_items
+                WHERE transaction_items.variant_uuid = variant_stocks.variant_uuid
+            ) as total_stock')
+            ->groupBy('variant_uuid')
+            ->withDefault([
+                'total_stock' => 0
+            ]);
     }
 }

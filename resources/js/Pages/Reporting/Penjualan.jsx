@@ -13,8 +13,9 @@ import {
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 export default function Penjualan({ data }) {
     console.log(data);
@@ -192,15 +193,14 @@ export default function Penjualan({ data }) {
                                             </td>
 
                                             <td className="px-4 py-5">
-                                                <button
-                                                    onClick={() =>
-                                                        toggleDropdown(index)
-                                                    }
-                                                    className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
+                                                <Link
+                                                    href={`/reporting/penjualan/${item.uuid}`}
+                                                    className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary w-fit"
                                                 >
-                                                    Aksi{" "}
-                                                    <FaChevronDown size={14} />
-                                                </button>
+                                                    <MdOutlineRemoveRedEye
+                                                        size={18}
+                                                    />
+                                                </Link>
                                             </td>
                                         </tr>
                                     )

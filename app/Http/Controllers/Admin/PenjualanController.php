@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\PenjualanExport;
+use App\Exports\ShowPenjualanExport;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\BrandRepository;
 use App\Http\Repositories\CategoryRepository;
+use App\Http\Repositories\ProductRepository;
 use App\Http\Repositories\TransactionRepository;
 use App\Traits\Response;
 use Illuminate\Http\Request;
@@ -18,17 +20,20 @@ class PenjualanController extends Controller
     private $transactionRepository;
     private $brandRepository;
     private $categoryRepository;
+    private $productRepository;
 
     public function __construct(
         Response $response,
         TransactionRepository $transactionRepository,
         BrandRepository $brandRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        ProductRepository $productRepository
     ) {
         $this->response = $response;
         $this->transactionRepository = $transactionRepository;
         $this->brandRepository = $brandRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function index(Request $request)
@@ -38,6 +43,21 @@ class PenjualanController extends Controller
         $data['categories'] = $this->categoryRepository->index($request);
         return Inertia::render('Reporting/Penjualan', compact('data'));
     }
+    public function show(Request $request, $uuid)
+    {
+        $data['product'] = $this->productRepository->single($uuid);
+        $data['transactions'] = $this->transactionRepository->show_penjualan_by_product($request, $uuid);
+        $data['summary'] = $this->transactionRepository->get_summary_detail_by_product($request, $uuid);
+        return Inertia::render('Reporting/Detail/Index', compact('data'));
+    }
+    public function show_export(Request $request, $uuid)
+    {
+        return Excel::download(
+            new ShowPenjualanExport($request, $this->transactionRepository, $uuid),
+            'penjualan_detail.xlsx'
+        );
+    }
+
     public function export(Request $request)
     {
         return Excel::download(
