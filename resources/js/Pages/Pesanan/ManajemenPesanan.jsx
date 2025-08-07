@@ -74,33 +74,34 @@ export default function ManajemenPesanan({ data }) {
     const dataCard = [
         {
             title: "Pesanan Selesai",
-            count: 100,
+            count: data?.summary?.pesanan_selesai ?? 0,
             iconBg: "bg-green-100",
             iconColor: "text-green-500",
             icon: <PiCheckCircleLight size={24} />,
         },
         {
-            title: "Pesanan Belum Diproses",
-            count: 2,
+            title: "Pesanan Sudah Dibayar",
+            count: data?.summary?.pesanan_belum_diproses ?? 0,
             iconBg: "bg-yellow-100",
             iconColor: "text-yellow-500",
             icon: <PiClockLight size={24} />,
         },
         {
             title: "Pesanan Dikirim",
-            count: 5,
+            count: data?.summary?.pesanan_dikirim ?? 0,
             iconBg: "bg-blue-100",
             iconColor: "text-blue-500",
             icon: <PiTruckLight size={24} />,
         },
         {
             title: "Pesanan Ditolak",
-            count: 5,
+            count: data?.summary?.pesanan_ditolak ?? 0,
             iconBg: "bg-red-100",
             iconColor: "text-red-500",
             icon: <PiXCircleLight size={24} />,
         },
     ];
+
     const handleApplyFilter = (filters) => {
         const params = {
             search,
@@ -147,6 +148,8 @@ export default function ManajemenPesanan({ data }) {
                                 brand: searchParams.get("brand") || "",
                                 category: searchParams.get("category") || "",
                                 status: searchParams.get("status") || "",
+                                startDate: searchParams.get("startDate") || "",
+                                endDate: searchParams.get("endDate") || "",
                             })}
                             className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
                         >

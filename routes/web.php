@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-data-produk', [ProductController::class, 'export'])->name('product.export');
         Route::get('/data-produk/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/data-produk', [ProductController::class, 'store'])->name('product.store');
-        Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); // 
+        Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); //
         // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); /
         Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-penjualan', [PenjualanController::class, 'export'])->name('penjualan.export');
         // Route::get('/item', fn() => Inertia::render('Reporting/Item'));
         Route::get('/item', [VariantStockController::class, 'index'])->name('item.index');
+        Route::get('/item-export', [VariantStockController::class, 'export'])->name('item.export');
         Route::post('/item', [VariantStockController::class, 'store'])->name('item.store');
         Route::delete('/item/{uuid}', [VariantStockController::class, 'destroy'])->name('item.destroy');
     });

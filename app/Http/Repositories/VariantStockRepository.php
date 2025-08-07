@@ -2,8 +2,10 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\TransactionItem;
 use App\Models\VariantStock;
 use App\Traits\Response;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -13,11 +15,13 @@ class VariantStockRepository
 {
     private $response;
     private $model;
+    private $transactionItem;
 
-    public function __construct(Response $response, VariantStock $model)
+    public function __construct(Response $response, VariantStock $model, TransactionItem $transactionItem)
     {
         $this->response = $response;
         $this->model = $model;
+        $this->transactionItem = $transactionItem;
     }
 
     private function validate()
@@ -60,10 +64,76 @@ class VariantStockRepository
 
         return $data;
     }
+    public function summary(Request $request)
+    {
+        $stockInQuery = $this->model->with([
+            'variant.product.category',
+            'variant.product.brand'
+        ]);
+
+        $stockOutQuery = $this->transactionItem->with([
+            'variant.product.category',
+            'variant.product.brand'
+        ]);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $stockInQuery->whereHas('variant', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhereHas('product', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%$search%")
+                            ->orWhereHas('category', fn($q3) => $q3->where('name', 'like', "%$search%"))
+                            ->orWhereHas('brand', fn($q4) => $q4->where('name', 'like', "%$search%"));
+                    });
+            });
+
+            $stockOutQuery->whereHas('variant', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhereHas('product', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%$search%")
+                            ->orWhereHas('category', fn($q3) => $q3->where('name', 'like', "%$search%"))
+                            ->orWhereHas('brand', fn($q4) => $q4->where('name', 'like', "%$search%"));
+                    });
+            });
+        }
+
+        if ($request->filled('category')) {
+            $category = $request->input('category');
+            $stockInQuery->whereHas('variant.product.category', fn($q) => $q->where('name', 'like', "%$category%"));
+            $stockOutQuery->whereHas('variant.product.category', fn($q) => $q->where('name', 'like', "%$category%"));
+        }
+
+        if ($request->filled('brand')) {
+            $brand = $request->input('brand');
+            $stockInQuery->whereHas('variant.product.brand', fn($q) => $q->where('name', 'like', "%$brand%"));
+            $stockOutQuery->whereHas('variant.product.brand', fn($q) => $q->where('name', 'like', "%$brand%"));
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+
+            $stockInQuery->whereBetween('created_at', [$start, $end]);
+            $stockOutQuery->whereBetween('created_at', [$start, $end]);
+        }
+
+        $totalMasuk = (int) $stockInQuery->sum('quantity');
+        $totalTerjual = (int) $stockOutQuery->sum('quantity');
+
+        return [
+            'barang_masuk' => $totalMasuk,
+            'stok_terjual' => $totalTerjual,
+        ];
+    }
+
 
     public function index_pagination(Request $request)
     {
-        $query = $this->model->with(['variant.product']);
+        $query = $this->model->with([
+            'variant.product.category',
+            'variant.product.brand'
+        ]);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -73,16 +143,92 @@ class VariantStockRepository
                     ->orWhereHas('variant', function ($q1) use ($search) {
                         $q1->where('name', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
-                                $q2->where('name', 'like', "%$search%");
+                                $q2->where('name', 'like', "%$search%")
+                                    ->orWhereHas('category', function ($q3) use ($search) {
+                                        $q3->where('name', 'like', "%$search%");
+                                    })
+                                    ->orWhereHas('brand', function ($q4) use ($search) {
+                                        $q4->where('name', 'like', "%$search%");
+                                    });
                             });
                     });
             });
         }
 
-        $data = $query->orderBy('created_at', 'desc')->paginate(10);
+        if ($request->filled('category')) {
+            $category = $request->input('category');
+            $query->whereHas('variant.product.category', function ($q) use ($category) {
+                $q->where('name', 'like', "%$category%");
+            });
+        }
 
-        return $data;
+        if ($request->filled('brand')) {
+            $brand = $request->input('brand');
+            $query->whereHas('variant.product.brand', function ($q) use ($brand) {
+                $q->where('name', 'like', "%$brand%");
+            });
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate(10);
     }
+    public function export(Request $request)
+    {
+        $query = $this->model->with([
+            'variant.product.category',
+            'variant.product.brand'
+        ]);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('note', 'like', "%$search%")
+                    ->orWhereHas('variant', function ($q1) use ($search) {
+                        $q1->where('name', 'like', "%$search%")
+                            ->orWhereHas('product', function ($q2) use ($search) {
+                                $q2->where('name', 'like', "%$search%")
+                                    ->orWhereHas('category', function ($q3) use ($search) {
+                                        $q3->where('name', 'like', "%$search%");
+                                    })
+                                    ->orWhereHas('brand', function ($q4) use ($search) {
+                                        $q4->where('name', 'like', "%$search%");
+                                    });
+                            });
+                    });
+            });
+        }
+
+        if ($request->filled('category')) {
+            $category = $request->input('category');
+            $query->whereHas('variant.product.category', function ($q) use ($category) {
+                $q->where('name', 'like', "%$category%");
+            });
+        }
+
+        if ($request->filled('brand')) {
+            $brand = $request->input('brand');
+            $query->whereHas('variant.product.brand', function ($q) use ($brand) {
+                $q->where('name', 'like', "%$brand%");
+            });
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        return $query->orderBy('created_at', 'desc')->get();
+    }
+
 
     public function show($uuid)
     {

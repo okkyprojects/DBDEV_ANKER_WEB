@@ -26,21 +26,21 @@ export default function Penjualan({ data }) {
     const dataCard = [
         {
             title: "Pendapatan Kotor",
-            count: formatRupiah(1500000),
+            count: formatRupiah(data?.summary?.pendapatan_kotor),
             iconBg: "bg-green-100",
             iconColor: "text-green-500",
             icon: <PiCurrencyCircleDollarLight size={24} />,
         },
         {
             title: "Total Pesanan",
-            count: 2,
+            count: data?.summary?.total_pesanan,
             iconBg: "bg-yellow-100",
             iconColor: "text-yellow-500",
             icon: <PiShoppingCartLight size={24} />,
         },
         {
-            title: "Item per Pesanan",
-            count: 5,
+            title: "Item Terjual",
+            count: data?.summary?.item_terjual,
             iconBg: "bg-red-100",
             iconColor: "text-red-500",
             icon: <PiCubeLight size={24} />,
@@ -113,6 +113,8 @@ export default function Penjualan({ data }) {
                                 search: searchParams.get("search") || "",
                                 brand: searchParams.get("brand") || "",
                                 category: searchParams.get("category") || "",
+                                startDate: searchParams.get("startDate") || "",
+                                endDate: searchParams.get("endDate") || "",
                             })}
                             className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
                         >
@@ -177,7 +179,7 @@ export default function Penjualan({ data }) {
                                             className="hover:bg-gray-50 text-sm text-neutral-700"
                                         >
                                             <td className="px-4 py-5 pl-9 xl:pl-11">
-                                                {index + 1}
+                                                {data?.transactions?.from + index}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item.product_name}

@@ -103,6 +103,49 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+    public function get_penjualan_summary(Request $request)
+    {
+        $query = DB::table('transaction_items')
+            ->join('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')
+            ->join('products', 'variants.product_uuid', '=', 'products.uuid')
+            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
+            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
+            ->where('transactions.status', '>=', 1);
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('transactions.created_at', [$start, $end]);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('categories.name', 'LIKE', '%' . $request->category . '%');
+        }
+        if ($request->filled('brand')) {
+            $query->where('brands.name', 'LIKE', '%' . $request->brand . '%');
+        }
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('products.name', 'LIKE', $search)
+                    ->orWhere('categories.name', 'LIKE', $search)
+                    ->orWhere('brands.name', 'LIKE', $search);
+            });
+        }
+        $result = $query->selectRaw('
+        COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan_kotor,
+        COUNT(DISTINCT transactions.uuid) as total_pesanan,
+        COALESCE(SUM(transaction_items.quantity), 0) as item_terjual
+    ')->first();
+
+        return [
+            'pendapatan_kotor' => (int) $result->pendapatan_kotor,
+            'total_pesanan'    => (int) $result->total_pesanan,
+            'item_terjual'     => (int) $result->item_terjual,
+        ];
+    }
+
     public function get_summary_detail_by_product(Request $request, $productUuid)
     {
         $subKuantitas = DB::table('variant_stocks')
@@ -253,6 +296,42 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+    public function summary_index(Request $request)
+    {
+        $baseQuery = $this->transaction->query();
+
+        if (Auth::user()->role !== 'admin') {
+            $baseQuery->where('user_id', Auth::id());
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where('uuid', 'like', "%$search%")
+                    ->orWhere('transaction_code', 'like', "%$search%")
+                    ->orWhere('note', 'like', "%$search%")
+                    ->orWhere('total_price', 'like', "%$search%")
+                    ->orWhere('grand_total', 'like', "%$search%")
+                    ->orWhere('admin_fee', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $baseQuery->whereBetween('created_at', [$start, $end]);
+        }
+        $counts = [
+            'pesanan_selesai'         => (clone $baseQuery)->where('status', 4)->count(),
+            'pesanan_belum_diproses'  => (clone $baseQuery)->where('status', 1)->count(),
+            'pesanan_dikirim'         => (clone $baseQuery)->where('status', 3)->count(),
+            'pesanan_ditolak'         => (clone $baseQuery)->where('status', 5)->count(),
+        ];
+
+        return $counts;
+    }
+
     public function export_pesanan(Request $request)
     {
         $query = $this->transaction

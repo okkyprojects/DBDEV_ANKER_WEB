@@ -39,6 +39,7 @@ class PenjualanController extends Controller
     public function index(Request $request)
     {
         $data['transactions'] = $this->transactionRepository->index_penjualan($request);
+        $data['summary'] = $this->transactionRepository->get_penjualan_summary($request);
         $data['brands'] = $this->brandRepository->index($request);
         $data['categories'] = $this->categoryRepository->index($request);
         return Inertia::render('Reporting/Penjualan', compact('data'));

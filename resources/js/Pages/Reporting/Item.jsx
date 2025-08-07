@@ -19,25 +19,28 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { router } from "@inertiajs/react";
+import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
 
 export default function Item({ data }) {
+    console.log(data);
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
+    const [showModalFilter, setShowModalFilter] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [variantStock, setVariantStock] = useState();
     const dataCard = [
         {
             title: "Stok Masuk",
-            count: 100,
+            count: data?.summary?.barang_masuk,
             iconBg: "bg-success-100",
             iconColor: "text-success-500",
             icon: <PiCubeLight size={24} />,
         },
         {
             title: "Stok Terjual",
-            count: 2,
+            count: data?.summary?.stok_terjual,
             iconBg: "bg-info-100",
             iconColor: "text-info-500",
             icon: <PiCubeLight size={24} />,
@@ -55,6 +58,35 @@ export default function Item({ data }) {
             router.get(
                 route(route().current()),
                 { search },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, [search]);
+    const handleApplyFilter = (filters) => {
+        const params = {
+            search,
+            ...filters,
+        };
+
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        const currentParams = new URLSearchParams(window.location.search);
+        const page = currentParams.get("page") || 1;
+
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { search, page },
                 {
                     preserveState: true,
                     replace: true,
@@ -84,12 +116,24 @@ export default function Item({ data }) {
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
-                        <button className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition">
+                        <button
+                            onClick={() => setShowModalFilter(true)}
+                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                        >
                             <GrFilter size={20} />
                         </button>
-                        <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
+                        <a
+                            href={route("reporting.item.export", {
+                                search: searchParams.get("search") || "",
+                                brand: searchParams.get("brand") || "",
+                                category: searchParams.get("category") || "",
+                                startDate: searchParams.get("startDate") || "",
+                                endDate: searchParams.get("endDate") || "",
+                            })}
+                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                        >
                             <HiOutlinePrinter size={20} />
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -156,26 +200,30 @@ export default function Item({ data }) {
                                             className="hover:bg-gray-50 text-sm text-neutral-700"
                                         >
                                             <td className="px-4 py-5 pl-9 xl:pl-11">
-                                                {index + 1}
+                                                {data?.variant_stocks?.from +
+                                                    index}
                                             </td>
                                             <td className="px-4 py-5">
                                                 <p>
-                                                    {item.variant.product.name}
+                                                    {
+                                                        item?.variant?.product
+                                                            ?.name
+                                                    }
                                                 </p>
                                                 <p className="text-neutral-500 text-xs mt-0.5">
-                                                    {item.variant.name}
+                                                    {item?.variant?.name}
                                                 </p>
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.quantity}
+                                                {item?.quantity}
                                             </td>{" "}
                                             <td className="px-4 py-5">
-                                                {moment(item.created_at).format(
-                                                    "DD/MM/YYYY, HH:mm"
-                                                )}
+                                                {moment(
+                                                    item?.created_at
+                                                ).format("DD/MM/YYYY, HH:mm")}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.note}
+                                                {item?.note}
                                             </td>
                                             <td className="px-4 py-5">
                                                 <button
@@ -233,6 +281,26 @@ export default function Item({ data }) {
                                         setShowEditModal(!showEditModal);
                                     }}
                                     item={variantStock}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {showModalFilter && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalFilter
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalFilter
+                                    isOpen={showModalFilter}
+                                    onClose={() => {
+                                        setShowModalFilter(!showModalFilter);
+                                    }}
+                                    data={data}
+                                    onApplyFilter={handleApplyFilter}
                                 />
                             </div>
                         </div>

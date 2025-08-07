@@ -10,16 +10,19 @@ import {
 } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
 import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
 import { BsBoxSeam, BsCart2, BsJournalText } from "react-icons/bs";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { formatRupiah } from "@/Utils/utils";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 export default function Index({ data }) {
     console.log(data);
+    const debounceRef = useRef(null);
     const chartData = {
         Harian: {
             categories: [
@@ -190,7 +193,23 @@ export default function Index({ data }) {
             links: [],
         },
     };
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        const currentParams = new URLSearchParams(window.location.search);
+        const page = currentParams.get("page") || 1;
 
+        debounceRef.current = setTimeout(() => {
+            router.get(
+                route(route().current()),
+                { page },
+                {
+                    preserveState: true,
+                    replace: true,
+                    preserveScroll: true,
+                }
+            );
+        }, 500);
+    }, []);
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">

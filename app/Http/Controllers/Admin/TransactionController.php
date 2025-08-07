@@ -32,6 +32,7 @@ class TransactionController extends Controller
     }
     public function index(Request $request)
     {
+        $data['summary'] = $this->transactionRepository->summary_index($request);
         $data['transactions'] = $this->transactionRepository->index($request);
         $data['brands'] = $this->brandRepository->index($request);
         $data['categories'] = $this->categoryRepository->index($request);
