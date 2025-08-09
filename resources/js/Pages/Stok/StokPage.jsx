@@ -11,6 +11,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
 
 export default function StokPage({ data }) {
+    console.log(data)
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -25,19 +26,19 @@ export default function StokPage({ data }) {
     const dataCard = [
         {
             title: "Produk Aktif",
-            count: 100,
+            count: data?.summary?.produk_aktif,
             iconBg: "bg-green-100",
             iconColor: "text-green-500",
         },
         {
             title: "Produk Stok Menipis",
-            count: 2,
+            count: data?.summary?.produk_stok_menipis,
             iconBg: "bg-yellow-100",
             iconColor: "text-yellow-500",
         },
         {
             title: "Produk Stok Habis",
-            count: 5,
+            count: data?.summary?.produk_stok_habis,
             iconBg: "bg-red-100",
             iconColor: "text-red-500",
         },
@@ -187,6 +188,9 @@ export default function StokPage({ data }) {
                                     <th className="min-w-[200px] px-4 py-4 ">
                                         Jumlah Varian
                                     </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
+                                        Total Stok Saat ini
+                                    </th>
                                     <th className="px-4 py-4 ">Aksi</th>
                                 </tr>
                             </thead>
@@ -210,6 +214,9 @@ export default function StokPage({ data }) {
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item.variant_count}
+                                        </td>
+                                        <td className=" px-4 py-5">
+                                            {item.total_stock}
                                         </td>
                                         <td className="relative px-4 py-5">
                                             <button

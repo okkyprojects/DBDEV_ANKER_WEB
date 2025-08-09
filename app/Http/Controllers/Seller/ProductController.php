@@ -31,6 +31,7 @@ class ProductController extends Controller
         $data['categories'] = $this->category->index($request);
         $data['brands'] = $this->brand->index($request);
         $data['products'] = $this->product->index($request);
+        $data['summary'] = $this->product->summary_product($request);
         return Inertia::render('Stok/StokPage', compact('data'));
     }
     public function create(Request $request)

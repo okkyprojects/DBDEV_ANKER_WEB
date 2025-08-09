@@ -54,7 +54,7 @@ export default function Edit({ data: initial_data }) {
         setData("variants", updated);
     };
     const handleDeleteVarian = (index, uuid = null) => {
-        console.log(uuid)
+        console.log(uuid);
         if (uuid) {
             if (confirm("Yakin ingin menghapus varian ini?")) {
                 router.delete(route("variant.destroy", uuid), {
@@ -63,6 +63,10 @@ export default function Edit({ data: initial_data }) {
                         const updated = [...data.variants];
                         updated.splice(index, 1);
                         setData("variants", updated);
+                        console.log("SUKSES");
+                    },
+                    onError: (errors) => {
+                        console.error("ERROR:", errors);
                     },
                 });
             }
@@ -327,6 +331,7 @@ export default function Edit({ data: initial_data }) {
                                         <p>Varian {index + 1}</p>
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             handleDeleteVarian(
                                                 index,

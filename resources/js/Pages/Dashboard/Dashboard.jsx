@@ -197,9 +197,6 @@ export default function Dashboard() {
                         >
                             <GrFilter size={20} />
                         </button>
-                        <button className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white">
-                            <HiOutlinePrinter size={20} />
-                        </button>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
