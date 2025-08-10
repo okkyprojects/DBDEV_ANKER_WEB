@@ -22,12 +22,14 @@ class VariantFactory extends Factory
         $discount = $this->faker->boolean(50)
             ? $price - $this->faker->randomFloat(2, 1000, $price * 0.3)
             : null;
+
         return [
-            'uuid' => Str::uuid(),
-            'product_uuid' => Product::inRandomOrder()->first()?->uuid,
-            'name' => $this->faker->word(),
-            'price' => $price,
-            'img' => 'https://fastly.picsum.photos/id/8/300/100.jpg?hmac=fEbCJREOWHtYm21WgwubKRUVUp7vPF2V9FY9gSJHwZs',
+            'uuid'          => Str::uuid(),
+            'product_uuid'  => Product::inRandomOrder()->first()?->uuid,
+            'sku'           => strtoupper('SKU-' . Str::random(8)),
+            'name'          => $this->faker->word(),
+            'price'         => $price,
+            'img'           => 'https://fastly.picsum.photos/id/8/300/100.jpg?hmac=fEbCJREOWHtYm21WgwubKRUVUp7vPF2V9FY9gSJHwZs',
             'discount_price' => $discount,
         ];
     }

@@ -26,7 +26,8 @@ class VariantRepository
 
             'variants' => 'required|array',
             'variants.*.product_uuid' => 'required|exists:products,uuid',
-            'variants.*.name' => 'required|string|max:255',
+            'variants.*.name' => 'required',
+            'variants.*.sku' => 'required',
             'variants.*.price' => 'required|numeric',
             'variants.*.discount_price' => 'nullable|numeric',
             'variants.*.img' => 'nullable|image|max:2048',
@@ -92,6 +93,7 @@ class VariantRepository
             'uuid' => $item['uuid'] ?? (string) Str::uuid(),
             'product_uuid' => $item['product_uuid'],
             'name' => $item['name'],
+            'sku' => $item['sku'],
             'price' => $item['price'],
             'discount_price' => $item['discount_price'] ?? null,
         ];

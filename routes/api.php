@@ -57,4 +57,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile', [ProfilController::class, 'store']);
     Route::get('/sellers/{id}', [SellerController::class, 'show']);
     Route::get('/bills', [BillController::class, 'index']);
+    Route::post('/transactions/{uuid}/repeat-order', [TransactionController::class, 'repeat_order']);
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Repositories\CartRepository;
 use App\Http\Repositories\TransactionRepository;
 use App\Traits\Response;
 use Illuminate\Http\Request;
@@ -10,15 +11,18 @@ use Illuminate\Http\Request;
 class TransactionController extends Controller
 {
     private $transactionRepository;
+    private $cartRepository;
     private $response;
 
 
     public function __construct(
         Response $response,
-        TransactionRepository $transactionRepository
+        TransactionRepository $transactionRepository,
+        CartRepository $cartRepository,
     ) {
         $this->response = $response;
         $this->transactionRepository = $transactionRepository;
+        $this->cartRepository = $cartRepository;
     }
 
     public function index(Request $request)
@@ -26,6 +30,11 @@ class TransactionController extends Controller
         $data = $this->transactionRepository->index($request);
         return $this->response->index($data);
     }
+    public function repeat_order($uuid)
+    {
+        return $this->cartRepository->repeat_order($uuid);
+    }
+
     public function show(string $id)
     {
         $data = $this->transactionRepository->show($id);

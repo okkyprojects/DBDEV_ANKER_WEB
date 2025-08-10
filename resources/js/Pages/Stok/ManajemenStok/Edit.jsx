@@ -20,6 +20,7 @@ export default function Edit({ data: initial_data }) {
         variants:
             initial_data.variants?.map((v) => ({
                 uuid: v.uuid || "",
+                sku: v.sku,
                 name: v.name,
                 price: v.price,
                 discount_price: v.discount_price,
@@ -386,7 +387,35 @@ export default function Edit({ data: initial_data }) {
                                                             className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                                         />
                                                     </div>
-
+                                                    {/* SKU Varian */}
+                                                    <div className="flex flex-col gap-2 text-sm">
+                                                        <label
+                                                            htmlFor={`varianSKU-${index}`}
+                                                        >
+                                                            SKU Varian
+                                                        </label>
+                                                        <input
+                                                            id={`varianSKU-${index}`}
+                                                            type="text"
+                                                            placeholder="Masukkan sku varian"
+                                                            value={varian.sku}
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].sku =
+                                                                    e.target.value;
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
+                                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                                        />
+                                                    </div>
                                                     {/* Harga */}
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label

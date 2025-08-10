@@ -19,6 +19,7 @@ export default function Create({ data: initial_data }) {
         variants: [
             {
                 name: "",
+                sku: "",
                 price: "",
                 discount_price: "",
                 img: null,
@@ -292,9 +293,7 @@ export default function Create({ data: initial_data }) {
                                 <div className="flex justify-between items-center flex-wrap gap-3">
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            toggleVarian(index)
-                                        }
+                                        onClick={() => toggleVarian(index)}
                                         className="flex gap-2.5 items-center"
                                     >
                                         <FaChevronUp
@@ -348,6 +347,35 @@ export default function Create({ data: initial_data }) {
                                                                 updated[
                                                                     index
                                                                 ].name =
+                                                                    e.target.value;
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
+                                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                                        />
+                                                    </div>
+                                                    {/* SKU Varian */}
+                                                    <div className="flex flex-col gap-2 text-sm">
+                                                        <label
+                                                            htmlFor={`varianSKU-${index}`}
+                                                        >
+                                                            SKU Varian
+                                                        </label>
+                                                        <input
+                                                            id={`varianSKU-${index}`}
+                                                            type="text"
+                                                            placeholder="Masukkan sku varian"
+                                                            value={varian.sku}
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].sku =
                                                                     e.target.value;
                                                                 setData(
                                                                     "variants",

@@ -13,6 +13,7 @@ class Variant extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'uuid',
+        'sku',
         'product_uuid',
         'name',
         'img',

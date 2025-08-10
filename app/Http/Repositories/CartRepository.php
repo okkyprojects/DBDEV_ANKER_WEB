@@ -6,6 +6,8 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\Variant;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
 use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -18,6 +20,8 @@ class CartRepository
     private $cart;
     private $cartItem;
     private $variant;
+    private $transaction;
+    private $transactionItem;
 
     public function __construct(
         Response $response,
@@ -25,12 +29,16 @@ class CartRepository
         Cart $cart,
         CartItem $cartItem,
         Variant $variant,
+        Transaction $transaction,
+        TransactionItem $transactionItem,
     ) {
         $this->response = $response;
         $this->product = $product;
         $this->cart = $cart;
         $this->cartItem = $cartItem;
         $this->variant = $variant;
+        $this->transaction = $transaction;
+        $this->transactionItem = $transactionItem;
     }
     public function index()
     {
@@ -75,6 +83,51 @@ class CartRepository
     //     $data = $query->first();
     //     return $data;
     // }
+    public function repeat_order($transactionUuid)
+    {
+        $userId = Auth::id();
+        $transaction = $this->transaction->where('uuid', $transactionUuid)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$transaction) {
+            return $this->response->notFound('Transaksi tidak ditemukan');
+        }
+        $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->get();
+
+        if ($items->isEmpty()) {
+            return $this->response->notFound('Tidak ada item dalam transaksi');
+        }
+        $cart = $this->cart->firstOrCreate(
+            ['user_id' => $userId],
+            ['uuid' => Str::uuid()]
+        );
+
+        foreach ($items as $item) {
+            $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
+            if (!$variant) {
+                continue;
+            }
+            $existingItem = $this->cartItem
+                ->where('cart_uuid', $cart->uuid)
+                ->where('variant_uuid', $item->variant_uuid)
+                ->first();
+
+            if ($existingItem) {
+                $existingItem->quantity += $item->quantity;
+                $existingItem->save();
+            } else {
+                $this->cartItem->create([
+                    'uuid' => Str::uuid(),
+                    'cart_uuid' => $cart->uuid,
+                    'variant_uuid' => $item->variant_uuid,
+                    'quantity' => $item->quantity,
+                ]);
+            }
+        }
+
+        return $this->response->store('Produk berhasil dimasukkan ke keranjang lagi');
+    }
 
     public function store($request)
     {
