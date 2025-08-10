@@ -3,6 +3,7 @@ import { IoIosClose } from "react-icons/io";
 import Datepicker from "react-tailwindcss-datepicker";
 import moment from "moment";
 import { formatRupiah } from "@/Utils/utils";
+import { statusBadge } from "@/Config/const";
 
 const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -51,8 +52,13 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                     <span className="text-primary-600 font-medium">
                                         #{item?.transaction_code}
                                     </span>
-                                    <span className="bg-success-100 text-success-700 px-2 py-0.5 rounded-full text-xs">
-                                        Selesai
+                                    <span
+                                        className={`px-2 py-1 text-xs font-semibold rounded-full  ${
+                                            statusBadge[item.status]?.className
+                                        }`}
+                                    >
+                                        {statusBadge[item.status]?.label ??
+                                            "Tidak Diketahui"}
                                     </span>
                                 </div>
                                 <span className="text-neutral-500 text-sm">
