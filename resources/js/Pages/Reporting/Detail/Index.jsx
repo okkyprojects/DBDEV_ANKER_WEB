@@ -10,7 +10,7 @@ import {
 } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
 import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
@@ -20,58 +20,21 @@ import { formatRupiah } from "@/Utils/utils";
 import { useEffect } from "react";
 import { useRef } from "react";
 
-export default function Index({ data }) {
-    console.log(data);
-    const debounceRef = useRef(null);
-    const chartData = {
-        Harian: {
-            categories: [
-                "1 Juli",
-                "2 Juli",
-                "3 Juli",
-                "4 Juli",
-                "5 Juli",
-                "6 Juli",
-                "7 Juli",
-                "8 Juli",
-                "9 Juli",
-                "10 Juli",
-                "11 Juli",
-                "12 Juli",
-            ],
-            pendapatan: [
-                15000000, 20000000, 13000000, 21000000, 27000000, 33000000,
-                39000000, 42000000, 50000000, 55000000, 60000000, 58000000,
-            ],
-            pesanan: [20, 25, 18, 30, 45, 60, 70, 80, 90, 100, 90, 85],
-        },
-        Mingguan: {
-            categories: ["Week 1", "Week 2", "Week 3", "Week 4"],
-            pendapatan: [120000000, 170000000, 150000000, 180000000],
-            pesanan: [300, 400, 380, 420],
-        },
-        Bulanan: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul"],
-            pendapatan: [
-                500000000, 600000000, 550000000, 700000000, 650000000,
-                750000000, 720000000,
-            ],
-            pesanan: [1000, 1200, 1100, 1300, 1250, 1400, 1380],
-        },
-    };
-
+export default function Index({ data, uuid }) {
     const [filter, setFilter] = useState("Harian");
+    const debounceRef = useRef(null);
+    const chartData = data.chart;
 
     const series = [
         {
             name: "Pendapatan",
             type: "line",
-            data: chartData[filter].pendapatan,
+            data: chartData.pendapatan || [],
         },
         {
             name: "Pesanan",
             type: "line",
-            data: chartData[filter].pesanan,
+            data: chartData.pesanan || [],
         },
     ];
 
@@ -83,53 +46,31 @@ export default function Index({ data }) {
             fontFamily: "DIN Next, sans-serif",
         },
         grid: {
-            yaxis: {
-                lines: {
-                    show: false,
-                },
-            },
-            xaxis: {
-                lines: {
-                    show: false,
-                },
-            },
+            yaxis: { lines: { show: false } },
+            xaxis: { lines: { show: false } },
         },
-
         colors: ["#22C55E", "#3B82F6"],
-        stroke: {
-            curve: "smooth",
-            width: 2,
-        },
+        stroke: { curve: "smooth", width: 2 },
         markers: {
             size: 3,
             strokeWidth: 0,
             strokeColors: "#fff",
-            hover: {
-                size: 4,
-            },
+            hover: { size: 4 },
         },
         xaxis: {
-            categories: chartData[filter].categories,
+            categories: chartData.categories || [],
         },
         yaxis: [
             {
-                title: {
-                    text: "Pendapatan (Rp)",
-                    style: { fontSize: "10px" },
-                },
+                title: { text: "Pendapatan (Rp)", style: { fontSize: "10px" } },
                 labels: {
                     formatter: (val) => `Rp ${val.toLocaleString("id-ID")}`,
                 },
             },
             {
                 opposite: true,
-                title: {
-                    text: "Pesanan",
-                    style: { fontSize: "10px" },
-                },
-                labels: {
-                    formatter: (val) => `${val}`,
-                },
+                title: { text: "Pesanan", style: { fontSize: "10px" } },
+                labels: { formatter: (val) => `${val}` },
             },
         ],
         legend: {
@@ -138,9 +79,7 @@ export default function Index({ data }) {
             fontFamily: "DIN Next, sans-serif",
         },
         tooltip: {
-            style: {
-                fontFamily: "DIN Next, sans-serif",
-            },
+            style: { fontFamily: "DIN Next, sans-serif" },
             shared: true,
             y: {
                 formatter: function (val, { seriesIndex }) {
@@ -151,7 +90,26 @@ export default function Index({ data }) {
             },
         },
     };
+    const handleApplyFilter = (filters) => {
+        const params = {
+            ...filters,
+        };
 
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter);
+        router.visit(route("reporting.penjualan.show", uuid), {
+            method: "get",
+            data: { filter: newFilter },
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
     const filters = ["Harian", "Mingguan", "Bulanan"];
     const mantap = {
         variant_stocks: {
@@ -332,10 +290,10 @@ export default function Index({ data }) {
                             {filters.map((item) => (
                                 <button
                                     key={item}
-                                    onClick={() => setFilter(item)}
+                                    onClick={() => handleFilterChange(item)}
                                     className={`px-4 py-1.5 text-sm rounded-full transition ${
                                         filter === item
-                                            ? "bg-primary-50 text-primary-600 "
+                                            ? "bg-primary-50 text-primary-600"
                                             : "text-neutral-500"
                                     }`}
                                 >

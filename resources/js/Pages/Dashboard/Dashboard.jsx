@@ -5,90 +5,69 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import {
     PiChartLineUpLight,
     PiCubeLight,
+    PiCurrencyCircleDollarLight,
     PiShoppingCartLight,
     PiUsersThreeLight,
 } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
 import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
+import { statusBadge } from "@/Config/const";
+import { formatRupiah } from "@/Utils/utils";
 
-export default function Dashboard() {
+export default function Dashboard({ data }) {
+    console.log("MASUU");
+    console.log(data);
     const [showModalFilter, setShowModalFilter] = useState(false);
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter);
+        router.visit(route("home.index"), {
+            method: "get",
+            data: { filter: newFilter },
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
     const dataCard = [
         {
-            title: "Pendapatan",
-            count: "Rp 70.000.000",
-            icon: <PiChartLineUpLight size={20} />,
-            iconBg: "bg-green-50",
-            iconColor: "text-green-600",
+            title: "Pendapatan Kotor",
+            count: formatRupiah(data?.summary?.pendapatan_kotor),
+            iconBg: "bg-green-100",
+            iconColor: "text-green-500",
+            icon: <PiCurrencyCircleDollarLight size={24} />,
         },
         {
-            title: "Pesanan",
-            count: "200",
-            icon: <PiShoppingCartLight size={20} />,
-            iconBg: "bg-blue-50",
-            iconColor: "text-blue-600",
+            title: "Total Pesanan",
+            count: data?.summary?.total_pesanan,
+            iconBg: "bg-yellow-100",
+            iconColor: "text-yellow-500",
+            icon: <PiShoppingCartLight size={24} />,
         },
         {
-            title: "Pengunjung",
-            count: "2.500",
-            icon: <PiUsersThreeLight size={20} />,
-            iconBg: "bg-red-50",
+            title: "Item Terjual",
+            count: data?.summary?.item_terjual,
+            iconBg: "bg-red-100",
             iconColor: "text-red-500",
+            icon: <PiCubeLight size={24} />,
         },
     ];
-    const chartData = {
-        Harian: {
-            categories: [
-                "1 Juli",
-                "2 Juli",
-                "3 Juli",
-                "4 Juli",
-                "5 Juli",
-                "6 Juli",
-                "7 Juli",
-                "8 Juli",
-                "9 Juli",
-                "10 Juli",
-                "11 Juli",
-                "12 Juli",
-            ],
-            pendapatan: [
-                15000000, 20000000, 13000000, 21000000, 27000000, 33000000,
-                39000000, 42000000, 50000000, 55000000, 60000000, 58000000,
-            ],
-            pesanan: [20, 25, 18, 30, 45, 60, 70, 80, 90, 100, 90, 85],
-        },
-        Mingguan: {
-            categories: ["Week 1", "Week 2", "Week 3", "Week 4"],
-            pendapatan: [120000000, 170000000, 150000000, 180000000],
-            pesanan: [300, 400, 380, 420],
-        },
-        Bulanan: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul"],
-            pendapatan: [
-                500000000, 600000000, 550000000, 700000000, 650000000,
-                750000000, 720000000,
-            ],
-            pesanan: [1000, 1200, 1100, 1300, 1250, 1400, 1380],
-        },
-    };
-
     const [filter, setFilter] = useState("Harian");
+
+    const chartData = data.chart;
 
     const series = [
         {
             name: "Pendapatan",
             type: "line",
-            data: chartData[filter].pendapatan,
+            data: chartData.pendapatan || [],
         },
         {
             name: "Pesanan",
             type: "line",
-            data: chartData[filter].pesanan,
+            data: chartData.pesanan || [],
         },
     ];
 
@@ -100,53 +79,31 @@ export default function Dashboard() {
             fontFamily: "DIN Next, sans-serif",
         },
         grid: {
-            yaxis: {
-                lines: {
-                    show: false,
-                },
-            },
-            xaxis: {
-                lines: {
-                    show: false,
-                },
-            },
+            yaxis: { lines: { show: false } },
+            xaxis: { lines: { show: false } },
         },
-
         colors: ["#22C55E", "#3B82F6"],
-        stroke: {
-            curve: "smooth",
-            width: 2,
-        },
+        stroke: { curve: "smooth", width: 2 },
         markers: {
             size: 3,
             strokeWidth: 0,
             strokeColors: "#fff",
-            hover: {
-                size: 4,
-            },
+            hover: { size: 4 },
         },
         xaxis: {
-            categories: chartData[filter].categories,
+            categories: chartData.categories || [],
         },
         yaxis: [
             {
-                title: {
-                    text: "Pendapatan (Rp)",
-                    style: { fontSize: "10px" },
-                },
+                title: { text: "Pendapatan (Rp)", style: { fontSize: "10px" } },
                 labels: {
                     formatter: (val) => `Rp ${val.toLocaleString("id-ID")}`,
                 },
             },
             {
                 opposite: true,
-                title: {
-                    text: "Pesanan",
-                    style: { fontSize: "10px" },
-                },
-                labels: {
-                    formatter: (val) => `${val}`,
-                },
+                title: { text: "Pesanan", style: { fontSize: "10px" } },
+                labels: { formatter: (val) => `${val}` },
             },
         ],
         legend: {
@@ -155,9 +112,7 @@ export default function Dashboard() {
             fontFamily: "DIN Next, sans-serif",
         },
         tooltip: {
-            style: {
-                fontFamily: "DIN Next, sans-serif",
-            },
+            style: { fontFamily: "DIN Next, sans-serif" },
             shared: true,
             y: {
                 formatter: function (val, { seriesIndex }) {
@@ -168,7 +123,17 @@ export default function Dashboard() {
             },
         },
     };
+    const handleApplyFilter = (filters) => {
+        const params = {
+            ...filters,
+        };
 
+        router.get(route(route().current()), params, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        });
+    };
     const filters = ["Harian", "Mingguan", "Bulanan"];
     return (
         <DefaultLayout>
@@ -177,27 +142,14 @@ export default function Dashboard() {
                     <p className="text-xl sm:text-2xl font-semibold">
                         Dashboard
                     </p>
-                    <div className="flex items-center gap-2 w-full sm:max-w-sm">
-                        <div className="relative w-full">
-                            <FiSearch
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                size={16}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Cari produk"
-                                className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                            />
-                        </div>
-                        <button
-                            onClick={() => {
-                                setShowModalFilter(!showModalFilter);
-                            }}
-                            className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
-                        >
-                            <GrFilter size={20} />
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => {
+                            setShowModalFilter(!showModalFilter);
+                        }}
+                        className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
+                    >
+                        <GrFilter size={20} />
+                    </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {dataCard.map((item, index) => (
@@ -217,10 +169,10 @@ export default function Dashboard() {
                                 <p className="text-xl font-semibold">
                                     {item.count}
                                 </p>
-                                <div className="flex items-center gap-1 text-green-600 text-sm ">
+                                {/* <div className="flex items-center gap-1 text-green-600 text-sm ">
                                     <LuTrendingUp size={16} />
                                     <span>10%</span>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     ))}
@@ -234,10 +186,10 @@ export default function Dashboard() {
                             {filters.map((item) => (
                                 <button
                                     key={item}
-                                    onClick={() => setFilter(item)}
+                                    onClick={() => handleFilterChange(item)}
                                     className={`px-4 py-1.5 text-sm rounded-full transition ${
                                         filter === item
-                                            ? "bg-primary-50 text-primary-600 "
+                                            ? "bg-primary-50 text-primary-600"
                                             : "text-neutral-500"
                                     }`}
                                 >
@@ -264,30 +216,36 @@ export default function Dashboard() {
                             </a>
                         </div>
                         <div className="flex flex-col gap-4">
-                            {[...Array(5)].map((_, idx) => (
+                            {data?.products.map((item, idx) => (
                                 <div
-                                    key={idx}
+                                    key={item.product.uuid}
                                     className="flex items-center justify-between"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-xl bg-neutral-300" />
+                                        <img
+                                            src={item.product.img}
+                                            alt={item.product.name}
+                                            className="w-12 h-12 rounded-xl object-cover"
+                                        />
                                         <div>
                                             <p className="text-sm text-neutral-800">
-                                                Nama produk
+                                                {item.product.name}
                                             </p>
                                             <span
                                                 className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                                                    idx === 1
+                                                    parseInt(
+                                                        item.stok_saat_ini
+                                                    ) <= 5
                                                         ? "bg-red-100 text-red-500"
                                                         : "bg-green-100 text-green-500"
                                                 }`}
                                             >
-                                                Stok : {idx === 1 ? "1" : "10"}
+                                                Stok : {item.stok_saat_ini}
                                             </span>
                                         </div>
                                     </div>
                                     <p className="text-sm font-medium whitespace-nowrap text-neutral-700">
-                                        300 Unit
+                                        {item.terjual} Unit
                                     </p>
                                 </div>
                             ))}
@@ -302,42 +260,78 @@ export default function Dashboard() {
                                 Lihat semua
                             </a>
                         </div>
-                        <table className="w-full table-auto text-sm">
-                            <thead className="text-left text-neutral-700">
-                                <tr>
-                                    <th className="py-2 font-normal">
-                                        ID Pesanan
-                                    </th>
-                                    <th className="py-2 font-normal">
-                                        Pemesan
-                                    </th>
-                                    <th className="py-2 font-normal">
-                                        Tanggal
-                                    </th>
-                                    <th className="py-2 font-normal">Jumlah</th>
-                                    <th className="py-2 font-normal">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...Array(5)].map((_, idx) => (
-                                    <tr
-                                        key={idx}
-                                        className="text-sm text-neutral-600"
-                                    >
-                                        <td className="py-2">#ID-Pesanan</td>
-                                        <td className="py-2">John Doe</td>
-                                        <td className="py-2">01/07/2025</td>
-                                        <td className="py-2">Rp 700.000</td>
-                                        <td className="py-2">
-                                            <span className="px-3 py-0.5 text-xs font-medium bg-green-100 text-green-600 rounded-full">
-                                                Selesai
-                                            </span>
-                                        </td>
+
+                        {data?.transactions?.length === 0 ? (
+                            <p className="text-center text-neutral-500 italic py-5">
+                                Belum ada pesanan
+                            </p>
+                        ) : (
+                            <table className="w-full table-auto text-sm">
+                                <thead className="text-left text-neutral-700">
+                                    <tr>
+                                        <th className="py-2 font-normal">
+                                            ID Pesanan
+                                        </th>
+                                        <th className="py-2 font-normal">
+                                            Pemesan
+                                        </th>
+                                        <th className="py-2 font-normal">
+                                            Tanggal
+                                        </th>
+                                        <th className="py-2 font-normal">
+                                            Jumlah
+                                        </th>
+                                        <th className="py-2 font-normal">
+                                            Status
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>{" "}
+                                </thead>
+                                <tbody>
+                                    {data?.transactions.map((item) => (
+                                        <tr
+                                            key={item.uuid}
+                                            className="text-sm text-neutral-600"
+                                        >
+                                            <td className="py-2">
+                                                {item.transaction_code}
+                                            </td>
+                                            <td className="py-2">
+                                                {item.user?.name}
+                                            </td>
+                                            <td className="py-2">
+                                                {new Date(
+                                                    item.created_at
+                                                ).toLocaleDateString("id-ID", {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                })}
+                                            </td>
+                                            <td className="py-2">
+                                                Rp{" "}
+                                                {item.grand_total.toLocaleString(
+                                                    "id-ID"
+                                                )}
+                                            </td>
+                                            <td className="py-2">
+                                                <span
+                                                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                        statusBadge[item.status]
+                                                            ?.className
+                                                    }`}
+                                                >
+                                                    {statusBadge[item.status]
+                                                        ?.label ??
+                                                        "Tidak Diketahui"}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
                     {showModalFilter && (
                         <div
                             className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
@@ -352,7 +346,7 @@ export default function Dashboard() {
                                     onClose={() => {
                                         setShowModalFilter(!showModalFilter);
                                     }}
-                                    onApplyFilter={() => {}}
+                                    onApplyFilter={handleApplyFilter}
                                 />
                             </div>
                         </div>

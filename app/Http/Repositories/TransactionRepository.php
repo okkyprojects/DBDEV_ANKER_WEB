@@ -103,6 +103,313 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+    public function get_chart_data(Request $request)
+    {
+        $filter = $request->input('filter', 'Harian');
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+
+        if ($filter === 'Harian') {
+            $day = $now->day;
+            $lastDay = $now->daysInMonth;
+            $startDay = $day >= 16 ? 16 : 1;
+            $endDay = $day >= 16 ? $lastDay : 15;
+
+            $categories = [];
+            $pendapatan = [];
+            $pesanan = [];
+
+            for ($d = $startDay; $d <= $endDay; $d++) {
+                $categories[] = $d . ' ' . Str::limit($now->translatedFormat('F'), 3, '');
+
+                $start = Carbon::createFromDate($year, $month, $d)->startOfDay();
+                $end = Carbon::createFromDate($year, $month, $d)->endOfDay();
+
+                $pendapatan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->sum('grand_total');
+
+                $pesanan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->count();
+            }
+
+            return [
+                'categories' => $categories,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        if ($filter === 'Mingguan') {
+            $weeks = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"];
+            $pendapatan = [];
+            $pesanan = [];
+
+            foreach (range(1, 4) as $week) {
+                $start = Carbon::createFromDate($year, $month, 1)->startOfMonth()->addWeeks($week - 1)->startOfWeek();
+                $end = (clone $start)->endOfWeek();
+
+                $pendapatan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->sum('grand_total');
+
+                $pesanan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->count();
+            }
+
+            return [
+                'categories' => $weeks,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        if ($filter === 'Bulanan') {
+            $months = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agu',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des'
+            ];
+            $pendapatan = [];
+            $pesanan = [];
+
+            foreach (range(1, 12) as $m) {
+                $start = Carbon::createFromDate($year, $m, 1)->startOfMonth();
+                $end = Carbon::createFromDate($year, $m, 1)->endOfMonth();
+
+                $pendapatan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->sum('grand_total');
+
+                $pesanan[] = $this->transaction
+                    ->whereBetween('created_at', [$start, $end])
+                    ->where('status', '>', 0)
+                    ->where('status', '<', 5)
+                    ->count();
+            }
+
+            return [
+                'categories' => $months,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        return [
+            'categories' => [],
+            'pendapatan' => [],
+            'pesanan' => []
+        ];
+    }
+    public function get_chart_data_by_product($request, $uuid)
+    {
+        $filter = $request->input('filter', 'Harian');
+        $productUuid = $uuid;
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+
+        $baseQuery = $this->transaction
+            ->join('transaction_items', 'transactions.uuid', '=', 'transaction_items.transaction_uuid')
+            ->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')
+            ->join('products', 'variants.product_uuid', '=', 'products.uuid')
+            ->where('transactions.status', '>', 0)
+            ->where('transactions.status', '<', 5);
+
+        if ($productUuid) {
+            $baseQuery->where('products.uuid', $productUuid);
+        }
+
+        if ($filter === 'Harian') {
+            $day = $now->day;
+            $lastDay = $now->daysInMonth;
+            $startDay = $day >= 16 ? 16 : 1;
+            $endDay = $day >= 16 ? $lastDay : 15;
+
+            $categories = [];
+            $pendapatan = [];
+            $pesanan = [];
+
+            for ($d = $startDay; $d <= $endDay; $d++) {
+                $categories[] = $d . ' ' . Str::limit($now->translatedFormat('F'), 3, '');
+
+                $start = Carbon::createFromDate($year, $month, $d)->startOfDay();
+                $end = Carbon::createFromDate($year, $month, $d)->endOfDay();
+
+                $pendapatan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+
+                $pesanan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->distinct('transactions.uuid')
+                    ->count('transactions.uuid');
+            }
+
+            return [
+                'categories' => $categories,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        if ($filter === 'Mingguan') {
+            $weeks = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"];
+            $pendapatan = [];
+            $pesanan = [];
+
+            foreach (range(1, 4) as $week) {
+                $start = Carbon::createFromDate($year, $month, 1)->startOfMonth()->addWeeks($week - 1)->startOfWeek();
+                $end = (clone $start)->endOfWeek();
+
+                $pendapatan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+
+                $pesanan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->distinct('transactions.uuid')
+                    ->count('transactions.uuid');
+            }
+
+            return [
+                'categories' => $weeks,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        if ($filter === 'Bulanan') {
+            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            $pendapatan = [];
+            $pesanan = [];
+
+            foreach (range(1, 12) as $m) {
+                $start = Carbon::createFromDate($year, $m, 1)->startOfMonth();
+                $end = Carbon::createFromDate($year, $m, 1)->endOfMonth();
+
+                $pendapatan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+
+                $pesanan[] = (clone $baseQuery)
+                    ->whereBetween('transactions.created_at', [$start, $end])
+                    ->distinct('transactions.uuid')
+                    ->count('transactions.uuid');
+            }
+
+            return [
+                'categories' => $months,
+                'pendapatan' => $pendapatan,
+                'pesanan' => $pesanan
+            ];
+        }
+
+        return [
+            'categories' => [],
+            'pendapatan' => [],
+            'pesanan' => []
+        ];
+    }
+
+
+    public function get_limit_penjualan(Request $request, $limit = 5)
+    {
+        $query = $this->transaction
+            ->with([
+                'user',
+                'items',
+                'address.province',
+                'address.city',
+                'address.district',
+                'bill'
+            ])
+            ->orderBy('created_at', 'desc');
+
+        if (Auth::user()->role !== 'admin') {
+            $query->where('user_id', Auth::id());
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('uuid', 'like', "%$search%")
+                    ->orWhere('transaction_code', 'like', "%$search%")
+                    ->orWhere('note', 'like', "%$search%")
+                    ->orWhere('total_price', 'like', "%$search%")
+                    ->orWhere('grand_total', 'like', "%$search%")
+                    ->orWhere('admin_fee', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        return $query->limit($limit)->get();
+    }
+    public function summary_top_selling($request, $limit = 5)
+    {
+        $query = Variant::with(['product', 'total_stock'])
+            ->select(
+                'variants.*',
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold')
+            )
+            ->leftJoin('transaction_items', 'transaction_items.variant_uuid', '=', 'variants.uuid')
+            ->leftJoin('transactions', 'transactions.uuid', '=', 'transaction_items.transaction_uuid')
+            ->where('transactions.status', '>', 0)
+            ->where('transactions.status', '<', 5);
+
+        if ($request->startDate && $request->endDate) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+
+            $query->whereBetween('transaction_items.created_at', [$startDate, $endDate]);
+        }
+
+        return $query
+            ->groupBy('variants.uuid')
+            ->orderByDesc('total_sold')
+            ->take($limit)
+            ->get()
+            ->map(function ($variant) {
+                return [
+                    'product' => $variant->product,
+                    'stok_saat_ini' => $variant->total_stock->total_stock ?? 0,
+                    'terjual' => (int) $variant->total_sold
+                ];
+            });
+    }
+
     public function get_penjualan_summary(Request $request)
     {
         $query = DB::table('transaction_items')
@@ -165,8 +472,8 @@ class TransactionRepository
                 $q->whereBetween('transactions.created_at', [$start, $end]);
             })
             ->where(function ($q) {
-                $q->whereNull('transactions.status')
-                    ->orWhere('transactions.status', '>=', 1);
+                $q->where('transactions.status', '>', 0)
+                    ->where('transactions.status', '<', 5);
             })
             ->selectRaw('
             COALESCE(SUM(vs.total_stok), 0) as total_stok,
@@ -245,9 +552,10 @@ class TransactionRepository
                 $q->whereBetween('transactions.created_at', [$start, $end]);
             })
             ->where(function ($q) {
-                $q->whereNull('transactions.status')
-                    ->orWhere('transactions.status', '>=', 1);
+                $q->where('transactions.status', '>', 0)
+                    ->where('transactions.status', '<', 5);
             })
+
             ->groupBy('variants.uuid', 'variants.name', 'categories.name', 'brands.name')->paginate(10);
 
         return $query;
@@ -599,6 +907,10 @@ class TransactionRepository
             'paid_at'          => $request->input('paid_at', $trx?->paid_at),
             'unpaid_at'        => $request->input('unpaid_at', $trx?->unpaid_at),
             'expired_at'       => $request->input('expired_at', $trx?->expired_at),
+            'processing_at'  => $request->input('processing_at', $trx?->processing_at),
+            'shipping_at'    => $request->input('shipping_at', $trx?->shipping_at),
+            'completed_at'   => $request->input('completed_at', $trx?->completed_at),
+            'canceled_at'    => $request->input('canceled_at', $trx?->canceled_at),
             'note'             => $request->input('note', $trx?->note),
         ];
 

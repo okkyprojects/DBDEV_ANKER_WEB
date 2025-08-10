@@ -49,7 +49,8 @@ class PenjualanController extends Controller
         $data['product'] = $this->productRepository->single($uuid);
         $data['transactions'] = $this->transactionRepository->show_penjualan_by_product($request, $uuid);
         $data['summary'] = $this->transactionRepository->get_summary_detail_by_product($request, $uuid);
-        return Inertia::render('Reporting/Detail/Index', compact('data'));
+        $data['chart'] = $this->transactionRepository->get_chart_data_by_product($request, $uuid);
+        return Inertia::render('Reporting/Detail/Index', compact('data','uuid'));
     }
     public function show_export(Request $request, $uuid)
     {

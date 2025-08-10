@@ -19,6 +19,7 @@ import ModalFilter from "@/Components/Modal/Pesanan/ModalFilter";
 import { router } from "@inertiajs/react";
 import { statusBadge } from "@/Config/const";
 import moment from "moment";
+import ModalUpdatePesanan from "@/Components/Modal/Pesanan/ModalUpdatePesanan";
 
 export default function ManajemenPesanan({ data }) {
     console.log(data);
@@ -34,6 +35,8 @@ export default function ManajemenPesanan({ data }) {
     const [pesanan, setPesanan] = useState();
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [aksi, setAksi] = useState();
     const [showEditModal, setShowEditModal] = useState(false);
     const handleClickOutside = (event) => {
         if (
@@ -200,6 +203,9 @@ export default function ManajemenPesanan({ data }) {
                                         Nama pemesan
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
+                                        Email pemesan
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Nomor HP
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -245,6 +251,9 @@ export default function ManajemenPesanan({ data }) {
                                                 {item.user.name}
                                             </td>
                                             <td className="px-4 py-5">
+                                                {item.user.email}
+                                            </td>
+                                            <td className="px-4 py-5">
                                                 {item.user.phone_number}
                                             </td>
                                             <td className="px-4 py-5">
@@ -264,7 +273,7 @@ export default function ManajemenPesanan({ data }) {
                                             </td>
                                             <td className="px-4 py-5">
                                                 <span
-                                                    className={`px-2 py-1 text-xs font-semibold rounded-full text-green-800 ${
+                                                    className={`px-2 py-1 text-xs font-semibold rounded-full  ${
                                                         statusBadge[item.status]
                                                             ?.className
                                                     }`}
@@ -308,6 +317,81 @@ export default function ManajemenPesanan({ data }) {
                                                         >
                                                             Detail Pesanan
                                                         </button>
+
+                                                        {item.status === 1 && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setPesanan(
+                                                                        item
+                                                                    );
+                                                                    setAksi(2); // Proses Pesanan
+                                                                    setShowUpdateModal(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                            >
+                                                                Proses Pesanan
+                                                            </button>
+                                                        )}
+
+                                                        {item.status === 2 && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setPesanan(
+                                                                        item
+                                                                    );
+                                                                    setAksi(3); // Proses Pengiriman
+                                                                    setShowUpdateModal(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                            >
+                                                                Proses
+                                                                Pengiriman
+                                                            </button>
+                                                        )}
+
+                                                        {item.status === 3 && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setPesanan(
+                                                                        item
+                                                                    );
+                                                                    setAksi(4); // Selesai Pesanan
+                                                                    setShowUpdateModal(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                            >
+                                                                Selesai Pesanan
+                                                            </button>
+                                                        )}
+
+                                                        {item.status !== 4 &&
+                                                            item.status !==
+                                                                5 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setPesanan(
+                                                                            item
+                                                                        );
+                                                                        setAksi(
+                                                                            5
+                                                                        ); // Batalkan Pesanan
+                                                                        setShowUpdateModal(
+                                                                            true
+                                                                        );
+                                                                    }}
+                                                                    className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                                >
+                                                                    Batalkan
+                                                                    Pesanan
+                                                                </button>
+                                                            )}
+
                                                         <button
                                                             onClick={() => {
                                                                 setPesanan(
@@ -350,6 +434,26 @@ export default function ManajemenPesanan({ data }) {
                                     setShowDetailModal(!showDetailModal);
                                 }}
                                 item={pesanan}
+                            />
+                        </div>
+                    </div>
+                )}
+                {showUpdateModal && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showUpdateModal
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalUpdatePesanan
+                                isOpen={showUpdateModal}
+                                onClose={() => {
+                                    setShowUpdateModal(!showUpdateModal);
+                                }}
+                                item={pesanan}
+                                aksi={aksi}
                             />
                         </div>
                     </div>

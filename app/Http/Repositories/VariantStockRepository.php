@@ -74,8 +74,11 @@ class VariantStockRepository
         $stockOutQuery = $this->transactionItem->with([
             'variant.product.category',
             'variant.product.brand'
-        ]);
-
+        ])
+            ->whereHas('transaction', function ($q) {
+                $q->where('status', '>', 0)
+                    ->where('status', '<', 5);
+            });
         if ($request->filled('search')) {
             $search = $request->input('search');
 

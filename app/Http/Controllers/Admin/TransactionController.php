@@ -45,6 +45,13 @@ class TransactionController extends Controller
             'pesanan.xlsx'
         );
     }
+    public function update(Request $request, $uuid)
+    {
+        $request['uuid'] = $uuid;
+        $this->transactionRepository->store($request);
+        return redirect()->back()->with('success', 'Berhasil Update Data!');
+    }
+
     public function destroy($uuid)
     {
         $data = $this->transactionRepository->destroy($uuid);

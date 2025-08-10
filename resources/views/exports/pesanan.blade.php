@@ -4,7 +4,8 @@
             <th>No</th>
             <th>Kode Transaksi</th>
             <th>Tanggal</th>
-            <th>Nama Pembeli</th>
+            <th>Nama Pemesan</th>
+            <th>Email Pemesan</th>
             <th>No. HP</th>
             <th>Alamat</th>
             <th>Provinsi</th>
@@ -21,6 +22,7 @@
             <td>{{ $item->transaction_code }}</td>
             <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y, H:i') }}</td>
             <td>{{ $item->user->name }}</td>
+            <td>{{ $item->user->email }}</td>
             <td>{{ $item->user->phone_number }}</td>
             <td>{{ $item->address->address }}</td>
             <td>{{ $item->address->province->nama }}</td>

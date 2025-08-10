@@ -96,7 +96,7 @@ const Navbar = () => {
                                             src={
                                                 userData?.fotoProfile
                                                     ? userData?.fotoProfile
-                                                    : "/images/profile/profile.png"
+                                                    : "/images/profile/profil.jpg"
                                             }
                                             alt="user photo"
                                         />
@@ -114,7 +114,7 @@ const Navbar = () => {
                                                         src={
                                                             userData?.fotoProfile
                                                                 ? userData?.fotoProfile
-                                                                : "/images/profile/profile.png"
+                                                                : "/images/profile/profil.jpg"
                                                         }
                                                         alt="user photo"
                                                     />

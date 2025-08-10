@@ -31,7 +31,6 @@ const ModalFilter = ({ isOpen, onClose, onApplyFilter }) => {
             endDate: dateValue.endDate
                 ? moment(dateValue.endDate).format("YYYY-MM-DD")
                 : null,
-            status,
         });
         onClose();
     };

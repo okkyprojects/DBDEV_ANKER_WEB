@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\VariantController;
@@ -74,6 +75,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
         Route::get('/export-pesanan', [TransactionController::class, 'export'])->name('manajemen.export');
         Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
+        Route::post('/manajemen-pesanan/{uuid}', [TransactionController::class, 'update'])->name('manajemen.update');
     });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
 
@@ -114,9 +116,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Dashboard');
-})->name('dashboard');
+Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('home.index');
 
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
