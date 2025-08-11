@@ -9,15 +9,18 @@ import { Link, router } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
+import { HiOutlineUpload } from "react-icons/hi";
+import ModalImport from "@/Components/Modal/Stok/ManajemenStok/ModalImport";
 
 export default function StokPage({ data }) {
-    console.log(data)
+    console.log(data);
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [produk, setProduk] = useState();
     const [showModalFilter, setShowModalFilter] = useState(false);
+    const [showModalImport, setShowModalImport] = useState(false);
     const dropdownRef = useRef(null);
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const toggleDropdown = (index) => {
@@ -123,6 +126,14 @@ export default function StokPage({ data }) {
                             className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
                         >
                             <GrFilter size={20} />
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowModalImport(!showModalImport);
+                            }}
+                            className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
+                        >
+                            <HiOutlineUpload size={20} />
                         </button>
                         <a
                             href={route("produk.product.export", {
@@ -280,6 +291,26 @@ export default function StokPage({ data }) {
                                     isOpen={showModalFilter}
                                     onClose={() => {
                                         setShowModalFilter(!showModalFilter);
+                                    }}
+                                    data={data}
+                                    onApplyFilter={handleApplyFilter}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {showModalImport && (
+                        <div
+                            className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                                showModalImport
+                                    ? "animate-fadeIn"
+                                    : "animate-fadeOut"
+                            }`}
+                        >
+                            <div className="bg-white p-6 rounded shadow-lg">
+                                <ModalImport
+                                    isOpen={showModalImport}
+                                    onClose={() => {
+                                        setShowModalImport(!showModalImport);
                                     }}
                                     data={data}
                                     onApplyFilter={handleApplyFilter}

@@ -8,6 +8,8 @@ use App\Http\Repositories\BrandRepository;
 use App\Http\Repositories\CategoryRepository;
 use App\Http\Repositories\ProductRepository;
 use App\Http\Repositories\VariantRepository;
+use App\Imports\ProductImport;
+use App\Imports\ProductVariantImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -46,6 +48,19 @@ class ProductController extends Controller
             new ProductExport($request, $this->product),
             'produk.xlsx'
         );
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv'
+        ]);
+
+        Excel::import(
+            new ProductImport($this->product),
+            request()->file('file')
+        );
+
+        return redirect()->route('produk.product.index')->with('success', 'Produk dan varian berhasil disimpan!');
     }
     public function edit(Request $request, $uuid)
     {

@@ -2,7 +2,10 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\Variant;
 use App\Traits\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -13,13 +16,22 @@ class ProductRepository
 {
     private $response;
     private $product;
+    private $variant;
+    private $brand;
+    private $category;
 
     public function __construct(
         Response $response,
         Product $product,
+        Variant $variant,
+        Brand $brand,
+        Category $category,
     ) {
         $this->response = $response;
         $this->product = $product;
+        $this->variant = $variant;
+        $this->brand = $brand;
+        $this->category = $category;
     }
     private function validate()
     {
@@ -30,6 +42,30 @@ class ProductRepository
             'img' => 'nullable',
             'description' => 'nullable|string',
         ];
+    }
+    public function import(array $row)
+    {
+        $category = $this->category->firstOrCreate(
+            ['name' => $row['category_name'] ?? ''],
+            ['uuid' => Str::uuid()]
+        );
+
+        $brand = $this->brand->firstOrCreate(
+            ['name' => $row['brand_name'] ?? ''],
+            ['uuid' => Str::uuid()]
+        );
+
+        $product = $this->product->updateOrCreate(
+            ['name' => $row['product_name'] ?? ''],
+            [
+                'uuid'          => Str::uuid(),
+                'category_uuid' => $category->uuid,
+                'brand_uuid'    => $brand->uuid,
+                'img'           => $row['product_img'] ?? null,
+                'description'   => $row['description'] ?? null,
+            ]
+        );
+        return true;
     }
 
 

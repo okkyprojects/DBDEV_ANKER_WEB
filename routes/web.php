@@ -35,7 +35,7 @@ use Inertia\Inertia;
 // Route::get('/product/{uuid}', [HomeController::class, 'product_show'])->name('home.product.show');
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('dashboard');
+        return redirect()->route('home.index');
     }
     return redirect()->route('login');
 });
@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('produk')->name('produk.')->middleware('auth')->group(function () {
         Route::get('/data-produk', [ProductController::class, 'index'])->name('product.index');
         Route::get('/export-data-produk', [ProductController::class, 'export'])->name('product.export');
+        Route::post('/import-data-produk', [ProductController::class, 'import'])->name('product.import');
         Route::get('/data-produk/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/data-produk', [ProductController::class, 'store'])->name('product.store');
         Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); //
