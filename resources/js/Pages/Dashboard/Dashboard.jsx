@@ -211,9 +211,12 @@ export default function Dashboard({ data }) {
                             <p className="text-lg font-medium">
                                 Produk Terlaris
                             </p>
-                            <a href="#" className="text-primary-600 text-sm">
+                            <Link
+                                href={route("produk.product.index")}
+                                className="text-primary-600 text-sm"
+                            >
                                 Lihat semua
-                            </a>
+                            </Link>
                         </div>
                         <div className="flex flex-col gap-4">
                             {data?.products.map((item, idx) => (
@@ -256,9 +259,12 @@ export default function Dashboard({ data }) {
                             <p className="text-lg font-medium">
                                 Pesanan Terbaru
                             </p>
-                            <a href="#" className="text-primary-600 text-sm">
+                            <Link
+                                href={route("pesanan.manajemen.index")}
+                                className="text-primary-600 text-sm"
+                            >
                                 Lihat semua
-                            </a>
+                            </Link>
                         </div>
 
                         {data?.transactions?.length === 0 ? (
