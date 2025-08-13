@@ -381,7 +381,12 @@ class TransactionRepository
     {
         $query = Variant::with(['product', 'total_stock'])
             ->select(
-                'variants.*',
+                'variants.uuid',
+                'variants.product_uuid',
+                'variants.name',
+                'variants.price',
+                'variants.created_at',
+                'variants.updated_at',
                 DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold')
             )
             ->leftJoin('transaction_items', 'transaction_items.variant_uuid', '=', 'variants.uuid')
@@ -397,7 +402,14 @@ class TransactionRepository
         }
 
         return $query
-            ->groupBy('variants.uuid')
+            ->groupBy(
+                'variants.uuid',
+                'variants.product_uuid',
+                'variants.name',
+                'variants.price',
+                'variants.created_at',
+                'variants.updated_at'
+            )
             ->orderByDesc('total_sold')
             ->take($limit)
             ->get()
@@ -409,6 +421,7 @@ class TransactionRepository
                 ];
             });
     }
+
 
     public function get_penjualan_summary(Request $request)
     {
