@@ -27,6 +27,9 @@ class User extends Authenticatable
         'img',
         'phone_number',
         'password',
+        'otp',
+        'otp_expires_at',
+        'email_verified_at'
     ];
 
     /**
@@ -37,6 +40,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'otp',
     ];
 
     /**
@@ -46,6 +50,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'otp_expires_at' => 'datetime',
     ];
 
     public function cart()

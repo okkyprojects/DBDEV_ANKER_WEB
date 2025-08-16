@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 
 class TransactionRepository
 {
@@ -795,12 +796,26 @@ class TransactionRepository
         $items = [];
 
         foreach ($request['items'] as $item) {
-            $variant = $this->variant->with('product')->where('uuid', $item['variant_uuid'])->first();
+            $variant = $this->variant
+                ->with(['product', 'total_stock'])
+                ->where('uuid', $item['variant_uuid'])
+                ->first();
 
             if (!$variant) {
                 return $this->response->validationError([
                     'items' => ['Variant tidak ditemukan untuk salah satu item.']
                 ]);
+            }
+
+            $availableStock = $variant->total_stock->total_stock ?? 0;
+            if ($item['quantity'] > $availableStock) {
+                return $this->response->validationError(
+                    new MessageBag([
+                        'items' => [
+                            "Stok untuk {$variant->product->name} - {$variant->name} tidak mencukupi. Stok tersedia: {$availableStock}"
+                        ]
+                    ])
+                );
             }
 
             $price = $variant->price;
@@ -819,6 +834,7 @@ class TransactionRepository
                 'price'            => $price,
             ];
         }
+
         $variantUuids = collect($request['items'])->pluck('variant_uuid')->toArray();
         $this->cartItem
             ->whereHas('cart', function ($q) use ($request) {

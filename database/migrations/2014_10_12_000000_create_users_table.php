@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('img')->nullable();
             $table->date('dob')->nullable();
             $table->string('password');
+            $table->string('otp')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
