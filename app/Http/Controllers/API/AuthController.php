@@ -33,15 +33,24 @@ class AuthController extends Controller
             ], 422);
         }
         $existingUser = User::where('email', $request->email)->first();
-        if ($existingUser && is_null($existingUser->email_verified_at)) {
-            $existingUser->delete();
-        }
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        if ($existingUser) {
+            if (!is_null($existingUser->email_verified_at)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email sudah terdaftar dan sudah terverifikasi.',
+                ], 409);
+            }
+            $user = $existingUser;
+            $user->name = $request->name;
+            $user->password = Hash::make($request->password);
+        } else {
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+        }
         $plainOtp = rand(100000, 999999);
         $expiresInMinutes = 10;
 
