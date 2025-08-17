@@ -1,82 +1,117 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8">
-    <title>Verifikasi Akun Anda</title>
+  <meta charset="UTF-8">
+  <title>Verifikasi Akun Anda</title>
 </head>
+<body style="margin:0; padding:0; background-color:#f3f4f6; font-family: Arial, sans-serif;">
+  <!-- Outer table (background) -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" align="center" style="background-color:#f3f4f6; padding:20px 0;">
+    <tr>
+      <td align="center">
 
-<body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f9f9f9;">
-    <div
-        style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #eee;">
+        <!-- Card table -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background:#ffffff; border-radius:10px; overflow:hidden; border:1px solid #e6e6e6;">
 
-        <!-- Header -->
-        <div style="text-align:center;">
-            <img src="{{ asset('images/email/header.png') }}" alt="Header"
-                style="width:100%; max-width:600px; display:block;">
-        </div>
+          <!-- Header image -->
+          <tr>
+            <td style="text-align:center; padding:0;">
+              <img
+                src="{{ isset($headerCid) ? 'cid:'.$headerCid : asset('images/email/header.png') }}"
+                alt="Header"
+                width="600"
+                style="display:block; width:100%; max-width:600px; height:auto; border:0; line-height:100%; outline:none; text-decoration:none;">
+            </td>
+          </tr>
 
-        <!-- Hero -->
-        <div style="text-align:center; padding:30px 20px 10px 20px;">
-            <img src="{{ asset('images/email/hero.png') }}" alt="Hero"
-                style="max-width:200px; display:block; margin:0 auto;">
-        </div>
+          <!-- Inner padded area -->
+          <tr>
+            <td style="padding:28px 40px 34px 40px;">
 
-        <!-- Content -->
-        <div style="padding:0 30px 30px 30px; text-align:center; color:#333;">
-            <h3 style="margin:20px 0 10px 0; font-size:18px; font-weight:600;">Halo {{ $user?->name ?? 'User' }},</h3>
-            <p style="margin:0 0 20px 0; font-size:14px; color:#555;">
-                Gunakan kode berikut untuk menyelesaikan proses verifikasi Anda<br>
-                Kode OTP Anda adalah:
-            </p>
+              <!-- Hero image centered -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:18px;">
+                <tr>
+                  <td align="center" style="padding-bottom:8px;">
+                    <img
+                      src="{{ isset($heroCid) ? 'cid:'.$heroCid : asset('images/email/hero.png') }}"
+                      alt="Hero"
+                      style="display:block; max-width:260px; width:100%; height:auto; border:0; outline:none; text-decoration:none;">
+                  </td>
+                </tr>
+              </table>
 
-            <!-- OTP -->
-            <div style="display:flex; justify-content:center; gap:8px; margin:20px 0;">
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 0, 1) }}
-                </div>
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 1, 1) }}
-                </div>
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 2, 1) }}
-                </div>
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 3, 1) }}
-                </div>
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 4, 1) }}
-                </div>
-                <div
-                    style="width:40px; height:40px; border:1px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; background:#f7f7f7; color:#333;">
-                    {{ substr($otp, 5, 1) }}
-                </div>
-            </div>
+              <!-- Title -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom:6px;">
+                    <span style="font-size:18px; font-weight:700; color:#111827;">Halo {{ $user?->name ?? 'User' }},</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-bottom:14px;">
+                    <span style="font-size:14px; color:#6b7280; line-height:1.5;">
+                      Gunakan kode berikut untuk menyelesaikan proses verifikasi Anda<br>
+                      <strong>Kode OTP Anda adalah:</strong>
+                    </span>
+                  </td>
+                </tr>
+              </table>
 
-            <p style="font-size:14px; color:#555; margin:0 0 20px 0;">
-                Kode ini hanya berlaku selama <strong>{{ $expiresInMinutes }} menit</strong>
-            </p>
+              <!-- OTP boxes (table-based) -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:20px auto;">
+                <tr>
+                  <!-- each box -->
+                  @for ($i = 0; $i < 6; $i++)
+                    <td style="width:56px; height:56px; text-align:center; vertical-align:middle; border-radius:12px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:20px; font-weight:700; color:#111827; line-height:56px;">
+                      {{ isset($otp) ? substr($otp, $i, 1) : '' }}
+                    </td>
+                    @if ($i < 5)
+                      <td style="width:8px;"></td>
+                    @endif
+                  @endfor
+                </tr>
+              </table>
 
-            <!-- Important Note -->
-            <p style="font-size:13px; color:#333; margin:0 0 5px 0; font-weight:bold;">PENTING:</p>
-            <p style="font-size:13px; color:#555; margin:0 0 20px 0; line-height:1.6;">
-                Demi keamanan, jangan pernah membagikan kode ini kepada siapa pun, termasuk tim
-                {{ config('app.name') }}.<br>
-                Kami tidak akan pernah meminta kode Anda.<br><br>
-                Jika Anda tidak merasa meminta kode ini, mohon abaikan email ini.
-            </p>
+              <!-- Expiry -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:10px;">
+                <tr>
+                  <td align="center" style="padding-top:6px; padding-bottom:18px; color:#6b7280; font-size:14px;">
+                    Kode ini hanya berlaku selama <strong>{{ $expiresInMinutes }} menit</strong>
+                  </td>
+                </tr>
+              </table>
 
-            <p style="font-size:14px; color:#333; margin:20px 0 0 0;">
-                Terima kasih,<br>
-                Tim {{ config('app.name') }} Indonesia
-            </p>
-        </div>
-    </div>
+              <!-- Important block -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8fafc; border-radius:8px; padding:14px;">
+                <tr>
+                  <td style="padding:8px 10px; text-align:left; color:#111827; font-size:13px; line-height:1.6;">
+                    <div style="font-weight:700; margin-bottom:6px;">PENTING:</div>
+                    <div style="color:#6b7280;">
+                      Demi keamanan, jangan pernah membagikan kode ini kepada siapa pun, termasuk tim {{ config('app.name') }}.<br>
+                      Kami tidak akan pernah meminta kode Anda.<br><br>
+                      Jika Anda tidak merasa meminta kode ini, mohon abaikan email ini.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Footer text -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:18px;">
+                <tr>
+                  <td align="left" style="color:#111827; font-size:14px;">
+                    Terima kasih,<br>
+                    Tim {{ config('app.name') }} 
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
 </body>
-
 </html>
