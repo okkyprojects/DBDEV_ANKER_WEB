@@ -49,7 +49,7 @@ class AuthController extends Controller
         $user->otp_expires_at = Carbon::now()->addMinutes($expiresInMinutes);
         $user->save();
 
-        Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes));
+        Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes, $user));
 
         return response()->json([
             'success' => true,
@@ -129,7 +129,7 @@ class AuthController extends Controller
         $user->save();
 
         try {
-            Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes));
+            Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes, $user));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

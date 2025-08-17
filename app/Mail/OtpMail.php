@@ -15,14 +15,16 @@ class OtpMail extends Mailable implements ShouldQueue
 
     public $otp;
     public $expiresInMinutes;
+    public $user; // tambahin user
 
     /**
      * Create a new message instance.
      */
-    public function __construct($otp, $expiresInMinutes = 10)
+    public function __construct($otp, $expiresInMinutes = 10, $user = null)
     {
         $this->otp = $otp;
         $this->expiresInMinutes = $expiresInMinutes;
+        $this->user = $user; 
     }
 
     /**
@@ -45,6 +47,7 @@ class OtpMail extends Mailable implements ShouldQueue
             with: [
                 'otp' => $this->otp,
                 'expiresInMinutes' => $this->expiresInMinutes,
+                'user' => $this->user,
             ],
         );
     }
