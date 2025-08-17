@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OtpMail;
+use App\Mail\OtpPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -229,7 +230,7 @@ class AuthController extends Controller
         $user->save();
 
         try {
-            Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes, $user));
+            Mail::to($user->email)->send(new OtpPassword($plainOtp, $expiresInMinutes, $user));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
