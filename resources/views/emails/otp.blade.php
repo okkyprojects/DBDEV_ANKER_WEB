@@ -17,7 +17,7 @@
           <tr>
             <td style="text-align:center; padding:0;">
               <img
-                src="{{ isset($headerCid) ? 'cid:'.$headerCid : asset('images/email/header.png') }}"
+                src=https://anker-web.okkyprojects.com/images/email/header.png
                 alt="Header"
                 width="600"
                 style="display:block; width:100%; max-width:600px; height:auto; border:0; line-height:100%; outline:none; text-decoration:none;">
@@ -33,7 +33,7 @@
                 <tr>
                   <td align="center" style="padding-bottom:8px;">
                     <img
-                      src="{{ isset($heroCid) ? 'cid:'.$heroCid : asset('images/email/hero.png') }}"
+                      src="https://anker-web.okkyprojects.com/images/email/hero.png"
                       alt="Hero"
                       style="display:block; max-width:260px; width:100%; height:auto; border:0; outline:none; text-decoration:none;">
                   </td>
@@ -100,7 +100,7 @@
                 <tr>
                   <td align="left" style="color:#111827; font-size:14px;">
                     Terima kasih,<br>
-                    Tim {{ config('app.name') }} 
+                    Tim {{ config('app.name') }}
                   </td>
                 </tr>
               </table>
