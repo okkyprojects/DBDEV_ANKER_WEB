@@ -201,4 +201,84 @@ class AuthController extends Controller
         $user = $request->user()->load('main_address');
         return response()->json($user);
     }
+
+    public function sendForgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
+        }
+        $cacheKey = 'forgot_pw_cooldown_' . $user->id;
+        $cooldownSeconds = 60;
+
+        if (Cache::has($cacheKey)) {
+            $secondsLeft = Cache::ttl($cacheKey);
+            return response()->json([
+                'success' => false,
+                'message' => "Tunggu {$secondsLeft} detik sebelum mengirim ulang OTP."
+            ], 429);
+        }
+
+        $plainOtp = rand(100000, 999999);
+        $expiresInMinutes = 10;
+
+        $user->otp = Hash::make($plainOtp);
+        $user->otp_expires_at = Carbon::now()->addMinutes($expiresInMinutes);
+        $user->save();
+
+        try {
+            Mail::to($user->email)->send(new OtpMail($plainOtp, $expiresInMinutes, $user));
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim OTP: ' . $e->getMessage()
+            ], 500);
+        }
+
+        Cache::put($cacheKey, true, $cooldownSeconds);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP untuk reset password telah dikirim ke email.',
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
+        }
+
+        if (!$user->otp || !$user->otp_expires_at) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada OTP aktif. Silakan minta ulang.'], 400);
+        }
+
+        if (Carbon::now()->greaterThan($user->otp_expires_at)) {
+            return response()->json(['success' => false, 'message' => 'OTP sudah kadaluarsa. Silakan minta ulang.'], 400);
+        }
+
+        if (!Hash::check($request->otp, $user->otp)) {
+            return response()->json(['success' => false, 'message' => 'OTP salah.'], 400);
+        }
+        $user->password = Hash::make($request->password);
+        $user->email_verified_at = $user->email_verified_at ?? now();
+        $user->otp = null;
+        $user->otp_expires_at = null;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil direset. Silakan login menggunakan password baru.',
+        ]);
+    }
 }
