@@ -17,7 +17,7 @@
           <tr>
             <td style="text-align:center; padding:0;">
               <img
-                src=https://anker-web.okkyprojects.com/images/email/header.png
+                src=https://anker-web.okkyprojects.com/images/email/header_email.png
                 alt="Header"
                 width="600"
                 style="display:block; width:100%; max-width:600px; height:auto; border:0; line-height:100%; outline:none; text-decoration:none;">
