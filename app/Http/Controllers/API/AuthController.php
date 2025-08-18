@@ -214,7 +214,17 @@ class AuthController extends Controller
 
     public function sendForgotPassword(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
@@ -257,12 +267,20 @@ class AuthController extends Controller
 
     public function resetPassword(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'otp'   => 'required|string',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|string|min:6',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
