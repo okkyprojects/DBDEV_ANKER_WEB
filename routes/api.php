@@ -47,6 +47,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
     Route::post('/resend-otp/forgot-password', [AuthController::class, 'sendForgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/check-otp/forgot-password', [AuthController::class, 'checkOTP']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);

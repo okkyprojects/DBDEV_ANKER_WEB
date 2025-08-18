@@ -264,14 +264,11 @@ class AuthController extends Controller
             'message' => 'OTP untuk reset password telah dikirim ke email.',
         ]);
     }
-
-    public function resetPassword(Request $request)
+    public function checkOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'otp'   => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-            'password_confirmation' => 'required|string|min:6',
         ]);
 
         if ($validator->fails()) {
@@ -295,6 +292,42 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'OTP sudah kadaluarsa. Silakan minta ulang.'], 400);
         }
 
+        if (!Hash::check($request->otp, $user->otp)) {
+            return response()->json(['success' => false, 'message' => 'OTP salah.'], 400);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP valid. Silakan lanjut ke halaman ganti password sebelum ' . $user->otp_expires_at->toDateTimeString(),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'otp'   => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
+        }
+        if (!$user->otp || !$user->otp_expires_at) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada OTP aktif. Silakan minta ulang.'], 400);
+        }
+        if (Carbon::now()->greaterThan($user->otp_expires_at)) {
+            return response()->json(['success' => false, 'message' => 'OTP sudah kadaluarsa. Silakan minta ulang.'], 400);
+        }
         if (!Hash::check($request->otp, $user->otp)) {
             return response()->json(['success' => false, 'message' => 'OTP salah.'], 400);
         }
