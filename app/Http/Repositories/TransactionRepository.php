@@ -32,6 +32,7 @@ class TransactionRepository
     private $address;
     private $variant;
     private $cartItem;
+    private $cart;
 
     public function __construct(
         Response $response,
@@ -43,6 +44,7 @@ class TransactionRepository
         Address $address,
         Variant $variant,
         CartItem $cartItem,
+        Cart $cart
     ) {
         $this->response = $response;
         $this->transaction = $transaction;
@@ -53,6 +55,7 @@ class TransactionRepository
         $this->address = $address;
         $this->variant = $variant;
         $this->cartItem = $cartItem;
+        $this->cart = $cart;
     }
     public function index_penjualan(Request $request)
     {
@@ -834,14 +837,17 @@ class TransactionRepository
                 'price'            => $price,
             ];
         }
+        $variantUuids = collect($request->input('items', []))
+            ->pluck('variant_uuid')
+            ->filter()
+            ->values()
+            ->all();
+        $cart = $this->cart->where('user_id', Auth::user()->id)->first();
 
-        $variantUuids = collect($request['items'])->pluck('variant_uuid')->toArray();
-        $this->cartItem
-            ->whereHas('cart', function ($q) use ($request) {
-                $q->where('user_id', $request['user_id']);
-            })
-            ->whereIn('variant_uuid', $variantUuids)
-            ->delete();
+        if ($cart) {
+            $cart->variants()->detach($variantUuids);
+        }
+
         $admin_fee = 0;
         $grand_total = $total_price + $admin_fee;
 
