@@ -4,43 +4,54 @@
 
 /* ===== DIN NEXT W1G ===== */
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-UltraLight.otf") format("opentype");
-    font-weight: 200;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-UltraLight.otf") format("opentype");
+font-weight: 200;
 }
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-Light.otf") format("opentype");
-    font-weight: 300;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-Light.otf") format("opentype");
+font-weight: 300;
 }
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-Regular.otf") format("opentype");
-    font-weight: 400;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-Regular.otf") format("opentype");
+font-weight: 400;
 }
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-Medium.otf") format("opentype");
-    font-weight: 500;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-Medium.otf") format("opentype");
+font-weight: 500;
 }
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-Medium.otf") format("opentype");
-    font-weight: 600;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-Medium.otf") format("opentype");
+font-weight: 600;
 }
 @font-face {
-    font-family: "DIN Next";
-    src: url("/fonts/DINNext/DINNextW1G-Bold.otf") format("opentype");
-    font-weight: 700;
+font-family: "DIN Next";
+src: url("/fonts/DINNext/DINNextW1G-Bold.otf") format("opentype");
+font-weight: 700;
 }
 
 @layer utilities {
-    .scrollbar-hidden {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
+.scrollbar-hidden {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
 
-    .scrollbar-hidden::-webkit-scrollbar {
-        display: none;
-    }
+.scrollbar-hidden::-webkit-scrollbar {
+display: none;
+}
+}
+
+.ql-container {
+border-radius: 0 0 12px 12px;
+border: 1px solid #d1d5db;
+}
+
+.ql-toolbar {
+border-radius: 12px 12px 0 0;
+border: 1px solid #d1d5db;
+border-bottom: none;
 }

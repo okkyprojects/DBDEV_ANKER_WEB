@@ -12,6 +12,7 @@ use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfilController;
 use App\Http\Controllers\API\SellerController;
+use App\Http\Controllers\API\TermController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\VariantController;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ Route::get('/provinces', [LocationController::class, 'indexProvince']);
 Route::get('/cities', [LocationController::class, 'indexCity']);
 Route::get('/districts', [LocationController::class, 'indexDistrict']);
 Route::get('/banners', [BannerController::class, 'index']);
+Route::get('/terms', [TermController::class, 'index']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);

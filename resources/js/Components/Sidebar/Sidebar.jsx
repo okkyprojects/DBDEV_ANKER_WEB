@@ -78,6 +78,14 @@ const sidebarMenu = {
             url: "/master/bill",
         },
     ],
+    SETTING: [
+        {
+            id: 10,
+            icon: <PiCirclesFourLight size={21} className="mr-4" />,
+            text: "Syarat Dan Ketentuan",
+            url: "/setting/term",
+        },
+    ],
 };
 
 const Sidebar = ({ isOpen, onToggle }) => {
