@@ -13,7 +13,7 @@ class ExpireTransaction extends Command
      *
      * @var string
      */
-    protected $signature = 'app:expire-transaction';
+    protected $signature = 'transactions:expire';
 
     /**
      * The console command description.
