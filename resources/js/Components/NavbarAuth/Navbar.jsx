@@ -94,8 +94,8 @@ const Navbar = () => {
                                         <img
                                             className="w-10 h-10 rounded-full"
                                             src={
-                                                userData?.fotoProfile
-                                                    ? userData?.fotoProfile
+                                                userData?.img
+                                                    ? `${window.location.origin}/${userData.img}`
                                                     : "/images/profile/profil.jpg"
                                             }
                                             alt="user photo"
@@ -112,8 +112,8 @@ const Navbar = () => {
                                                     <img
                                                         className="w-10 h-10 mr-2 rounded-full"
                                                         src={
-                                                            userData?.fotoProfile
-                                                                ? userData?.fotoProfile
+                                                            userData?.img
+                                                                ? `${window.location.origin}/${userData.img}`
                                                                 : "/images/profile/profil.jpg"
                                                         }
                                                         alt="user photo"

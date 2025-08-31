@@ -85,6 +85,12 @@ const sidebarMenu = {
             text: "Syarat Dan Ketentuan",
             url: "/setting/term",
         },
+        {
+            id: 11,
+            icon: <PiCirclesFourLight size={21} className="mr-4" />,
+            text: "User",
+            url: "/setting/user",
+        },
     ],
 };
 

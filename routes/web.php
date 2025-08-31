@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\VariantStockController;
 use App\Http\Controllers\HomeController;
@@ -123,7 +124,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/term', [TermController::class, 'index'])->name('term.index');
             Route::post('/term', [TermController::class, 'store'])->name('term.store');
             Route::delete('/term/{uuid}', [TermController::class, 'destroy'])->name('term.destroy');
-        });
+
+        Route::get('/user', [UserController::class, 'index'])->name('user.index');
+        Route::post('/user',[UserController::class, 'store'])->name('user.store');
+        Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+    });
 });
 // Route::get('/checkout', function () {
 //     return Inertia::render('Checkout');
