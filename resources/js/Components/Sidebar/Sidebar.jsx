@@ -65,12 +65,12 @@ const sidebarMenu = {
             text: "Brand",
             url: "/master/brand",
         },
-        {
-            id: 8,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Banner",
-            url: "/master/banner",
-        },
+        // {
+        //     id: 8,
+        //     icon: <PiCirclesFourLight size={21} className="mr-4" />,
+        //     text: "Banner",
+        //     url: "/master/banner",
+        // },
         {
             id: 9,
             icon: <PiCirclesFourLight size={21} className="mr-4" />,
