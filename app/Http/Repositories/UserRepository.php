@@ -4,6 +4,7 @@ namespace App\Http\Repositories;
 
 use App\Models\User;
 use App\Traits\Response;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -56,6 +57,9 @@ class UserRepository
             $filename = time() . '-' . $file->getClientOriginalName();
             $path = $file->storeAs('user-images', $filename, 'public');
             $data['img'] = 'storage/' . $path;
+        }
+        if (!$request->filled('id')) {
+            $data['email_verified_at'] = Carbon::now();
         }
 
         return $data;
