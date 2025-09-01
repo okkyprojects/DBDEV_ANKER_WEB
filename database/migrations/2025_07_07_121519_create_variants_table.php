@@ -21,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('discount_price')->nullable();
             $table->timestamps();
             $table->foreign('product_uuid')->references('uuid')->on('products')->nullOnDelete();
+            $table->softDeletes();
         });
     }
 

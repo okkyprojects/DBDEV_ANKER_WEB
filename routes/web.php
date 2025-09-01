@@ -100,11 +100,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
             Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
             Route::delete('/category/{uuid}', [CategoryController::class, 'destroy'])->name('category.destroy');
+            Route::delete('/bulk-delete/category', [CategoryController::class, 'bulk_destroy'])->name('category.bulk_destroy');
+
 
             // Brand
             Route::get('/brand', [BrandController::class, 'index'])->name('brand.index');
             Route::post('/brand', [BrandController::class, 'store'])->name('brand.store');
             Route::delete('/brand/{uuid}', [BrandController::class, 'destroy'])->name('brand.destroy');
+            Route::delete('/bulk-delete/brand', [BrandController::class, 'bulk_destroy'])->name('brand.bulk_destroy');
 
             // Banner
             Route::get('/banner', [BannerController::class, 'index'])->name('banner.index');
@@ -125,10 +128,10 @@ Route::middleware('auth')->group(function () {
             Route::post('/term', [TermController::class, 'store'])->name('term.store');
             Route::delete('/term/{uuid}', [TermController::class, 'destroy'])->name('term.destroy');
 
-        Route::get('/user', [UserController::class, 'index'])->name('user.index');
-        Route::post('/user',[UserController::class, 'store'])->name('user.store');
-        Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
-    });
+            Route::get('/user', [UserController::class, 'index'])->name('user.index');
+            Route::post('/user', [UserController::class, 'store'])->name('user.store');
+            Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+        });
 });
 // Route::get('/checkout', function () {
 //     return Inertia::render('Checkout');

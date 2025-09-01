@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VariantStock extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -19,6 +21,6 @@ class VariantStock extends Model
     ];
     public function variant()
     {
-        return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid');
+        return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid')->withTrashed();
     }
 }

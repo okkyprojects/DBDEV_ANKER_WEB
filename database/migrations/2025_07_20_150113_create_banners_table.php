@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('uuid')->primary();
             $table->string('img');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

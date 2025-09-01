@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Variant extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -23,7 +25,7 @@ class Variant extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_uuid', 'uuid');
+        return $this->belongsTo(Product::class, 'product_uuid', 'uuid')->withTrashed();
     }
     public function carts()
     {
@@ -35,11 +37,11 @@ class Variant extends Model
             'uuid',
             'uuid'
         )->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
-            ->withTimestamps();
+            ->withTimestamps()->withTrashed();
     }
     public function stocks()
     {
-        return $this->hasMany(VariantStock::class, 'variant_uuid', 'uuid');
+        return $this->hasMany(VariantStock::class, 'variant_uuid', 'uuid')->withTrashed();
     }
     public function total_stock()
     {

@@ -58,7 +58,7 @@ class BillRepository
         $data = $query->orderByDesc('is_main')->orderBy('created_at', 'desc')->paginate(10);
         return $data;
     }
-    
+
     public function index(Request $request)
     {
         $query = $this->bill->query();
@@ -99,19 +99,16 @@ class BillRepository
 
         $data = $this->request($request);
 
-        if ($data['is_main']) {
-            $this->bill->where('user_id', Auth::id())->update(['is_main' => false]);
-        }
-
         if ($request->filled('uuid')) {
-            $bill = $this->bill->where('uuid', $request->uuid)->where('user_id', Auth::id())->first();
+            $bill = $this->bill->where('uuid', $request->uuid)->first();
             if (!$bill) {
                 return $this->response->notFound();
             }
 
             $updated = $bill->update($data);
 
-            if (!$this->bill->where('user_id', Auth::id())->where('is_main', true)->exists()) {
+            if (!empty($data['is_main']) && $data['is_main']) {
+                $this->bill->where('uuid', '!=', $bill->uuid)->update(['is_main' => false]);
                 $bill->update(['is_main' => true]);
             }
 
@@ -120,18 +117,21 @@ class BillRepository
                 : $this->response->updateError();
         } else {
             $data['uuid'] = Str::uuid();
-
-            if (!$this->bill->where('user_id', Auth::id())->exists()) {
-                $data['is_main'] = true;
-            }
-
             $bill = $this->bill->create($data);
+
+            if (!empty($data['is_main']) && $data['is_main']) {
+                $this->bill->where('uuid', '!=', $bill->uuid)->update(['is_main' => false]);
+                $bill->update(['is_main' => true]);
+            } elseif (!$this->bill->where('is_main', true)->exists()) {
+                $bill->update(['is_main' => true]);
+            }
 
             return $bill
                 ? $this->response->store($bill)
                 : $this->response->storeError();
         }
     }
+
 
     public function destroy($uuid)
     {

@@ -29,4 +29,9 @@ class BrandController extends Controller
         $data = $this->brand->destroy($uuid);
         return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
     }
+    public function bulk_destroy(Request $request)
+    {
+        $this->brand->bulk_destroy($request);
+        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+    }
 }

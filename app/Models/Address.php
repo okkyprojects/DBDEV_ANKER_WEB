@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
+    use SoftDeletes;
     use HasUuids;
 
     protected $primaryKey = 'uuid';
@@ -30,16 +32,16 @@ class Address extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();;
     }
     public function province()
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(Province::class)->withTrashed();;
     }
 
     public function city()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(City::class)->withTrashed();;
     }
 
     public function district()

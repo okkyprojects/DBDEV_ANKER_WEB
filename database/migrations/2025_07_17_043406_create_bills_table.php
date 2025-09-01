@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('account_holder_name')->nullable();
             $table->boolean('is_main')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

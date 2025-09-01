@@ -29,4 +29,9 @@ class CategoryController extends Controller
         $data = $this->category->destroy($uuid);
         return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
     }
+    public function bulk_destroy(Request $request)
+    {
+        $this->category->bulk_destroy($request);
+        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+    }
 }

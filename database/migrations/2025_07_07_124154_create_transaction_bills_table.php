@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_main')->default(false);
             $table->timestamps();
             $table->foreign('transaction_uuid')->references('uuid')->on('transactions')->nullOnDelete();
+            $table->softDeletes();
         });
     }
 

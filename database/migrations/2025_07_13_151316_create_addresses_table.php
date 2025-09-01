@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+            $table->softDeletes();
         });
     }
 

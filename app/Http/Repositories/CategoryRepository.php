@@ -118,7 +118,26 @@ class CategoryRepository
             Storage::disk('public')->delete(str_replace('storage/', '', $category->img));
         }
 
-    $category->delete();
+        $category->delete();
         return $this->response->destroy($category);
+    }
+    public function bulk_destroy($request)
+    {
+        $uuids = $request->input('uuids', []);
+
+        if (empty($uuids)) {
+            return $this->response->validationError(['uuids' => ['Data tidak boleh kosong']]);
+        }
+
+        $categories = $this->category->whereIn('uuid', $uuids)->get();
+
+        foreach ($categories as $category) {
+            if ($category->img && Storage::disk('public')->exists(str_replace('storage/', '', $category->img))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $category->img));
+            }
+            $category->delete();
+        }
+
+        return $this->response->destroy('Berhasil menghapus beberapa data!');
     }
 }

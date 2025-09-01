@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('category_uuid')->references('uuid')->on('categories')->nullOnDelete();
             $table->foreign('brand_uuid')->references('uuid')->on('brands')->nullOnDelete();
+            $table->softDeletes();
         });
     }
 

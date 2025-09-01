@@ -17,8 +17,8 @@ return new class extends Migration
             $table->bigInteger('quantity');
             $table->string('note')->nullable();
             $table->timestamps();
-
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();
+            $table->softDeletes();
         });
     }
 

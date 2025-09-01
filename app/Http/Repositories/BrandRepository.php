@@ -114,4 +114,23 @@ class BrandRepository
         $brand->delete();
         return $this->response->destroy($brand);
     }
+    public function bulk_destroy($request)
+    {
+        $uuids = $request->input('uuids', []);
+
+        if (empty($uuids)) {
+            return $this->response->validationError(['uuids' => ['Data tidak boleh kosong']]);
+        }
+
+        $brands = $this->brand->whereIn('uuid', $uuids)->get();
+
+        foreach ($brands as $brand) {
+            if ($brand->img && Storage::disk('public')->exists(str_replace('storage/', '', $brand->img))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $brand->img));
+            }
+            $brand->delete();
+        }
+
+        return $this->response->destroy('Berhasil menghapus beberapa data!');
+    }
 }
