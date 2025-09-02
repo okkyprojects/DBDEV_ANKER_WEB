@@ -139,13 +139,7 @@ class ProductRepository
     public function index(Request $request)
     {
         $query = $this->product
-            ->with([
-                'category:uuid,name',
-                'brand:uuid,name',
-                'variants' => function ($q) {
-                    $q->with(['total_stock']); // jangan pakai transactionItems di eager load
-                }
-            ])
+            ->with(['category:uuid,name', 'brand:uuid,name', 'variants.total_stock'])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
@@ -170,40 +164,38 @@ class ProductRepository
                 });
             });
 
-        // Sorting by price
-        if ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
+        // Tambahkan subquery untuk total_sold
+        $query->select('products.*')
+            ->selectSub(function ($q) {
+                $q->from('transaction_items')
+                    ->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')
+                    ->whereColumn('variants.product_uuid', 'products.uuid')
+                    ->selectRaw('COALESCE(SUM(transaction_items.quantity),0)');
+            }, 'total_sold');
+
+        // Sorting
+        if ($request->input('sort_by') === 'best_seller') {
+            $query->orderByDesc('total_sold');
+        } elseif ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
             $query->withMin('variants', 'price')->withMax('variants', 'price');
             $query->orderBy(
                 'variants_min_price',
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
             );
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         // Paginate
         $products = $query->paginate(10);
 
-        // Transform collection: hitung price, variant_count, total_stock, total_sold
+        // Transform collection: hitung price, variant_count, total_stock
         $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
-
-            $product->total_stock = $product->variants->sum(function ($variant) {
-                return $variant->total_stock->total_stock ?? 0;
-            });
-
-            // total_sold via query join, pasti benar
-            $variantUuids = $product->variants->pluck('uuid')->toArray();
-            $product->total_sold = DB::table('transaction_items')
-                ->whereIn('variant_uuid', $variantUuids)
-                ->sum('quantity');
-
+            $product->total_stock = $product->variants->sum(fn($variant) => $variant->total_stock->total_stock ?? 0);
             return $product;
         });
-
-        // Sorting best_seller setelah transform
-        if ($request->input('sort_by') === 'best_seller') {
-            $products->getCollection()->sortByDesc('total_sold')->values();
-        }
 
         return $products;
     }
