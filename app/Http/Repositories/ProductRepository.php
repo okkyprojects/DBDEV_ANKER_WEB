@@ -141,8 +141,9 @@ class ProductRepository
             ->with([
                 'category:uuid,name',
                 'brand:uuid,name',
-                'variants.total_stock',
-                'variants.transactionItem',
+                'variants' => function ($q) {
+                    $q->with(['total_stock', 'transactionItems']);
+                }
             ])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
@@ -174,28 +175,31 @@ class ProductRepository
                 'variants_min_price',
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
             );
-        } elseif ($request->input('sort_by') === 'best_seller') {
-            $query->withSum('variants.transactionItem as total_sold', 'quantity')
-                ->orderBy('total_sold', 'desc');
-        } else {
-            $query->orderBy('created_at', 'desc');
         }
 
         $products = $query->paginate(10);
 
-        $products->getCollection()->transform(function ($product) {
+        $products->getCollection()->transform(function ($product) use ($request) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
 
             $product->total_stock = $product->variants->sum(function ($variant) {
                 return $variant->total_stock->total_stock ?? 0;
             });
+            $product->total_sold = $product->variants->sum(function ($variant) {
+                return $variant->transactionItems->sum('quantity');
+            });
 
             return $product;
         });
 
+        if ($request->input('sort_by') === 'best_seller') {
+            $products->getCollection()->sortByDesc('total_sold')->values();
+        }
+
         return $products;
     }
+
     public function export(Request $request)
     {
         $query = $this->product
