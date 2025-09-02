@@ -27,7 +27,7 @@ export default function Index({ data }) {
         debounceRef.current = setTimeout(() => {
             router.get(
                 route(route().current()),
-                { search,page },
+                { search, page },
                 {
                     preserveState: true,
                     replace: true,
@@ -120,12 +120,12 @@ export default function Index({ data }) {
                                             <span
                                                 className={`inline-block px-3 py-1 text-xs font-semibold rounded-full
         ${
-            item.is_main
+            item.is_main == 1
                 ? "bg-primary-200 text-primary-800"
                 : "bg-gray-400 text-white"
         }`}
                                             >
-                                                {item.is_main
+                                                {item.is_main == 1
                                                     ? "Utama"
                                                     : "Biasa"}
                                             </span>
