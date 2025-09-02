@@ -175,7 +175,7 @@ class ProductRepository
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
             );
         } elseif ($request->input('sort_by') === 'best_seller') {
-            $query->withSum('variants.transactionItems as total_sold', 'quantity')
+            $query->withSum('variants.transactionItem as total_sold', 'quantity')
                 ->orderBy('total_sold', 'desc');
         } else {
             $query->orderBy('created_at', 'desc');
