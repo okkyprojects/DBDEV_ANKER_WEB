@@ -142,10 +142,9 @@ class ProductRepository
                 'category:uuid,name',
                 'brand:uuid,name',
                 'variants' => function ($q) {
-                    $q->with(['total_stock']);
+                    $q->with(['total_stock']); // jangan pakai transactionItems di eager load
                 }
             ])
-            ->withSum('variants as total_sold', 'transactionItems.quantity') // <- hitung total_sold
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
@@ -179,27 +178,34 @@ class ProductRepository
             );
         }
 
-        // Sorting best_seller
-        if ($request->input('sort_by') === 'best_seller') {
-            $query->orderByDesc('total_sold');
-        }
-
         // Paginate
         $products = $query->paginate(10);
 
-        // Transform collection: hitung price, variant_count, total_stock
+        // Transform collection: hitung price, variant_count, total_stock, total_sold
         $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
+
             $product->total_stock = $product->variants->sum(function ($variant) {
                 return $variant->total_stock->total_stock ?? 0;
             });
+
+            // total_sold via query join, pasti benar
+            $variantUuids = $product->variants->pluck('uuid')->toArray();
+            $product->total_sold = DB::table('transaction_items')
+                ->whereIn('variant_uuid', $variantUuids)
+                ->sum('quantity');
+
             return $product;
         });
 
+        // Sorting best_seller setelah transform
+        if ($request->input('sort_by') === 'best_seller') {
+            $products->getCollection()->sortByDesc('total_sold')->values();
+        }
+
         return $products;
     }
-
     public function export(Request $request)
     {
         $query = $this->product
