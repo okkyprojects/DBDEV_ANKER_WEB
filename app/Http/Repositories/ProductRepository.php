@@ -164,7 +164,6 @@ class ProductRepository
                 });
             });
 
-        // Tambahkan subquery untuk total_sold
         $query->select('products.*')
             ->selectSub(function ($q) {
                 $q->from('transaction_items')
@@ -173,7 +172,6 @@ class ProductRepository
                     ->selectRaw('COALESCE(SUM(transaction_items.quantity),0)');
             }, 'total_sold');
 
-        // Sorting
         if ($request->input('sort_by') === 'best_seller') {
             $query->orderByDesc('total_sold');
         } elseif ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
@@ -186,10 +184,8 @@ class ProductRepository
             $query->orderBy('created_at', 'desc');
         }
 
-        // Paginate
         $products = $query->paginate(10);
 
-        // Transform collection: hitung price, variant_count, total_stock
         $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
