@@ -32,16 +32,16 @@ class Address extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withTrashed();;
+        return $this->belongsTo(User::class)->withTrashed();
     }
     public function province()
     {
-        return $this->belongsTo(Province::class)->withTrashed();;
+        return $this->belongsTo(Province::class);
     }
 
     public function city()
     {
-        return $this->belongsTo(City::class)->withTrashed();;
+        return $this->belongsTo(City::class);
     }
 
     public function district()
