@@ -57,4 +57,8 @@ class Variant extends Model
                 'total_stock' => 0
             ]);
     }
+    public function transactionItem()
+    {
+        return $this->hasMany(TransactionItem::class, 'variant_uuid', 'uuid');
+    }
 }

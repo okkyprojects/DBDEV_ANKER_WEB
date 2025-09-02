@@ -142,6 +142,7 @@ class ProductRepository
                 'category:uuid,name',
                 'brand:uuid,name',
                 'variants.total_stock',
+                'variants.transactionItem',
             ])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
@@ -167,12 +168,15 @@ class ProductRepository
                 });
             });
 
-        if (in_array($request->input('sort_by'), ['lowest_price', 'highest_price'])) {
+        if ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
             $query->withMin('variants', 'price')->withMax('variants', 'price');
             $query->orderBy(
                 'variants_min_price',
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
             );
+        } elseif ($request->input('sort_by') === 'best_seller') {
+            $query->withSum('variants.transactionItems as total_sold', 'quantity')
+                ->orderBy('total_sold', 'desc');
         } else {
             $query->orderBy('created_at', 'desc');
         }
