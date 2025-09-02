@@ -145,7 +145,7 @@ class ProductRepository
                     $q->with(['total_stock']);
                 }
             ])
-            ->withSum('variants as total_sold', 'transaction_items.quantity') // <- hitung total_sold
+            ->withSum('variants as total_sold', 'transactionItems.quantity') // <- hitung total_sold
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
