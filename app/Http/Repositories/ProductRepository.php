@@ -142,9 +142,10 @@ class ProductRepository
                 'category:uuid,name',
                 'brand:uuid,name',
                 'variants' => function ($q) {
-                    $q->with(['total_stock', 'transactionItems']);
+                    $q->with(['total_stock']);
                 }
             ])
+            ->withSum('variants as total_sold', 'transaction_items.quantity') // <- hitung total_sold
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
@@ -169,6 +170,7 @@ class ProductRepository
                 });
             });
 
+        // Sorting by price
         if ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
             $query->withMin('variants', 'price')->withMax('variants', 'price');
             $query->orderBy(
@@ -177,25 +179,23 @@ class ProductRepository
             );
         }
 
+        // Sorting best_seller
+        if ($request->input('sort_by') === 'best_seller') {
+            $query->orderByDesc('total_sold');
+        }
+
+        // Paginate
         $products = $query->paginate(10);
 
-        $products->getCollection()->transform(function ($product) use ($request) {
+        // Transform collection: hitung price, variant_count, total_stock
+        $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
-
             $product->total_stock = $product->variants->sum(function ($variant) {
                 return $variant->total_stock->total_stock ?? 0;
             });
-            $product->total_sold = $product->variants->sum(function ($variant) {
-                return $variant->transactionItems->sum('quantity');
-            });
-
             return $product;
         });
-
-        if ($request->input('sort_by') === 'best_seller') {
-            $products->getCollection()->sortByDesc('total_sold')->values();
-        }
 
         return $products;
     }
