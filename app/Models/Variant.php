@@ -59,6 +59,6 @@ class Variant extends Model
     }
     public function transactionItems()
     {
-        return $this->hasMany(TransactionItem::class, 'variant_uuid', 'uuid');
+        return $this->hasMany(TransactionItem::class, 'variant_uuid', 'uuid')->withTrashed();
     }
 }
