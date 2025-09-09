@@ -64,7 +64,7 @@ export default function Index({ data }) {
 
         if (!confirm("Yakin hapus kategori terpilih?")) return;
 
-        router.delete(route("category.bulk_destroy"), {
+        router.delete(route("master.category.bulk_destroy"), {
             data: { uuids: selected },
             preserveScroll: true,
             onSuccess: () => {
