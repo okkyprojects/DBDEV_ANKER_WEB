@@ -109,13 +109,15 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
 
                             {/* Gambar */}
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm">Gambar</label>
+                                <label className="text-sm">
+                                    Gambar (Ratio 1:1)
+                                </label>
                                 {data.img ? (
-                                    <div className="relative group">
+                                    <div className="relative group aspect-square w-full max-w-sm">
                                         <img
                                             src={URL.createObjectURL(data.img)}
                                             alt="Uploaded"
-                                            className="h-64 w-full rounded-lg object-cover"
+                                            className="h-full w-full rounded-lg object-cover"
                                         />
                                         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                             <label
@@ -134,7 +136,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                         />
                                     </div>
                                 ) : (
-                                    <label className="border-gray-300 bg-white flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
+                                    <label className="border-gray-300 bg-white flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
                                         <div className="flex flex-col items-center justify-center gap-1.5">
                                             <IoImageOutline
                                                 size={37}

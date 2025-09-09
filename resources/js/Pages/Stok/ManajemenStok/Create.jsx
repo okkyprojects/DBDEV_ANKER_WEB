@@ -196,7 +196,7 @@ export default function Create({ data: initial_data }) {
                         <div className="mt-5 space-y-5">
                             <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="img">
-                                    Unggah foto utama produk anda
+                                    Unggah foto utama produk anda (Ratio 16:9)
                                 </label>
                                 {data.img ? (
                                     <div className="relative group">
@@ -385,7 +385,26 @@ export default function Create({ data: initial_data }) {
                                                             className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                                         />
                                                     </div>
-
+                                                    <div className="flex flex-col gap-2 text-sm">
+                                                        <span className="">
+                                                            Stok Saat Ini
+                                                            <span className="text-neutral-500 italic text-xs">
+                                                                {" "}
+                                                                (Untuk melakukan
+                                                                restok barang
+                                                                melalui menu
+                                                                barang masuk)
+                                                            </span>
+                                                        </span>
+                                                        <span className="px-3 py-2 rounded-xl text-sm border bg-gray-100 border-neutral-400 text-neutral-800">
+                                                            {initial_data
+                                                                ?.variants?.[
+                                                                index
+                                                            ]?.total_stock
+                                                                ?.total_stock ??
+                                                                "0"}
+                                                        </span>
+                                                    </div>
                                                     {/* Harga */}
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label
@@ -471,7 +490,7 @@ export default function Create({ data: initial_data }) {
                                                         htmlFor={`varianImage-${index}`}
                                                     >
                                                         Unggah foto utama produk
-                                                        anda
+                                                        anda (Ratio 16:9)
                                                     </label>
                                                     {varian.img ? (
                                                         <div className="relative group">
