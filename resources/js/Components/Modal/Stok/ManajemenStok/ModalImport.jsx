@@ -69,9 +69,8 @@ const ModalImport = ({ isOpen, onClose }) => {
                         <p className="text-xs text-gray-500 mt-1">
                             Pastikan format sesuai template.{" "}
                             <a
-                                href="/files/product.xlsx"
+                                href={route("produk.product.downloadTemplate")}
                                 className="text-primary-600 hover:underline"
-                                download
                             >
                                 Unduh template
                             </a>

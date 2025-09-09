@@ -94,4 +94,9 @@ class ProductController extends Controller
         $data = $this->product->destroy($uuid);
         return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
     }
+    public function downloadTemplate()
+    {
+        $filePath = public_path('files/product.xlsx');
+        return response()->download($filePath, 'Template Produk.xlsx');
+    }
 }

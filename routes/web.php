@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); //
             // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); /
             Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
+            Route::get('/download-template-produk', [ProductController::class, 'downloadTemplate'])->name('product.downloadTemplate');
         });
     Route::prefix('reporting')
         ->name('reporting.')
