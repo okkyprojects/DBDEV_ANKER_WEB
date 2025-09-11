@@ -50,13 +50,12 @@ class ProductRepository
             ['name' => $row['category_name'] ?? ''],
             ['uuid' => Str::uuid()]
         );
-
         $brand = $this->brand->firstOrCreate(
             ['name' => $row['brand_name'] ?? ''],
             ['uuid' => Str::uuid()]
         );
 
-        $product = $this->product->updateOrCreate(
+        $product = $this->product->firstOrCreate(
             ['name' => $row['product_name'] ?? ''],
             [
                 'uuid'          => Str::uuid(),
@@ -66,8 +65,22 @@ class ProductRepository
                 'description'   => $row['description'] ?? null,
             ]
         );
+        $this->variant->firstOrCreate(
+            ['sku' => $row['sku'] ?? ''],
+            [
+                'uuid'           => Str::uuid(),
+                'product_uuid'   => $product->uuid,
+                'name'           => $row['variant_name'] ?? '',
+                'img'            => $row['variant_img'] ?? null,
+                'price'          => $row['price'] ?? 0,
+                'discount_price' => $row['discount_price'] ?? null,
+            ]
+        );
+
         return true;
     }
+
+
 
 
     private function request(Request $request): array
@@ -249,6 +262,7 @@ class ProductRepository
     public function single($uuid)
     {
         $data = $this->product
+            ->withTrashed() 
             ->with([
                 'brand',
                 'category',
@@ -257,9 +271,9 @@ class ProductRepository
             ->where('uuid', $uuid)
             ->firstOrFail();
 
-
         return $data;
     }
+
     public function store($request)
     {
         $validator = Validator::make($request->all(), $this->validate());
@@ -299,5 +313,24 @@ class ProductRepository
 
         $product->delete();
         return $this->response->destroy($product);
+    }
+    public function bulk_destroy($request)
+    {
+        $uuids = $request->input('uuids', []);
+
+        if (empty($uuids)) {
+            return $this->response->validationError(['uuids' => ['Data tidak boleh kosong']]);
+        }
+
+        $products = $this->product->whereIn('uuid', $uuids)->get();
+
+        foreach ($products as $product) {
+            if ($product->img && Storage::disk('public')->exists(str_replace('storage/', '', $product->img))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $product->img));
+            }
+            $product->delete();
+        }
+
+        return $this->response->destroy('Berhasil menghapus beberapa data!');
     }
 }

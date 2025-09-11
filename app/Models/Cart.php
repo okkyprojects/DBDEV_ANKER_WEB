@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Cart extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';

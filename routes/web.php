@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); //
             // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); /
             Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
+        Route::delete('/bulk-delete/data-produk', [ProductController::class, 'bulk_destroy'])->name('product.bulk_destroy');
             Route::get('/download-template-produk', [ProductController::class, 'downloadTemplate'])->name('product.downloadTemplate');
         });
     Route::prefix('reporting')
@@ -92,6 +93,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/manajemen-pesanan/{uuid}', [TransactionController::class, 'update'])->name('manajemen.update');
         });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
+    Route::get('/export-variant', [VariantController::class, 'export'])->name('variant.export');
 
     Route::prefix('master')
         ->name('master.')

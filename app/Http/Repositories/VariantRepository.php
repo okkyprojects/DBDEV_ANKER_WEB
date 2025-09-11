@@ -123,4 +123,34 @@ class VariantRepository
         $variant->delete();
         return $this->response->destroy($variant);
     }
+
+    public function export(Request $request)
+    {
+        $variants = $this->variant
+            ->with([
+                'product' => function ($q) {
+                    $q->with(['category', 'brand']);
+                },
+                'total_stock'
+            ])
+            ->when($request->input('search'), function ($q, $search) {
+                $q->whereHas('product', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->input('category'), function ($q, $categoryName) {
+                $q->whereHas('product.category', function ($q) use ($categoryName) {
+                    $q->where('name', $categoryName);
+                });
+            })
+            ->when($request->input('brand'), function ($q, $brandName) {
+                $q->whereHas('product.brand', function ($q) use ($brandName) {
+                    $q->where('name', $brandName);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $variants;
+    }
 }

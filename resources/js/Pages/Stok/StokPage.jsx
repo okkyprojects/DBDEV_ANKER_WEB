@@ -3,7 +3,7 @@ import { GrFilter } from "react-icons/gr";
 import { HiOutlinePrinter } from "react-icons/hi2";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
-import { FaChevronDown, FaPlus } from "react-icons/fa6";
+import { FaChevronDown, FaPlus, FaTrash } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { Link, router } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
@@ -11,6 +11,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
 import { HiOutlineUpload } from "react-icons/hi";
 import ModalImport from "@/Components/Modal/Stok/ManajemenStok/ModalImport";
+import { toast } from "react-toastify";
 
 export default function StokPage({ data }) {
     console.log(data);
@@ -26,6 +27,8 @@ export default function StokPage({ data }) {
     const toggleDropdown = (index) => {
         setDropdownOpen((prev) => (prev === index ? null : index));
     };
+    const [selected, setSelected] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
     const dataCard = [
         {
             title: "Produk Aktif",
@@ -97,7 +100,38 @@ export default function StokPage({ data }) {
             );
         }, 500);
     }, [search]);
+    const handleSelect = (uuid) => {
+        setSelected((prev) =>
+            prev.includes(uuid)
+                ? prev.filter((id) => id !== uuid)
+                : [...prev, uuid]
+        );
+    };
 
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelected([]);
+        } else {
+            setSelected(data?.products?.data?.map((item) => item.uuid) || []);
+        }
+        setSelectAll(!selectAll);
+    };
+
+    const handleBulkDelete = () => {
+        if (selected.length === 0) return;
+
+        if (!confirm("Yakin hapus produk terpilih?")) return;
+
+        router.delete(route("produk.product.bulk_destroy"), {
+            data: { uuids: selected },
+            preserveScroll: true,
+            onSuccess: () => {
+                setSelected([]);
+                setSelectAll(false);
+                toast.success("Berhasil menghapus data!");
+            },
+        });
+    };
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -136,7 +170,7 @@ export default function StokPage({ data }) {
                             <HiOutlineUpload size={20} />
                         </button>
                         <a
-                            href={route("produk.product.export", {
+                            href={route("variant.export", {
                                 search: searchParams.get("search") || "",
                                 brand: searchParams.get("brand") || "",
                                 category: searchParams.get("category") || "",
@@ -174,19 +208,37 @@ export default function StokPage({ data }) {
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Produk</p>
-                        <Link
-                            href="/produk/data-produk/create"
-                            className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
-                        >
-                            <FaPlus />
-                            Tambah Produk
-                        </Link>
+                        <div className="flex gap-2 items-center">
+                            {selected.length > 0 && (
+                                <button
+                                    onClick={handleBulkDelete}
+                                    className="flex gap-1 items-center bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-full"
+                                >
+                                    <FaTrash />
+                                    Hapus Terpilih ({selected.length})
+                                </button>
+                            )}
+                            <Link
+                                href="/produk/data-produk/create"
+                                className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                            >
+                                <FaPlus />
+                                Tambah Produk
+                            </Link>
+                        </div>
                     </div>
                     <div className="max-w-full overflow-x-auto ">
                         <table className="w-full table-auto">
                             <thead>
                                 <tr className="text-left text-sm">
-                                    <th className="min-w-[25px] px-4 py-4 xl:pl-11 " />
+                                    <th className="px-4 py-4">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectAll}
+                                            onChange={handleSelectAll}
+                                            className="accent-primary-600 checked:text-white"
+                                        />
+                                    </th>
                                     <th className="min-w-[280px] px-4 py-4 ">
                                         Produk
                                     </th>
@@ -211,8 +263,17 @@ export default function StokPage({ data }) {
                                         key={index}
                                         className="hover:bg-gray-50 text-sm text-neutral-700"
                                     >
-                                        <td className=" px-4 py-5 pl-9 xl:pl-11">
-                                            {data?.products?.from + index}
+                                        <td className="px-4 py-5">
+                                            <input
+                                                type="checkbox"
+                                                checked={selected.includes(
+                                                    item.uuid
+                                                )}
+                                                onChange={() =>
+                                                    handleSelect(item.uuid)
+                                                }
+                                                className="accent-primary-600 checked:text-white"
+                                            />
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item.name}

@@ -99,4 +99,9 @@ class ProductController extends Controller
         $filePath = public_path('files/product.xlsx');
         return response()->download($filePath, 'Template Produk.xlsx');
     }
+    public function bulk_destroy(Request $request)
+    {
+        $this->product->bulk_destroy($request);
+        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+    }
 }
