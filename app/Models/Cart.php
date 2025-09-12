@@ -36,6 +36,6 @@ class Cart extends Model
             'uuid'
         )
             ->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
-            ->withTimestamps()->withTrashed();
+            ->withTimestamps();
     }
 }
