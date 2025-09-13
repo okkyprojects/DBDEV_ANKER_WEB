@@ -43,7 +43,12 @@ class CartRepository
     public function index()
     {
         $cart = $this->cart
-            ->with(['variants.product'])
+            ->with(['variants' => function ($q) {
+                $q->whereNull('deleted_at') // hanya yang variant belum dihapus
+                    ->whereHas('product', function ($q2) {
+                        $q2->whereNull('deleted_at'); // hanya yang product belum dihapus
+                    });
+            }, 'variants.product'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->first();
