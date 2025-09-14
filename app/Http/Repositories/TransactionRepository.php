@@ -131,7 +131,7 @@ class TransactionRepository
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
             ->whereNull('products.deleted_at')
-            ->whereNull('categories.deleted_at') 
+            ->whereNull('categories.deleted_at')
             ->whereNull('brands.deleted_at')
             ->where('transactions.status', '>=', 1)
             ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
@@ -854,9 +854,16 @@ class TransactionRepository
         $items = [];
 
         foreach ($request['items'] as $item) {
+            // $variant = $this->variant
+            //     ->with(['product', 'total_stock'])
+            //     ->where('uuid', $item['variant_uuid'])
+            //     ->first();
             $variant = $this->variant
-                ->with(['product', 'total_stock'])
+                ->with(['product' => function ($q) {
+                    $q->whereNull('deleted_at');
+                }, 'total_stock'])
                 ->where('uuid', $item['variant_uuid'])
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$variant) {

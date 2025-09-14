@@ -88,6 +88,52 @@ class CartRepository
     //     $data = $query->first();
     //     return $data;
     // }
+    // public function repeat_order($transactionUuid)
+    // {
+    //     $userId = Auth::id();
+    //     $transaction = $this->transaction->where('uuid', $transactionUuid)
+    //         ->where('user_id', $userId)
+    //         ->first();
+
+    //     if (!$transaction) {
+    //         return $this->response->notFound('Transaksi tidak ditemukan');
+    //     }
+    //     $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->get();
+
+    //     if ($items->isEmpty()) {
+    //         return $this->response->notFound('Tidak ada item dalam transaksi');
+    //     }
+    //     $cart = $this->cart->firstOrCreate(
+    //         ['user_id' => $userId],
+    //         ['uuid' => Str::uuid()]
+    //     );
+
+    //     foreach ($items as $item) {
+    //         $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
+    //         if (!$variant) {
+    //             continue;
+    //         }
+    //         $existingItem = $this->cartItem
+    //             ->where('cart_uuid', $cart->uuid)
+    //             ->where('variant_uuid', $item->variant_uuid)
+    //             ->first();
+
+    //         if ($existingItem) {
+    //             $existingItem->quantity += $item->quantity;
+    //             $existingItem->save();
+    //         } else {
+    //             $this->cartItem->create([
+    //                 'uuid' => Str::uuid(),
+    //                 'cart_uuid' => $cart->uuid,
+    //                 'variant_uuid' => $item->variant_uuid,
+    //                 'quantity' => $item->quantity,
+    //             ]);
+    //         }
+    //     }
+
+    //     return $this->response->store('Produk berhasil dimasukkan ke keranjang lagi');
+    // }
+
     public function repeat_order($transactionUuid)
     {
         $userId = Auth::id();
@@ -98,21 +144,32 @@ class CartRepository
         if (!$transaction) {
             return $this->response->notFound('Transaksi tidak ditemukan');
         }
-        $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->get();
 
+        $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->get();
         if ($items->isEmpty()) {
             return $this->response->notFound('Tidak ada item dalam transaksi');
         }
+
         $cart = $this->cart->firstOrCreate(
             ['user_id' => $userId],
             ['uuid' => Str::uuid()]
         );
 
         foreach ($items as $item) {
-            $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
-            if (!$variant) {
-                continue;
+            $variant = $this->variant
+                ->with(['product' => function ($q) {
+                    $q->whereNull('deleted_at');
+                }])
+                ->where('uuid', $item->variant_uuid)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if (!$variant || !$variant->product) {
+                return $this->response->validationError([
+                    'items' => ["Variant atau Product dari {$item->variant_name} sudah tidak tersedia."]
+                ]);
             }
+
             $existingItem = $this->cartItem
                 ->where('cart_uuid', $cart->uuid)
                 ->where('variant_uuid', $item->variant_uuid)
@@ -123,16 +180,52 @@ class CartRepository
                 $existingItem->save();
             } else {
                 $this->cartItem->create([
-                    'uuid' => Str::uuid(),
-                    'cart_uuid' => $cart->uuid,
+                    'uuid'         => Str::uuid(),
+                    'cart_uuid'    => $cart->uuid,
                     'variant_uuid' => $item->variant_uuid,
-                    'quantity' => $item->quantity,
+                    'quantity'     => $item->quantity,
                 ]);
             }
         }
 
         return $this->response->store('Produk berhasil dimasukkan ke keranjang lagi');
     }
+
+
+    // public function store($request)
+    // {
+    //     $validator = Validator::make($request->all(), $this->validate());
+    //     if ($validator->fails()) {
+    //         return $this->response->validationError($validator->errors());
+    //     }
+    //     $validated = $validator->validated();
+    //     $userId = Auth::id();
+    //     $cart = $this->cart->firstOrCreate(
+    //         ['user_id' => $userId],
+    //         ['uuid' => Str::uuid()]
+    //     );
+    //     if (!empty($request['uuid'])) {
+    //         return $this->update($request);
+    //     }
+    //     $existingItem = $this->cartItem
+    //         ->where('cart_uuid', $cart->uuid)
+    //         ->where('variant_uuid', $validated['variant_uuid'])
+    //         ->first();
+
+    //     if ($existingItem) {
+    //         $existingItem->quantity += $validated['quantity'] ?? 1;
+    //         $existingItem->save();
+
+    //         return $this->response->update($existingItem);
+    //     }
+    //     $data = $this->cartItem->create(array_merge(
+    //         ['uuid' => Str::uuid()],
+    //         $this->request($request, $cart->uuid)
+    //     ));
+    //     return $data
+    //         ? $this->response->store($data)
+    //         : $this->response->storeError();
+    // }
 
     public function store($request)
     {
@@ -141,14 +234,32 @@ class CartRepository
             return $this->response->validationError($validator->errors());
         }
         $validated = $validator->validated();
+
+        // 🔎 cek variant dan product aktif
+        $variant = $this->variant
+            ->with(['product' => function ($q) {
+                $q->whereNull('deleted_at');
+            }])
+            ->where('uuid', $validated['variant_uuid'])
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$variant || !$variant->product) {
+            return $this->response->validationError([
+                'variant_uuid' => ['Variant atau Product sudah dihapus, tidak bisa dimasukkan ke keranjang.']
+            ]);
+        }
+
         $userId = Auth::id();
         $cart = $this->cart->firstOrCreate(
             ['user_id' => $userId],
             ['uuid' => Str::uuid()]
         );
+
         if (!empty($request['uuid'])) {
             return $this->update($request);
         }
+
         $existingItem = $this->cartItem
             ->where('cart_uuid', $cart->uuid)
             ->where('variant_uuid', $validated['variant_uuid'])
@@ -157,17 +268,19 @@ class CartRepository
         if ($existingItem) {
             $existingItem->quantity += $validated['quantity'] ?? 1;
             $existingItem->save();
-
             return $this->response->update($existingItem);
         }
+
         $data = $this->cartItem->create(array_merge(
             ['uuid' => Str::uuid()],
             $this->request($request, $cart->uuid)
         ));
+
         return $data
             ? $this->response->store($data)
             : $this->response->storeError();
     }
+
 
     private function update($request)
     {
