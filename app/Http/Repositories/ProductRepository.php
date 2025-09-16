@@ -262,17 +262,18 @@ class ProductRepository
     public function single($uuid)
     {
         $data = $this->product
-            ->withTrashed() 
             ->with([
                 'brand',
                 'category',
                 'variants.total_stock',
             ])
             ->where('uuid', $uuid)
+            ->whereNull('deleted_at') 
             ->firstOrFail();
 
         return $data;
     }
+
 
     public function store($request)
     {
