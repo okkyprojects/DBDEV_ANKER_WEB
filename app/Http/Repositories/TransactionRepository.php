@@ -866,9 +866,9 @@ class TransactionRepository
                 ->whereNull('deleted_at')
                 ->first();
 
-            if (!$variant) {
+            if (!$variant || !$variant->product) {
                 return $this->response->validationError([
-                    'items' => ['Variant tidak ditemukan untuk salah satu item.']
+                    'items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']
                 ]);
             }
 
