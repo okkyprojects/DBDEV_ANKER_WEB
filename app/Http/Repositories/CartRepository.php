@@ -12,6 +12,7 @@ use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\MessageBag;
 
 class CartRepository
 {
@@ -235,7 +236,6 @@ class CartRepository
         }
         $validated = $validator->validated();
 
-        // 🔎 cek variant dan product aktif
         $variant = $this->variant
             ->with(['product' => function ($q) {
                 $q->whereNull('deleted_at');
@@ -245,9 +245,10 @@ class CartRepository
             ->first();
 
         if (!$variant || !$variant->product) {
-            return $this->response->validationError([
+            $errors = new MessageBag([
                 'variant_uuid' => ['Variant atau Product sudah dihapus, tidak bisa dimasukkan ke keranjang.']
             ]);
+            return $this->response->validationError($errors);
         }
 
         $userId = Auth::id();

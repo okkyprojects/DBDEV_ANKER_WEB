@@ -867,11 +867,11 @@ class TransactionRepository
                 ->first();
 
             if (!$variant || !$variant->product) {
-                return $this->response->validationError([
+                $errors = new MessageBag([
                     'items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']
                 ]);
+                return $this->response->validationError($errors);
             }
-
             $availableStock = $variant->total_stock->total_stock ?? 0;
             if ($item['quantity'] > $availableStock) {
                 return $this->response->validationError(
