@@ -854,10 +854,6 @@ class TransactionRepository
         $items = [];
 
         foreach ($request['items'] as $item) {
-            // $variant = $this->variant
-            //     ->with(['product', 'total_stock'])
-            //     ->where('uuid', $item['variant_uuid'])
-            //     ->first();
             $variant = $this->variant
                 ->with(['product' => function ($q) {
                     $q->whereNull('deleted_at');
@@ -867,11 +863,11 @@ class TransactionRepository
                 ->first();
 
             if (!$variant || !$variant->product) {
-                $errors = new MessageBag([
-                    'items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']
-                ]);
-                return $this->response->validationError($errors);
+                return $this->response->validationError(
+                    new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']])
+                );
             }
+
             $availableStock = $variant->total_stock->total_stock ?? 0;
             if ($item['quantity'] > $availableStock) {
                 return $this->response->validationError(
@@ -899,19 +895,34 @@ class TransactionRepository
                 'price'            => $price,
             ];
         }
+
         $variantUuids = collect($request->input('items', []))
             ->pluck('variant_uuid')
             ->filter()
             ->values()
             ->all();
-        $cart = $this->cart->where('user_id', Auth::user()->id)->first();
 
+        $cart = $this->cart->where('user_id', Auth::user()->id)->first();
         if ($cart) {
             $cart->variants()->detach($variantUuids);
         }
 
         $admin_fee = 0;
         $grand_total = $total_price + $admin_fee;
+
+        $address = $this->address->where('uuid', $request['address_uuid'])->first();
+        if (!$address) {
+            return $this->response->validationError(
+                new MessageBag(['address_uuid' => ['Alamat tidak ditemukan atau kosong.']])
+            );
+        }
+
+        $bill = $this->bill->where('uuid', $request['bill_uuid'])->first();
+        if (!$bill) {
+            return $this->response->validationError(
+                new MessageBag(['bill_uuid' => ['Rekening pembayaran tidak ditemukan atau kosong.']])
+            );
+        }
 
         $trxData = $this->request($request);
         $trxData['uuid'] = $uuid;
@@ -922,7 +933,6 @@ class TransactionRepository
 
         $transaction = $this->transaction->create($trxData);
 
-        $address = $this->address->where('uuid', $request['address_uuid'])->first();
         $this->transactionAddress->create([
             'uuid'              => Str::uuid(),
             'transaction_uuid'  => $uuid,
@@ -939,7 +949,6 @@ class TransactionRepository
             'note'              => $address->note,
         ]);
 
-        $bill = $this->bill->where('uuid', $request['bill_uuid'])->first();
         $this->transactionBill->create([
             'uuid'                 => Str::uuid(),
             'transaction_uuid'     => $uuid,
@@ -955,6 +964,7 @@ class TransactionRepository
 
         return $this->response->store($transaction);
     }
+
 
     private function update($request)
     {
