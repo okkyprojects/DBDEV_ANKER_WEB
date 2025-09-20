@@ -104,6 +104,7 @@ export default function Create({ data: initial_data }) {
                                 <label htmlFor="name">Nama Produk</label>
                                 <input
                                     id="name"
+                                    required
                                     type="text"
                                     placeholder="Masukkan nama produk"
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
@@ -121,6 +122,7 @@ export default function Create({ data: initial_data }) {
                                 </label>
                                 <select
                                     id="category_uuid"
+                                    required
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                     value={data.category_uuid}
                                     onChange={(e) =>
@@ -149,6 +151,7 @@ export default function Create({ data: initial_data }) {
                                 <label htmlFor="brand_uuid">Brand</label>
                                 <select
                                     id="brand_uuid"
+                                    required
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                     value={data.brand_uuid}
                                     onChange={(e) =>
@@ -179,6 +182,7 @@ export default function Create({ data: initial_data }) {
                                 </label>
                                 <textarea
                                     id="description"
+                                    required
                                     placeholder="Masukkan deskripsi produk"
                                     rows={6}
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none resize-none"
@@ -339,6 +343,7 @@ export default function Create({ data: initial_data }) {
                                                             type="text"
                                                             placeholder="Masukkan nama varian"
                                                             value={varian.name}
+                                                            required
                                                             onChange={(e) => {
                                                                 const updated =
                                                                     [
@@ -368,6 +373,7 @@ export default function Create({ data: initial_data }) {
                                                             type="text"
                                                             placeholder="Masukkan sku varian"
                                                             value={varian.sku}
+                                                            required
                                                             onChange={(e) => {
                                                                 const updated =
                                                                     [
@@ -421,6 +427,7 @@ export default function Create({ data: initial_data }) {
                                                                 type="number"
                                                                 placeholder="0"
                                                                 min={0}
+                                                                required
                                                                 value={
                                                                     varian.discount_price
                                                                 }
@@ -459,6 +466,7 @@ export default function Create({ data: initial_data }) {
                                                                 type="number"
                                                                 placeholder="0"
                                                                 min={0}
+                                                                required
                                                                 value={
                                                                     varian.price
                                                                 }

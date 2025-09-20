@@ -152,7 +152,14 @@ class ProductRepository
     public function index(Request $request)
     {
         $query = $this->product
-            ->with(['category:uuid,name', 'brand:uuid,name', 'variants.total_stock'])
+            ->with([
+                'category:uuid,name',
+                'brand:uuid,name',
+                'variants' => function ($q) {
+                    $q->whereNull('variants.deleted_at')
+                        ->with('total_stock');
+                },
+            ])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
@@ -268,7 +275,7 @@ class ProductRepository
                 'variants.total_stock',
             ])
             ->where('uuid', $uuid)
-            ->whereNull('deleted_at') 
+            ->whereNull('deleted_at')
             ->firstOrFail();
 
         return $data;

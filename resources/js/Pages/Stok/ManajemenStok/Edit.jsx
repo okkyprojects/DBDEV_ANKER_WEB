@@ -128,6 +128,7 @@ export default function Edit({ data: initial_data }) {
                                 <input
                                     id="name"
                                     type="text"
+                                    required
                                     placeholder="Masukkan nama produk"
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                     value={data.name}
@@ -144,6 +145,7 @@ export default function Edit({ data: initial_data }) {
                                 </label>
                                 <select
                                     id="category_uuid"
+                                    required
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                     value={data.category_uuid}
                                     onChange={(e) =>
@@ -172,6 +174,7 @@ export default function Edit({ data: initial_data }) {
                                 <label htmlFor="brand_uuid">Brand</label>
                                 <select
                                     id="brand_uuid"
+                                    required
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                     value={data.brand_uuid}
                                     onChange={(e) =>
@@ -204,6 +207,7 @@ export default function Edit({ data: initial_data }) {
                                     id="description"
                                     placeholder="Masukkan deskripsi produk"
                                     rows={6}
+                                    required
                                     className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none resize-none"
                                     value={data.description}
                                     onChange={(e) =>
@@ -371,6 +375,7 @@ export default function Edit({ data: initial_data }) {
                                                             type="text"
                                                             placeholder="Masukkan nama varian"
                                                             value={varian.name}
+                                                            required
                                                             onChange={(e) => {
                                                                 const updated =
                                                                     [
@@ -398,6 +403,7 @@ export default function Edit({ data: initial_data }) {
                                                         <input
                                                             id={`varianSKU-${index}`}
                                                             type="text"
+                                                            required
                                                             placeholder="Masukkan sku varian"
                                                             value={varian.sku}
                                                             onChange={(e) => {
@@ -453,6 +459,7 @@ export default function Edit({ data: initial_data }) {
                                                                 id={`varianPrice-${index}`}
                                                                 type="number"
                                                                 placeholder="0"
+                                                                required
                                                                 min={0}
                                                                 value={
                                                                     varian.discount_price
@@ -491,6 +498,7 @@ export default function Edit({ data: initial_data }) {
                                                                 id={`varianPrice-${index}`}
                                                                 type="number"
                                                                 placeholder="0"
+                                                                required
                                                                 min={0}
                                                                 value={
                                                                     varian.price
