@@ -427,7 +427,7 @@ export default function Create({ data: initial_data }) {
                                                                 type="number"
                                                                 placeholder="0"
                                                                 min={0}
-                                                                required
+                                                                
                                                                 value={
                                                                     varian.discount_price
                                                                 }

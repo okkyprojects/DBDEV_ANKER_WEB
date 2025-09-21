@@ -272,7 +272,10 @@ class ProductRepository
             ->with([
                 'brand',
                 'category',
-                'variants.total_stock',
+                'variants' => function ($q) {
+                    $q->whereNull('deleted_at')
+                        ->with('total_stock');
+                },
             ])
             ->where('uuid', $uuid)
             ->whereNull('deleted_at')
@@ -280,6 +283,7 @@ class ProductRepository
 
         return $data;
     }
+
 
 
     public function store($request)
