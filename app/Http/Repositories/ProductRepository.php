@@ -281,7 +281,7 @@ class ProductRepository
             ])
             ->where('uuid', $uuid)
             ->whereNull('deleted_at')
-            ->firstOrFail();
+            ->first();
 
         return $data;
     }

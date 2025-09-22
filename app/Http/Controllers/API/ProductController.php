@@ -43,8 +43,14 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $data = $this->repository->single($id);
+
+        if (!$data) {
+            return $this->response->notFound();
+        }
+
         return $this->response->index($data);
     }
+
 
     /**
      * Update the specified resource in storage.
