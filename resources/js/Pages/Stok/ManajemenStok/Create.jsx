@@ -200,7 +200,7 @@ export default function Create({ data: initial_data }) {
                         <div className="mt-5 space-y-5">
                             <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="img">
-                                    Unggah foto utama produk anda (Ratio 16:9)
+                                    Unggah foto utama produk anda (Ratio 1:1)
                                 </label>
                                 {data.img ? (
                                     <div className="relative group">
@@ -213,9 +213,7 @@ export default function Create({ data: initial_data }) {
                                                       )
                                             }
                                             alt="Uploaded"
-                                            className="h-64 w-full rounded-lg object-cover"
-                                            width={300}
-                                            height={300}
+                                            className="aspect-square w-full rounded-lg object-cover"
                                         />
                                         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                             <label
@@ -234,7 +232,7 @@ export default function Create({ data: initial_data }) {
                                         />
                                     </div>
                                 ) : (
-                                    <label className="border-gray-300 bg-white flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
+                                    <label className="border-gray-300 bg-white flex aspect-square w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
                                         <div className="flex flex-col items-center justify-center gap-1.5">
                                             <IoImageOutline
                                                 size={37}
@@ -427,7 +425,6 @@ export default function Create({ data: initial_data }) {
                                                                 type="number"
                                                                 placeholder="0"
                                                                 min={0}
-                                                                
                                                                 value={
                                                                     varian.discount_price
                                                                 }
@@ -498,7 +495,7 @@ export default function Create({ data: initial_data }) {
                                                         htmlFor={`varianImage-${index}`}
                                                     >
                                                         Unggah foto utama produk
-                                                        anda (Ratio 16:9)
+                                                        anda (Ratio 1:1)
                                                     </label>
                                                     {varian.img ? (
                                                         <div className="relative group">
@@ -514,7 +511,7 @@ export default function Create({ data: initial_data }) {
                                                                 alt={`Preview Varian ${
                                                                     index + 1
                                                                 }`}
-                                                                className="h-64 w-full rounded-lg object-cover"
+                                                                className="aspect-square w-full rounded-lg object-cover"
                                                             />
                                                             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                                                 <label
@@ -549,7 +546,7 @@ export default function Create({ data: initial_data }) {
                                                             />
                                                         </div>
                                                     ) : (
-                                                        <label className="border-gray-300 bg-white flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
+                                                        <label className="border-gray-300 bg-white flex aspect-square w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
                                                             <div className="flex flex-col items-center justify-center gap-1.5">
                                                                 <IoImageOutline
                                                                     size={37}
