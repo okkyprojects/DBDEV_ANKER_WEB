@@ -166,9 +166,9 @@ class CartRepository
                 ->first();
 
             if (!$variant || !$variant->product) {
-                return $this->response->validationError([
-                    'items' => ["Variant atau Product dari {$item->variant_name} sudah tidak tersedia."]
-                ]);
+                return $this->response->validationError(
+                    new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']])
+                );
             }
 
             $existingItem = $this->cartItem

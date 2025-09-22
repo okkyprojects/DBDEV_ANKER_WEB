@@ -159,7 +159,9 @@ class ProductRepository
                     $q->whereNull('variants.deleted_at')
                         ->with('total_stock');
                 },
-            ])
+            ])->whereHas('variants', function ($q) {
+                $q->whereNull('variants.deleted_at');
+            })
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             })
