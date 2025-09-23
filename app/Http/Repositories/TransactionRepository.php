@@ -627,11 +627,12 @@ class TransactionRepository
                 $q->where('transactions.status', '>', 0)
                     ->where('transactions.status', '<', 5);
             })
-
-            ->groupBy('variants.uuid', 'variants.name', 'categories.name', 'brands.name')->paginate(10);
+            ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')
+            ->paginate(10);
 
         return $query;
     }
+
 
 
     public function index(Request $request)
