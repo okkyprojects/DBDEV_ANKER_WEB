@@ -592,7 +592,7 @@ class TransactionRepository
                 $q->whereNull('transactions.status')
                     ->orWhere('transactions.status', '>=', 1);
             })
-            ->groupBy('variants.uuid', 'variants.name', 'categories.name', 'brands.name')->get();
+            ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')->get();
 
         return $query;
     }
