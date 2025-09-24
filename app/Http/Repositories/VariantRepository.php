@@ -127,28 +127,40 @@ class VariantRepository
     public function export(Request $request)
     {
         $variants = $this->variant
+            ->whereNull('variants.deleted_at')
             ->with([
                 'product' => function ($q) {
-                    $q->with(['category', 'brand']);
+                    $q->whereNull('products.deleted_at')
+                        ->with(['category' => function ($q) {
+                            $q->whereNull('categories.deleted_at');
+                        }, 'brand' => function ($q) {
+                            $q->whereNull('brands.deleted_at');
+                        }]);
                 },
                 'total_stock'
             ])
+            ->whereHas('product', function ($q) {
+                $q->whereNull('products.deleted_at');
+            })
             ->when($request->input('search'), function ($q, $search) {
                 $q->whereHas('product', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
+                    $q->where('products.name', 'like', "%{$search}%");
                 });
             })
             ->when($request->input('category'), function ($q, $categoryName) {
                 $q->whereHas('product.category', function ($q) use ($categoryName) {
-                    $q->where('name', $categoryName);
+                    $q->where('categories.name', $categoryName);
                 });
             })
             ->when($request->input('brand'), function ($q, $brandName) {
                 $q->whereHas('product.brand', function ($q) use ($brandName) {
-                    $q->where('name', $brandName);
+                    $q->where('brands.name', $brandName);
                 });
             })
-            ->orderBy('created_at', 'desc')
+            ->join('products', 'variants.product_uuid', '=', 'products.uuid')
+            ->orderBy('products.name', 'asc')
+            ->orderBy('variants.name', 'asc')
+            ->select('variants.*')
             ->get();
 
         return $variants;

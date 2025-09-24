@@ -127,13 +127,15 @@ class TransactionRepository
             ])
             ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
-            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->leftJoin('transactions', function ($join) {
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
+                    ->where('transactions.status', '>=', 1);
+            })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
             ->whereNull('products.deleted_at')
             ->whereNull('categories.deleted_at')
             ->whereNull('brands.deleted_at')
-            ->where('transactions.status', '>=', 1)
             ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
@@ -161,6 +163,7 @@ class TransactionRepository
 
         return $query->paginate(10);
     }
+
 
     public function get_chart_data(Request $request)
     {
@@ -604,11 +607,7 @@ class TransactionRepository
                 'variants.img as variant_img',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((
-                SELECT SUM(vs.quantity)
-                FROM variant_stocks vs
-                WHERE vs.variant_uuid = variants.uuid
-            ), 0) as kuantitas'),
+                DB::raw('COALESCE((SELECT SUM(vs.quantity) FROM variant_stocks vs WHERE vs.variant_uuid = variants.uuid), 0) as kuantitas'),
                 DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
                 DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan')
             ])
@@ -616,22 +615,23 @@ class TransactionRepository
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
-            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->leftJoin('transactions', function ($join) {
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
+                    ->where('transactions.status', '>', 0)
+                    ->where('transactions.status', '<', 5);
+            })
             ->where('variants.product_uuid', $productUuid)
             ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
                 $start = Carbon::parse($request->startDate)->startOfDay();
-                $end = Carbon::parse($request->endDate)->endOfDay();
+                $end   = Carbon::parse($request->endDate)->endOfDay();
                 $q->whereBetween('transactions.created_at', [$start, $end]);
-            })
-            ->where(function ($q) {
-                $q->where('transactions.status', '>', 0)
-                    ->where('transactions.status', '<', 5);
             })
             ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')
             ->paginate(10);
 
         return $query;
     }
+
 
 
 
@@ -774,10 +774,15 @@ class TransactionRepository
             ])
             ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
-            ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
+            ->leftJoin('transactions', function ($join) {
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
+                    ->where('transactions.status', '>=', 1);
+            })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
-            ->where('transactions.status', '>=', 1)
+            ->whereNull('products.deleted_at')
+            ->whereNull('categories.deleted_at')
+            ->whereNull('brands.deleted_at')
             ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {

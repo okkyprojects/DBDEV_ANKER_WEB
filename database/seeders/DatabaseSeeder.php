@@ -33,20 +33,20 @@ class DatabaseSeeder extends Seeder
         $this->call(LocationSeeder::class);
         $this->call(UserSeeder::class);
         User::factory()->count(5)->create();
-        Category::factory()->count(50)->create();
-        Brand::factory()->count(5)->create();
-        Product::factory()->count(30)->create()->each(function ($product) {
-            Variant::factory()->count(rand(1, 3))->create([
-                'product_uuid' => $product->uuid,
-            ])->each(function ($variant) {
-                VariantStock::create([
-                    'uuid' => Str::uuid(),
-                    'variant_uuid' => $variant->uuid,
-                    'quantity' => rand(10, 100),
-                    'note' => 'Initial stock seeder',
-                ]);
-            });
-        });
+        // Category::factory()->count(50)->create();
+        // Brand::factory()->count(5)->create();
+        // Product::factory()->count(30)->create()->each(function ($product) {
+        //     Variant::factory()->count(rand(1, 3))->create([
+        //         'product_uuid' => $product->uuid,
+        //     ])->each(function ($variant) {
+        //         VariantStock::create([
+        //             'uuid' => Str::uuid(),
+        //             'variant_uuid' => $variant->uuid,
+        //             'quantity' => rand(10, 100),
+        //             'note' => 'Initial stock seeder',
+        //         ]);
+        //     });
+        // });
 
         // Cart::factory()->count(200)->create();
         // CartItem::factory()->count(500)->create();

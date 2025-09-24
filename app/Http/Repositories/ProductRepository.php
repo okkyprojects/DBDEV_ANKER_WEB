@@ -46,39 +46,71 @@ class ProductRepository
     }
     public function import(array $row)
     {
-        $category = $this->category->firstOrCreate(
-            ['name' => $row['category_name'] ?? ''],
-            ['uuid' => Str::uuid()]
-        );
-        $brand = $this->brand->firstOrCreate(
-            ['name' => $row['brand_name'] ?? ''],
-            ['uuid' => Str::uuid()]
-        );
+        if (empty($row['product_name'])) {
+            return false;
+        }
 
-        $product = $this->product->firstOrCreate(
-            ['name' => $row['product_name'] ?? ''],
-            [
-                'uuid'          => Str::uuid(),
-                'category_uuid' => $category->uuid,
-                'brand_uuid'    => $brand->uuid,
-                'img'           => $row['product_img'] ?? null,
-                'description'   => $row['description'] ?? null,
-            ]
-        );
-        $this->variant->firstOrCreate(
-            ['sku' => $row['sku'] ?? ''],
-            [
-                'uuid'           => Str::uuid(),
-                'product_uuid'   => $product->uuid,
-                'name'           => $row['variant_name'] ?? '',
-                'img'            => $row['variant_img'] ?? null,
-                'price'          => $row['price'] ?? 0,
-                'discount_price' => $row['discount_price'] ?? null,
-            ]
-        );
+        $category = $this->category
+            ->withTrashed()
+            ->firstOrCreate(
+                ['name' => $row['category_name'] ?? ''],
+                ['uuid' => Str::uuid()]
+            );
+        if ($category->trashed()) {
+            $category->restore();
+        }
+
+        $brand = $this->brand
+            ->withTrashed()
+            ->firstOrCreate(
+                ['name' => $row['brand_name'] ?? ''],
+                ['uuid' => Str::uuid()]
+            );
+        if ($brand->trashed()) {
+            $brand->restore();
+        }
+
+        $product = $this->product
+            ->withTrashed()
+            ->firstOrCreate(
+                [
+                    'name'          => $row['product_name'],
+                    'category_uuid' => $category->uuid,
+                    'brand_uuid'    => $brand->uuid,
+                ],
+                [
+                    'uuid'        => Str::uuid(),
+                    'img'         => $row['product_img'] ?? null,
+                    'description' => $row['description'] ?? null,
+                ]
+            );
+        if ($product->trashed()) {
+            $product->restore();
+        }
+
+        if (!empty($row['sku'])) {
+            $variant = $this->variant
+                ->withTrashed()
+                ->firstOrCreate(
+                    ['sku' => $row['sku']],
+                    [
+                        'uuid'           => Str::uuid(),
+                        'product_uuid'   => $product->uuid,
+                        'name'           => $row['variant_name'] ?? '',
+                        'img'            => $row['variant_img'] ?? null,
+                        'price'          => $row['price'] ?? 0,
+                        'discount_price' => $row['discount_price'] ?? null,
+                    ]
+                );
+            if ($variant->trashed()) {
+                $variant->restore();
+            }
+        }
 
         return true;
     }
+
+
 
 
 
