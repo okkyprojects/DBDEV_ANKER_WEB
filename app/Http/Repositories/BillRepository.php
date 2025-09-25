@@ -135,7 +135,7 @@ class BillRepository
 
     public function destroy($uuid)
     {
-        $bill = $this->bill->where('uuid', $uuid)->where('user_id', Auth::id())->first();
+        $bill = $this->bill->where('uuid', $uuid)->first();
 
         if (!$bill) {
             return $this->response->notFound();
@@ -145,7 +145,7 @@ class BillRepository
         $bill->delete();
 
         if ($wasMain) {
-            $another = $this->bill->where('user_id', Auth::id())->first();
+            $another = $this->bill->first();
             if ($another) {
                 $another->update(['is_main' => true]);
             }
