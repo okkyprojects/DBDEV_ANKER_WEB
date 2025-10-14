@@ -62,6 +62,7 @@ class CartRepository
                     'itemcart_uuid'   => $variant->pivot->uuid,
                     'variant_uuid'    => $variant->uuid,
                     'variant_name'    => $variant->name,
+                    'variant_sku'    => $variant->sku,
                     'quantity'        => $variant->pivot->quantity,
                     'discount_price'  => $variant->discount_price,
                     'price'           => $variant->price,
