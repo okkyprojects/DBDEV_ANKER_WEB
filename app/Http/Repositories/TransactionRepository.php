@@ -843,7 +843,7 @@ class TransactionRepository
         $transaction = $this->transaction
             ->with([
                 'user',
-                'items',
+                'items.variant',
                 'address.province',
                 'address.city',
                 'address.district',
