@@ -337,7 +337,7 @@ export default function ManajemenPesanan({ data }) {
                                                             Detail Pesanan
                                                         </button>
 
-                                                        {item.status === 1 && (
+                                                        {item.status == 1 && (
                                                             <button
                                                                 onClick={() => {
                                                                     setPesanan(
@@ -354,8 +354,8 @@ export default function ManajemenPesanan({ data }) {
                                                                 Pesanan
                                                             </button>
                                                         )}
-                                                        {item.status !== 3 &&
-                                                            item.status !==
+                                                        {item.status != 3 &&
+                                                            item.status !=
                                                                 4 && (
                                                                 <button
                                                                     onClick={() => {
