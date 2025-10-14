@@ -67,7 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/data-produk/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit'); //
             // Route::post('/data-produk/{uuid}', [ProductController::class, 'update'])->name('product.update'); /
             Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
-        Route::delete('/bulk-delete/data-produk', [ProductController::class, 'bulk_destroy'])->name('product.bulk_destroy');
+            Route::delete('/bulk-delete/data-produk', [ProductController::class, 'bulk_destroy'])->name('product.bulk_destroy');
             Route::get('/download-template-produk', [ProductController::class, 'downloadTemplate'])->name('product.downloadTemplate');
         });
     Route::prefix('reporting')
@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/manajemen-pesanan', [TransactionController::class, 'index'])->name('manajemen.index');
             Route::get('/export-pesanan', [TransactionController::class, 'export'])->name('manajemen.export');
+            Route::post('/import-pesanan', [TransactionController::class, 'import'])->name('manajemen.import');
             Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
             Route::post('/manajemen-pesanan/{uuid}', [TransactionController::class, 'update'])->name('manajemen.update');
         });

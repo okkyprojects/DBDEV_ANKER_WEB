@@ -85,6 +85,9 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                                         {product.product_name}
                                                     </div>
                                                     <div className="text-xs text-neutral-600">
+                                                        SKU : {product.variant.sku}
+                                                    </div>
+                                                    <div className="text-xs text-neutral-600">
                                                         {product.variant_name}
                                                     </div>
                                                     <div className="text-xs text-neutral-600 mt-0.5 mb-1">

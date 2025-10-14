@@ -30,7 +30,7 @@ class ExpireTransaction extends Command
         $count = Transaction::where('status', 0)
             ->where('expired_at', '<', Carbon::now())
             ->update([
-                'status' => 6,
+                'status' => 4,
                 'updated_at' => now()
             ]);
 

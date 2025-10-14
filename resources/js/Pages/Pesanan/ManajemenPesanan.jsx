@@ -20,6 +20,9 @@ import { router } from "@inertiajs/react";
 import { statusBadge } from "@/Config/const";
 import moment from "moment";
 import ModalUpdatePesanan from "@/Components/Modal/Pesanan/ModalUpdatePesanan";
+import { PiMoneyLight, PiWarningLight } from "react-icons/pi";
+import { HiOutlineUpload } from "react-icons/hi";
+import ModalImport from "@/Components/Modal/Pesanan/ModalImport";
 
 export default function ManajemenPesanan({ data }) {
     console.log(data);
@@ -28,6 +31,7 @@ export default function ManajemenPesanan({ data }) {
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [showModalFilter, setShowModalFilter] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(null);
+    const [showModalImport, setShowModalImport] = useState(false);
     const toggleDropdown = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
@@ -76,29 +80,36 @@ export default function ManajemenPesanan({ data }) {
     }, [search]);
     const dataCard = [
         {
-            title: "Pesanan Selesai",
-            count: data?.summary?.pesanan_selesai ?? 0,
-            iconBg: "bg-green-100",
-            iconColor: "text-green-500",
-            icon: <PiCheckCircleLight size={24} />,
-        },
-        {
-            title: "Pesanan Sudah Dibayar",
-            count: data?.summary?.pesanan_belum_diproses ?? 0,
+            title: "Belum Dibayar",
+            count: data?.summary?.pesanan_belum_dibayar ?? 0,
             iconBg: "bg-yellow-100",
             iconColor: "text-yellow-500",
             icon: <PiClockLight size={24} />,
         },
         {
-            title: "Pesanan Dikirim",
-            count: data?.summary?.pesanan_dikirim ?? 0,
+            title: "Menunggu Konfirmasi",
+            count: data?.summary?.pesanan_menunggu_konfirmasi ?? 0,
             iconBg: "bg-blue-100",
             iconColor: "text-blue-500",
-            icon: <PiTruckLight size={24} />,
+            icon: <PiWarningLight size={24} />,
         },
         {
-            title: "Pesanan Ditolak",
-            count: data?.summary?.pesanan_ditolak ?? 0,
+            title: "Sudah Dibayar",
+            count: data?.summary?.pesanan_sudah_dibayar ?? 0,
+            iconBg: "bg-green-100",
+            iconColor: "text-green-500",
+            icon: <PiMoneyLight size={24} />,
+        },
+        {
+            title: "Kadaluwarsa",
+            count: data?.summary?.pesanan_kadaluwarsa ?? 0,
+            iconBg: "bg-gray-100",
+            iconColor: "text-gray-500",
+            icon: <PiClockLight size={24} />,
+        },
+        {
+            title: "Dibatalkan Penjual",
+            count: data?.summary?.pesanan_dibatalkan ?? 0,
             iconBg: "bg-red-100",
             iconColor: "text-red-500",
             icon: <PiXCircleLight size={24} />,
@@ -135,7 +146,7 @@ export default function ManajemenPesanan({ data }) {
                                 type="text"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Cari produk"
+                                placeholder="Cari pesanan"
                                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                             />
                         </div>
@@ -145,6 +156,14 @@ export default function ManajemenPesanan({ data }) {
                         >
                             <GrFilter size={20} />
                         </button>
+                        {/* <button
+                            onClick={() => {
+                                setShowModalImport(!showModalImport);
+                            }}
+                            className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
+                        >
+                            <HiOutlineUpload size={20} />
+                        </button> */}
                         <a
                             href={route("pesanan.manajemen.export", {
                                 search: searchParams.get("search") || "",
@@ -161,11 +180,11 @@ export default function ManajemenPesanan({ data }) {
                     </div>
                 </div>
                 {/* KARTU STATISTIK */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5">
                     {dataCard.map((item, index) => (
                         <div
                             key={index}
-                            className="bg-white rounded-xl p-5 flex items-center gap-4"
+                            className="bg-white rounded-xl py-3 px-3 flex items-center gap-4"
                         >
                             <div
                                 className={`p-3 rounded-xl ${item.iconBg} ${item.iconColor}`}
@@ -240,45 +259,45 @@ export default function ManajemenPesanan({ data }) {
                                                 {index + 1}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.transaction_code}
+                                                {item?.transaction_code}
                                             </td>{" "}
                                             <td className="px-4 py-5">
-                                                {moment(item.created_at).format(
+                                                {moment(item?.created_at).format(
                                                     "DD/MM/YYYY, HH:mm"
                                                 )}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.user.name}
+                                                {item?.user?.name}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.user.email}
+                                                {item?.user?.email}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.user.phone_number}
+                                                {item?.user?.phone_number}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.address.address}
+                                                {item?.address?.address}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.address.province.nama}
+                                                {item?.address?.province?.nama}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.address.city.nama}
+                                                {item?.address?.city?.nama}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.address.postal_code}
+                                                {item?.address?.postal_code}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {formatRupiah(item.total_price)}
+                                                {formatRupiah(item?.total_price)}
                                             </td>
                                             <td className="px-4 py-5">
                                                 <span
                                                     className={`px-2 py-1 text-xs font-semibold rounded-full  ${
-                                                        statusBadge[item.status]
+                                                        statusBadge[item?.status]
                                                             ?.className
                                                     }`}
                                                 >
-                                                    {statusBadge[item.status]
+                                                    {statusBadge[item?.status]
                                                         ?.label ??
                                                         "Tidak Diketahui"}
                                                 </span>
@@ -324,63 +343,28 @@ export default function ManajemenPesanan({ data }) {
                                                                     setPesanan(
                                                                         item
                                                                     );
-                                                                    setAksi(2); // Proses Pesanan
+                                                                    setAksi(2);
                                                                     setShowUpdateModal(
                                                                         true
                                                                     );
                                                                 }}
                                                                 className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
                                                             >
-                                                                Proses Pesanan
+                                                                Konfirmasi
+                                                                Pesanan
                                                             </button>
                                                         )}
-
-                                                        {item.status === 2 && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPesanan(
-                                                                        item
-                                                                    );
-                                                                    setAksi(3); // Proses Pengiriman
-                                                                    setShowUpdateModal(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                            >
-                                                                Proses
-                                                                Pengiriman
-                                                            </button>
-                                                        )}
-
-                                                        {item.status === 3 && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPesanan(
-                                                                        item
-                                                                    );
-                                                                    setAksi(4); // Selesai Pesanan
-                                                                    setShowUpdateModal(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                            >
-                                                                Selesai Pesanan
-                                                            </button>
-                                                        )}
-
-                                                        {item.status !== 4 &&
+                                                        {item.status !== 3 &&
                                                             item.status !==
-                                                                5 && (
+                                                                4 && (
                                                                 <button
                                                                     onClick={() => {
                                                                         setPesanan(
                                                                             item
                                                                         );
                                                                         setAksi(
-                                                                            5
-                                                                        ); // Batalkan Pesanan
+                                                                            3
+                                                                        );
                                                                         setShowUpdateModal(
                                                                             true
                                                                         );
@@ -392,7 +376,7 @@ export default function ManajemenPesanan({ data }) {
                                                                 </button>
                                                             )}
 
-                                                        <button
+                                                        {/* <button
                                                             onClick={() => {
                                                                 setPesanan(
                                                                     item
@@ -404,7 +388,7 @@ export default function ManajemenPesanan({ data }) {
                                                             className="text-error-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
                                                         >
                                                             Hapus Pesanan
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                 </div>
                                             )}
@@ -490,6 +474,26 @@ export default function ManajemenPesanan({ data }) {
                                 isOpen={showModalFilter}
                                 onClose={() => {
                                     setShowModalFilter(!showModalFilter);
+                                }}
+                                data={data}
+                                onApplyFilter={handleApplyFilter}
+                            />
+                        </div>
+                    </div>
+                )}
+                {showModalImport && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showModalImport
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalImport
+                                isOpen={showModalImport}
+                                onClose={() => {
+                                    setShowModalImport(!showModalImport);
                                 }}
                                 data={data}
                                 onApplyFilter={handleApplyFilter}

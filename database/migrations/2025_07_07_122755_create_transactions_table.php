@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('total_price');
             $table->bigInteger('admin_fee')->default(0);
             $table->bigInteger('grand_total');
-            $table->unsignedTinyInteger('status')->default(0); // 0=unpaid, 1=paid, 2=processing, 3=shipping, 4=completed, 5=failed, 6=expired
+            $table->unsignedTinyInteger('status')->default(0); // 0=unpaid, 1=menunggu verifikasi, 2=paid 3=failed, 4=expired
             $table->timestamp('unpaid_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('processing_at')->nullable();

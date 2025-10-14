@@ -168,25 +168,19 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
                                                 className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                             >
                                                 <option value="">
-                                                    Pilih status
+                                                    Pilih Status
                                                 </option>
                                                 <option value="0">
                                                     Belum Dibayar
                                                 </option>
                                                 <option value="1">
-                                                    Sudah Dibayar
+                                                    Menunggu Verifikasi
                                                 </option>
                                                 <option value="2">
-                                                    Sedang Diproses
+                                                    Sudah Dibayar
                                                 </option>
-                                                <option value="3">
-                                                    Sedang Dikirim
-                                                </option>
+                                                <option value="3">Dibatalkan Penjual</option>
                                                 <option value="4">
-                                                    Selesai
-                                                </option>
-                                                <option value="5">Gagal</option>
-                                                <option value="6">
                                                     Kedaluwarsa
                                                 </option>
                                             </select>

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Repositories\BrandRepository;
 use App\Http\Repositories\CategoryRepository;
 use App\Http\Repositories\TransactionRepository;
+use App\Imports\ProductImport;
+use App\Imports\TransactionImport;
 use App\Traits\Response;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -56,5 +58,18 @@ class TransactionController extends Controller
     {
         $data = $this->transactionRepository->destroy($uuid);
         return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv'
+        ]);
+
+        Excel::import(
+            new TransactionImport($this->transactionRepository),
+            request()->file('file')
+        );
+
+        return redirect()->route('produk.product.index')->with('success', 'Produk dan varian berhasil disimpan!');
     }
 }

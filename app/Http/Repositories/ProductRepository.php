@@ -149,7 +149,7 @@ class ProductRepository
                 ],
                 [
                     'uuid' => Str::uuid(),
-                    'img' => $row['product_img'] ?? null,
+                    'img' => !empty($row['product_img']) ? $row['product_img'] : '/images/no/product.jpg',
                     'description' => $row['description'] ?? null,
                 ]
             );
@@ -165,7 +165,7 @@ class ProductRepository
                         'uuid' => Str::uuid(),
                         'product_uuid' => $product->uuid,
                         'name' => $row['variant_name'] ?? '',
-                        'img' => $row['variant_img'] ?? null,
+                        'img' => !empty($row['variant_img']) ? $row['variant_img'] : '/images/no/product.jpg',
                         'price' => $row['price'] ?? 0,
                         'discount_price' => $row['discount_price'] ?? null,
                     ]
@@ -177,7 +177,7 @@ class ProductRepository
                     'uuid' => Str::uuid(),
                     'variant_uuid' => $variant->uuid,
                     'quantity' => $row['stock'],
-                    'note' => $row['note'] ?? null, 
+                    'note' => $row['note'] ?? null,
                 ]);
             }
         }

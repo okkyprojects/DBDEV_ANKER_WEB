@@ -11,6 +11,10 @@ use App\Models\TransactionBill;
 use App\Models\Variant;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\City;
+use App\Models\Product;
+use App\Models\Province;
+use App\Models\User;
 use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\MessageBag;
 
 class TransactionRepository
@@ -33,6 +38,10 @@ class TransactionRepository
     private $variant;
     private $cartItem;
     private $cart;
+    private $user;
+    private $product;
+    private $province;
+    private $city;
 
     public function __construct(
         Response $response,
@@ -44,7 +53,11 @@ class TransactionRepository
         Address $address,
         Variant $variant,
         CartItem $cartItem,
-        Cart $cart
+        Cart $cart,
+        User $user,
+        Product $product,
+        Province $province,
+        City $city,
     ) {
         $this->response = $response;
         $this->transaction = $transaction;
@@ -56,6 +69,10 @@ class TransactionRepository
         $this->variant = $variant;
         $this->cartItem = $cartItem;
         $this->cart = $cart;
+        $this->user = $user;
+        $this->product = $product;
+        $this->province = $province;
+        $this->city = $city;
     }
     // public function index_penjualan(Request $request)
     // {
@@ -640,7 +657,7 @@ class TransactionRepository
         $query = $this->transaction
             ->with([
                 'user',
-                'items',
+                'items.variant',
                 'address.province',
                 'address.city',
                 'address.district',
@@ -703,36 +720,39 @@ class TransactionRepository
             $end   = Carbon::parse($request->endDate)->endOfDay();
             $baseQuery->whereBetween('created_at', [$start, $end]);
         }
+
         $counts = [
-            'pesanan_selesai'         => (clone $baseQuery)->where('status', 4)->count(),
-            'pesanan_belum_diproses'  => (clone $baseQuery)->where('status', 1)->count(),
-            'pesanan_dikirim'         => (clone $baseQuery)->where('status', 3)->count(),
-            'pesanan_ditolak'         => (clone $baseQuery)->where('status', 5)->count(),
+            'pesanan_belum_dibayar'   => (clone $baseQuery)->where('status', 0)->count(),
+            'pesanan_menunggu_konfirmasi'  => (clone $baseQuery)->where('status', 1)->count(),
+            'pesanan_sudah_dibayar'   => (clone $baseQuery)->where('status', 2)->count(),
+            'pesanan_dibatalkan'           => (clone $baseQuery)->where('status', 3)->count(),
+            'pesanan_kadaluwarsa'     => (clone $baseQuery)->where('status', 4)->count(),
         ];
 
         return $counts;
     }
-
     public function export_pesanan(Request $request)
     {
-        $query = $this->transaction
+        $query = $this->transactionItem
             ->with([
-                'user',
-                'items',
-                'address.province',
-                'address.city',
-                'address.district',
-                'bill'
+                'transaction.user',
+                'transaction.address.province',
+                'transaction.address.city',
+                'transaction.address.district',
+                'transaction.bill',
+                'variant.product'
             ])
             ->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
-            $query->where('user_id', Auth::id());
+            $query->whereHas('transaction', function ($q) {
+                $q->where('user_id', Auth::id());
+            });
         }
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            $query->whereHas('transaction', function ($q) use ($search) {
                 $q->where('uuid', 'like', "%$search%")
                     ->orWhere('transaction_code', 'like', "%$search%")
                     ->orWhere('note', 'like', "%$search%")
@@ -744,17 +764,22 @@ class TransactionRepository
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->whereHas('transaction', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            });
         }
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
             $end   = Carbon::parse($request->endDate)->endOfDay();
-            $query->whereBetween('created_at', [$start, $end]);
+            $query->whereHas('transaction', function ($q) use ($start, $end) {
+                $q->whereBetween('created_at', [$start, $end]);
+            });
         }
 
         return $query->get();
     }
+
     public function export_penjualan(Request $request)
     {
         $query = DB::table('products')
@@ -896,7 +921,7 @@ class TransactionRepository
                 'variant_uuid'     => $variant->uuid,
                 'product_name'     => $variant->product->name,
                 'variant_name'     => $variant->name,
-                'img'              => $variant->img,
+                'img' => $variant->img ?? '/images/no/product.jpg',
                 'quantity'         => $quantity,
                 'price'            => $price,
             ];
@@ -1048,5 +1073,105 @@ class TransactionRepository
             'note' => 'nullable|string',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
         ];
+    }
+    public function import(array $row)
+    {
+        if (empty($row['email'])) return null;
+
+        // 1. Ambil atau buat user
+        $user = $this->user->firstOrCreate(
+            ['email' => $row['email']],
+            [
+                'name' => $row['nama_pemesan'] ?? 'Unknown',
+                'phone_number' => $row['no_hp'] ?? null,
+                'uuid' => Str::uuid(),
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        // 🔹 2. Cari provinsi dan kota berdasarkan NAMA (bukan ID)
+        $province = $this->province
+            ->whereRaw('UPPER(nama) = ?', [strtoupper($row['provinsi'] ?? '')])
+            ->first();
+
+        $city = $this->city
+            ->whereRaw('UPPER(nama) = ?', [strtoupper($row['kota'] ?? '')])
+            ->first();
+
+        // 🔹 3. Ambil atau buat alamat
+        $address = $this->address->firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'address' => $row['alamat'] ?? '-',
+            ],
+            [
+                'name' => $row['nama_penerima'] ?? $user->name,
+                'phone_number' => $row['phone_penerima'] ?? $user->phone_number,
+                'province_id' => $province->id ?? null,
+                'city_id' => $city->id ?? null,
+                'postal_code' => $row['kode_pos'] ?? null,
+                'uuid' => Str::uuid(),
+            ]
+        );
+
+        // 🔹 4. Generate kode transaksi otomatis
+        $transactionCode = $this->generateTransactionCode();
+
+        // 🔹 5. Buat transaksi
+        $transaction = $this->transaction->firstOrCreate(
+            ['transaction_code' => $transactionCode],
+            [
+                'user_id' => $user->id,
+                'address_id' => $address->id,
+                'total_price' => $row['total_harga'] ?? 0,
+                'grand_total' => $row['grand_total'] ?? 0,
+                'admin_fee' => $row['admin_fee'] ?? 0,
+                'status' => $row['status'] ?? 0,
+                'uuid' => Str::uuid(),
+            ]
+        );
+
+        // 🔹 6. Buat item transaksi (jika ada)
+        if (!empty($row['sku'])) {
+            $variant = $this->variant->where('sku', $row['sku'])->first();
+
+            if (!$variant) {
+                // fallback produk jika belum ada
+                $product = $this->product->firstOrCreate(
+                    ['name' => $row['product_name'] ?? 'Unknown'],
+                    [
+                        'uuid' => Str::uuid(),
+                        'img' => '/images/no/product.jpg',
+                    ]
+                );
+
+                $variant = $this->variant->firstOrCreate(
+                    ['sku' => $row['sku']],
+                    [
+                        'product_uuid' => $product->uuid,
+                        'name' => $row['variant_name'] ?? '-',
+                        'img' => '/images/no/product.jpg',
+                        'price' => $row['harga'] ?? 0,
+                        'uuid' => Str::uuid(),
+                    ]
+                );
+            } else {
+                $product = $variant->product; // ambil produk dari relasi
+            }
+
+            $this->transactionItem->create([
+                'transaction_id' => $transaction->id,
+                'variant_id' => $variant->id,
+                'product_name' => $product->name ?? $row['product_name'] ?? 'Unknown',
+                'variant_name' => $variant->name ?? $row['variant_name'] ?? '-',
+                'img' => $variant->img ?? $row['variant_img'] ?? '-',
+                'quantity' => $row['quantity'] ?? 1,
+                'price' => $row['harga'] ?? 0,
+                'subtotal' => ($row['quantity'] ?? 1) * ($row['harga'] ?? 0),
+                'uuid' => Str::uuid(),
+            ]);
+        }
+
+        return $transaction;
     }
 }
