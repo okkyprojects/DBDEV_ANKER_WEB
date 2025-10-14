@@ -720,6 +720,9 @@ class TransactionRepository
             $end   = Carbon::parse($request->endDate)->endOfDay();
             $baseQuery->whereBetween('created_at', [$start, $end]);
         }
+        if ($request->filled('status')) {
+            $baseQuery->where('status', $request->status);
+        }
 
         $counts = [
             'pesanan_belum_dibayar'   => (clone $baseQuery)->where('status', 0)->count(),
