@@ -174,7 +174,7 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
                                                     Belum Dibayar
                                                 </option>
                                                 <option value="1">
-                                                    Konfirmasi Pembayaran
+                                                    Menunggu Konfirmasi
                                                 </option>
                                                 <option value="2">
                                                     Pesanan Diproses

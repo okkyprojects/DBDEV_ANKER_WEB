@@ -62,7 +62,7 @@
                     @php
                         $statusList = [
                             0 => 'Belum Dibayar',
-                            1 => 'Konfirmasi Pembayaran',
+                            1 => 'Menunggu Konfirmasi',
                             2 => 'Pesanan Diproses',
                             3 => 'Pesanan Dikirim',
                             4 => 'Pesanan Selesai',

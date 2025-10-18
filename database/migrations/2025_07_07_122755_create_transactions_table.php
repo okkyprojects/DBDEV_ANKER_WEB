@@ -19,7 +19,7 @@ return new class extends Migration
             $table->bigInteger('total_price');
             $table->bigInteger('admin_fee')->default(0);
             $table->bigInteger('grand_total');
-            $table->unsignedTinyInteger('status')->default(0); // 0=Belum Dibayar , 1=Konfirmasi Pembayaran, 2=Pesanan Diproses 3=Pesanan Dikirim, 4=Pesanan Selesai, 5=Cancel
+            $table->unsignedTinyInteger('status')->default(0); // 0=Belum Dibayar , 1=Menunggu Konfirmasi, 2=Pesanan Diproses 3=Pesanan Dikirim, 4=Pesanan Selesai, 5=Cancel
             $table->timestamp('unpaid_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('processing_at')->nullable();

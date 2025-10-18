@@ -18,7 +18,7 @@ const ModalBatalPesanan = ({ isOpen, onClose, item, aksi }) => {
             case 0:
                 return "Belum Dibayar";
             case 1:
-                return "Konfirmasi Pembayaran";
+                return "Menunggu Konfirmasi";
             case 2:
                 return "Pesanan Diproses";
             case 3:

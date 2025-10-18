@@ -353,7 +353,7 @@ export default function Payment() {
                             disabled={!proof}
                         >
                             <FaCircleCheck size={18} />
-                            Konfirmasi Pembayaran
+                            Menunggu Konfirmasi
                         </button>
                     </div>
                 </div>

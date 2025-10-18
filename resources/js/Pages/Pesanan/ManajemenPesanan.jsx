@@ -81,51 +81,50 @@ export default function ManajemenPesanan({ data }) {
             );
         }, 500);
     }, [search]);
-   const dataCard = [
-       {
-           title: "Belum Dibayar",
-           count: data?.summary?.pesanan_belum_dibayar ?? 0,
-           iconBg: "bg-yellow-100",
-           iconColor: "text-yellow-500",
-           icon: <PiClockLight size={24} />,
-       },
-       {
-           title: "Konfirmasi Pembayaran",
-           count: data?.summary?.pesanan_konfirmasi_pembayaran ?? 0,
-           iconBg: "bg-blue-100",
-           iconColor: "text-blue-500",
-           icon: <PiWarningLight size={24} />,
-       },
-       {
-           title: "Pesanan Diproses",
-           count: data?.summary?.pesanan_diproses ?? 0,
-           iconBg: "bg-indigo-100",
-           iconColor: "text-indigo-500",
-           icon: <PiGearLight size={24} />,
-       },
-       {
-           title: "Pesanan Dikirim",
-           count: data?.summary?.pesanan_dikirim ?? 0,
-           iconBg: "bg-cyan-100",
-           iconColor: "text-cyan-500",
-           icon: <PiTruckLight size={24} />,
-       },
-       {
-           title: "Pesanan Selesai",
-           count: data?.summary?.pesanan_selesai ?? 0,
-           iconBg: "bg-green-100",
-           iconColor: "text-green-500",
-           icon: <PiCheckCircleLight size={24} />,
-       },
-       {
-           title: "Cancel",
-           count: data?.summary?.pesanan_dibatalkan ?? 0,
-           iconBg: "bg-red-100",
-           iconColor: "text-red-500",
-           icon: <PiXCircleLight size={24} />,
-       },
-   ];
-
+    const dataCard = [
+        {
+            title: "Belum Dibayar",
+            count: data?.summary?.pesanan_belum_dibayar ?? 0,
+            iconBg: "bg-yellow-100",
+            iconColor: "text-yellow-500",
+            icon: <PiClockLight size={24} />,
+        },
+        {
+            title: "Menunggu Konfirmasi",
+            count: data?.summary?.pesanan_konfirmasi_pembayaran ?? 0,
+            iconBg: "bg-blue-100",
+            iconColor: "text-blue-500",
+            icon: <PiWarningLight size={24} />,
+        },
+        {
+            title: "Pesanan Diproses",
+            count: data?.summary?.pesanan_diproses ?? 0,
+            iconBg: "bg-indigo-100",
+            iconColor: "text-indigo-500",
+            icon: <PiGearLight size={24} />,
+        },
+        {
+            title: "Pesanan Dikirim",
+            count: data?.summary?.pesanan_dikirim ?? 0,
+            iconBg: "bg-cyan-100",
+            iconColor: "text-cyan-500",
+            icon: <PiTruckLight size={24} />,
+        },
+        {
+            title: "Pesanan Selesai",
+            count: data?.summary?.pesanan_selesai ?? 0,
+            iconBg: "bg-green-100",
+            iconColor: "text-green-500",
+            icon: <PiCheckCircleLight size={24} />,
+        },
+        {
+            title: "Cancel",
+            count: data?.summary?.pesanan_dibatalkan ?? 0,
+            iconBg: "bg-red-100",
+            iconColor: "text-red-500",
+            icon: <PiXCircleLight size={24} />,
+        },
+    ];
 
     const handleApplyFilter = (filters) => {
         const params = {

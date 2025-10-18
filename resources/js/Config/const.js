@@ -4,7 +4,7 @@ export const statusBadge = {
         className: "bg-yellow-100 text-yellow-700",
     },
     1: {
-        label: () => "Konfirmasi Pembayaran",
+        label: () => "Menunggu Konfirmasi",
         className: "bg-blue-100 text-blue-700",
     },
     2: {
