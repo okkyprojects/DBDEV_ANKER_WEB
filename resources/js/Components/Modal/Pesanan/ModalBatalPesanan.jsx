@@ -35,19 +35,33 @@ const ModalBatalPesanan = ({ isOpen, onClose, item, aksi }) => {
     if (!isOpen) return null;
 
     const handleUpdateStatus = () => {
+        const payload = {
+            status: aksi,
+            note_transaction: data.note_transaction,
+        };
         const now = moment().format("YYYY-MM-DD HH:mm:ss");
 
-        setData({
-            ...data,
-            status: aksi,
-            ...(aksi === 1 && { paid_at: now }),
-            ...(aksi === 2 && { processing_at: now }),
-            ...(aksi === 3 && { shipping_at: now }),
-            ...(aksi === 4 && { completed_at: now }),
-            ...(aksi === 5 && { failed_at: now }),
-        });
+        switch (aksi) {
+            case 1:
+                payload.paid_at = now;
+                break;
+            case 2:
+                payload.processing_at = now;
+                break;
+            case 3:
+                payload.shipping_at = now;
+                break;
+            case 4:
+                payload.completed_at = now;
+                break;
+            case 5:
+                payload.failed_at = now;
+                break;
+            default:
+                break;
+        }
 
-        post(route("pesanan.manajemen.update", item.uuid), {
+        post(route("pesanan.manajemen.update", item.uuid), payload, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(
