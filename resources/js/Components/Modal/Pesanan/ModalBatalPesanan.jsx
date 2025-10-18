@@ -14,56 +14,40 @@ const ModalBatalPesanan = ({ isOpen, onClose, item, aksi }) => {
     }, [isOpen]);
 
     const getAksiLabel = (aksi) => {
-  switch (aksi) {
-      case 0:
-          return "Belum Dibayar";
-      case 1:
-          return "Konfirmasi Pembayaran";
-      case 2:
-          return "Pesanan Diproses";
-      case 3:
-          return "Pesanan Dikirim";
-      case 4:
-          return "Pesanan Selesai";
-      case 5:
-          return "Dibatalkan";
-      default:
-          return "Tidak Diketahui";
-  }
-
+        switch (aksi) {
+            case 0:
+                return "Belum Dibayar";
+            case 1:
+                return "Konfirmasi Pembayaran";
+            case 2:
+                return "Pesanan Diproses";
+            case 3:
+                return "Pesanan Dikirim";
+            case 4:
+                return "Pesanan Selesai";
+            case 5:
+                return "Dibatalkan";
+            default:
+                return "Tidak Diketahui";
+        }
     };
 
     if (!isOpen) return null;
 
     const handleUpdateStatus = () => {
-        const payload = {
-            status: aksi,
-            note_transaction: data.note_transaction,
-        };
         const now = moment().format("YYYY-MM-DD HH:mm:ss");
 
-        switch (aksi) {
-            case 1:
-                payload.paid_at = now;
-                break;
-            case 2:
-                payload.processing_at = now;
-                break;
-            case 3:
-                payload.shipping_at = now;
-                break;
-            case 4:
-                payload.completed_at = now;
-                break;
-            case 5:
-                payload.failed_at = now;
-                break;
-            default:
-                break;
-        }
+        setData({
+            ...data,
+            status: aksi,
+            ...(aksi === 1 && { paid_at: now }),
+            ...(aksi === 2 && { processing_at: now }),
+            ...(aksi === 3 && { shipping_at: now }),
+            ...(aksi === 4 && { completed_at: now }),
+            ...(aksi === 5 && { failed_at: now }),
+        });
 
         post(route("pesanan.manajemen.update", item.uuid), {
-            data: payload,
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(
