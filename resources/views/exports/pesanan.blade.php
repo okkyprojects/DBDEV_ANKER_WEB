@@ -17,7 +17,10 @@
             <th>Quantity</th>
             <th>Harga</th>
             <th>Total Harga</th>
+            <th>Bukti Pembayaran</th>
+            <th>Catatan</th>
             <th>Status</th>
+            <th>Keterangan Batal</th>
         </tr>
     </thead>
     <tbody>
@@ -44,16 +47,35 @@
                 <td>{{ $item->quantity }}</td>
                 <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                 <td>Rp {{ number_format($item->subtotal ?? $item->price * $item->quantity, 0, ',', '.') }}</td>
-
                 <td>
-                    {{ [
-                        0 => 'Belum Dibayar',
-                        1 => 'Menunggu Konfirmasi',
-                        2 => 'Sudah Dibayar',
-                        3 => 'Dibatalkan Penjual',
-                        4 => 'Kedaluwarsa',
-                    ][$item->transaction->status] ?? 'Tidak Diketahui' }}
+                    @if (!empty($item->transaction->file))
+                        <a href="{{ url($item->transaction->file) }}" target="_blank"
+                            class="text-primary-600 hover:underline">
+                            Lihat Bukti Pembayaran
+                        </a>
+                    @else
+                        <span>-</span>
+                    @endif
                 </td>
+                <td>{{ $item->transaction->note }}</td>
+                <td>
+                    @php
+                        $statusList = [
+                            0 => 'Belum Dibayar',
+                            1 => 'Konfirmasi Pembayaran',
+                            2 => 'Pesanan Diproses',
+                            3 => 'Pesanan Dikirim',
+                            4 => 'Pesanan Selesai',
+                            5 => 'Cancel',
+                        ];
+                        $statusText = $statusList[$item->transaction->status] ?? 'Tidak Diketahui';
+                        if ($item->transaction->status == 4 && $item->transaction->completedBy) {
+                            $statusText .= ' - ' . $item->transaction->completedBy->name;
+                        }
+                    @endphp
+                    {{ $statusText }}
+                </td>
+                <td>{{ $item->note_transaction ?? '-' }}</td>
             </tr>
         @endforeach
     </tbody>

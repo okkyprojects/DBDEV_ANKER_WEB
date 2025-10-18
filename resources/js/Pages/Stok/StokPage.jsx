@@ -112,7 +112,7 @@ export default function StokPage({ data }) {
         if (selectAll) {
             setSelected([]);
         } else {
-            setSelected(data?.products?.data?.map((item) => item.uuid) || []);
+            setSelected(data?.products?.data?.map((item) => item?.uuid) || []);
         }
         setSelectAll(!selectAll);
     };
@@ -188,16 +188,16 @@ export default function StokPage({ data }) {
                             className="bg-white rounded-xl p-5 flex items-center gap-4"
                         >
                             <div
-                                className={`p-3 rounded-xl ${item.iconBg} ${item.iconColor}`}
+                                className={`p-3 rounded-xl ${item?.iconBg} ${item?.iconColor}`}
                             >
                                 <PiCubeLight size={24} />
                             </div>
                             <div className="flex flex-col gap-0.5">
                                 <p className="text-sm text-neutral-500">
-                                    {item.title}
+                                    {item?.title}
                                 </p>
                                 <p className="text-xl font-medium">
-                                    {item.count}
+                                    {item?.count}
                                 </p>
                             </div>
                         </div>
@@ -267,28 +267,28 @@ export default function StokPage({ data }) {
                                             <input
                                                 type="checkbox"
                                                 checked={selected.includes(
-                                                    item.uuid
+                                                    item?.uuid
                                                 )}
                                                 onChange={() =>
-                                                    handleSelect(item.uuid)
+                                                    handleSelect(item?.uuid)
                                                 }
                                                 className="accent-primary-600 checked:text-white"
                                             />
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.name}
+                                            {item?.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.category.name}
+                                            {item?.category?.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.brand.name}
+                                            {item?.brand?.name}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.variant_count}
+                                            {item?.variant_count}
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item.total_stock}
+                                            {item?.total_stock}
                                         </td>
                                         <td className="relative px-4 py-5">
                                             <button
@@ -313,7 +313,7 @@ export default function StokPage({ data }) {
                                                     <Link
                                                         href={route(
                                                             "produk.product.edit",
-                                                            item.uuid
+                                                            item?.uuid
                                                         )}
                                                         className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
                                                     >

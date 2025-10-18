@@ -20,16 +20,20 @@ const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
     }, [isOpen]);
     const getAksiLabel = (aksi) => {
         switch (aksi) {
+            case 0:
+                return "Belum Dibayar";
+            case 1:
+                return "Konfirmasi Pembayaran";
             case 2:
-                return "diproses";
+                return "Pesanan Diproses";
             case 3:
-                return "pengiriman barang";
+                return "Pesanan Dikirim";
             case 4:
-                return "selesai";
+                return "Pesanan Selesai";
             case 5:
-                return "dibatalkan";
+                return "Dibatalkan";
             default:
-                return "tidak diketahui";
+                return "Tidak Diketahui";
         }
     };
 
@@ -38,14 +42,24 @@ const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
         const payload = { status: aksi };
         const now = moment().format("YYYY-MM-DD HH:mm:ss");
 
-        if (aksi === 2) {
-            payload.processing_at = now;
-        } else if (aksi === 3) {
-            payload.shipping_at = now;
-        } else if (aksi === 4) {
-            payload.completed_at = now;
-        } else if (aksi === 5) {
-            payload.failed_at = now;
+        switch (aksi) {
+            case 1:
+                payload.paid_at = now;
+                break;
+            case 2:
+                payload.processing_at = now;
+                break;
+            case 3:
+                payload.shipping_at = now;
+                break;
+            case 4:
+                payload.completed_at = now;
+                break;
+            case 5:
+                payload.failed_at = now;
+                break;
+            default:
+                break;
         }
 
         router.post(route("pesanan.manajemen.update", item.uuid), payload, {

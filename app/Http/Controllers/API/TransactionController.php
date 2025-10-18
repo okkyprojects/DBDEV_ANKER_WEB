@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\PesananExport;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\CartRepository;
 use App\Http\Repositories\TransactionRepository;
 use App\Traits\Response;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -50,5 +52,12 @@ class TransactionController extends Controller
     {
         $data = $this->transactionRepository->destroy($id);
         return $data;
+    }
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new PesananExport($request, $this->transactionRepository),
+            'pesanan.xlsx'
+        );
     }
 }

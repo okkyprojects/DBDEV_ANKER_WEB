@@ -52,7 +52,7 @@ class Variant extends Model
                 FROM transaction_items
                 JOIN transactions ON transactions.uuid = transaction_items.transaction_uuid
                 WHERE transaction_items.variant_uuid = variant_stocks.variant_uuid
-                AND transactions.status IN (2)
+                AND transactions.status IN (2,3,4)
             ) as total_stock')
             ->groupBy('variant_uuid')
             ->withDefault([

@@ -174,14 +174,19 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
                                                     Belum Dibayar
                                                 </option>
                                                 <option value="1">
-                                                    Menunggu Verifikasi
+                                                    Konfirmasi Pembayaran
                                                 </option>
                                                 <option value="2">
-                                                    Sudah Dibayar
+                                                    Pesanan Diproses
                                                 </option>
-                                                <option value="3">Dibatalkan Penjual</option>
+                                                <option value="3">
+                                                    Pesanan Dikirim
+                                                </option>
                                                 <option value="4">
-                                                    Kedaluwarsa
+                                                    Pesanan Selesai
+                                                </option>
+                                                <option value="5">
+                                                    Cancel
                                                 </option>
                                             </select>
                                         </div>

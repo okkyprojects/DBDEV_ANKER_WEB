@@ -17,6 +17,7 @@ class Transaction extends Model
         'uuid',
         'transaction_code',
         'user_id',
+        'completed_by',
         'total_price',
         'admin_fee',
         'grand_total',
@@ -29,12 +30,17 @@ class Transaction extends Model
         'failed_at',
         'expired_at',
         'note',
+        'note_transaction',
         'file',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
+    }
+    public function completedBy()
+    {
+        return $this->belongsTo(User::class, 'completed_by', 'id')->withTrashed();
     }
     public function items()
     {

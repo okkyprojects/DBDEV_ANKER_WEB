@@ -60,6 +60,7 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('carts', CartController::class);
     Route::apiResource('transactions', TransactionController::class);
+    Route::get('/export-transactions', [TransactionController::class, 'export']);
     Route::apiResource('addresses', AddressController::class);
     Route::post('/profile', [ProfilController::class, 'store']);
     Route::get('/sellers/{id}', [SellerController::class, 'show']);

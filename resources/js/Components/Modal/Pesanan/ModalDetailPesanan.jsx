@@ -53,12 +53,16 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                         #{item?.transaction_code}
                                     </span>
                                     <span
-                                        className={`px-2 py-1 text-xs font-semibold rounded-full  ${
+                                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
                                             statusBadge[item.status]?.className
                                         }`}
                                     >
-                                        {statusBadge[item.status]?.label ??
-                                            "Tidak Diketahui"}
+                                        {typeof statusBadge[item.status]
+                                            ?.label === "function"
+                                            ? statusBadge[item.status].label(
+                                                  item
+                                              )
+                                            : statusBadge[item.status]?.label}
                                     </span>
                                 </div>
                                 <span className="text-neutral-500 text-sm">
@@ -85,7 +89,8 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                                         {product.product_name}
                                                     </div>
                                                     <div className="text-xs text-neutral-600">
-                                                        SKU : {product.variant.sku}
+                                                        SKU :{" "}
+                                                        {product.variant.sku}
                                                     </div>
                                                     <div className="text-xs text-neutral-600">
                                                         {product.variant_name}
@@ -183,6 +188,12 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                         {formatRupiah(item?.admin_fee)}
                                     </span>
                                 </div>
+                            </div>
+                            <div className="mb-6">
+                                <p className="text-neutral-900 text-sm font-medium mb-1">
+                                    Catatan
+                                </p>
+                                <p className="text-neutral-700">{item?.note}</p>
                             </div>
                             <div className="flex justify-between text-sm font-medium border-t pt-4">
                                 <span className="text-neutral-900">
