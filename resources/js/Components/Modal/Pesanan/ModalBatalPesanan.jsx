@@ -63,6 +63,7 @@ const ModalBatalPesanan = ({ isOpen, onClose, item, aksi }) => {
         }
 
         post(route("pesanan.manajemen.update", item.uuid), {
+            data: payload,
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(
