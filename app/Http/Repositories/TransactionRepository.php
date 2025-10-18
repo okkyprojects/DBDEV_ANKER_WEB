@@ -852,6 +852,7 @@ class TransactionRepository
         $transaction = $this->transaction
             ->with([
                 'user',
+                'completedBy',
                 'items.variant',
                 'address.province',
                 'address.city',
