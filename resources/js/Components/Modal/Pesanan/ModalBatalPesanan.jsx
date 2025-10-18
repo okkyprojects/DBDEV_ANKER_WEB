@@ -61,7 +61,7 @@ const ModalBatalPesanan = ({ isOpen, onClose, item, aksi }) => {
                 break;
         }
 
-        post(route("pesanan.manajemen.update", item.uuid), payload, {
+        router.post(route("pesanan.manajemen.update", item.uuid), payload, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(
