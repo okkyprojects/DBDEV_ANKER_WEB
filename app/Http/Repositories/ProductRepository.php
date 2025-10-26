@@ -41,7 +41,7 @@ class ProductRepository
     private function validate()
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:products,name',
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
             'img' => 'nullable',

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('variant_uuid')->nullable();
             $table->string('product_name');
             $table->string('variant_name');
-            $table->string('img');
+            $table->text('img');
             $table->integer('quantity')->default(1);
             $table->bigInteger('price');
             $table->timestamps();

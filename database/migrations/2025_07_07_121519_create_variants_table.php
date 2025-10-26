@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('product_uuid')->nullable();
             $table->string('name');
             $table->string('sku');
-            $table->string('img')->nullable();
+            $table->text('img')->nullable();
             $table->bigInteger('price')->default(0);
             $table->bigInteger('discount_price')->nullable();
             $table->timestamps();

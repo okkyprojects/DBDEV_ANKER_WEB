@@ -189,7 +189,12 @@ class AuthController extends Controller
                 'message' => 'Akun belum terverifikasi. Silakan cek email untuk kode OTP atau minta kirim ulang.',
             ], 403);
         }
-
+        if ($user->role !== 'user') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses login ditolak',
+            ], 403);
+        }
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
