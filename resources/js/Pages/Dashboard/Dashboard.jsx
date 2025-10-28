@@ -272,7 +272,7 @@ export default function Dashboard({ data }) {
                                 Belum ada pesanan
                             </p>
                         ) : (
-                            <table className="w-full table-auto text-sm">
+                            <table className="w-full table-auto text-sm overflow-x-auto">
                                 <thead className="text-left text-neutral-700">
                                     <tr>
                                         <th className="py-2 font-normal">
@@ -287,7 +287,7 @@ export default function Dashboard({ data }) {
                                         <th className="py-2 font-normal">
                                             Jumlah
                                         </th>
-                                        <th className="py-2 font-normal">
+                                        <th className="py-2 min-w-40 font-normal">
                                             Status
                                         </th>
                                     </tr>
@@ -321,14 +321,20 @@ export default function Dashboard({ data }) {
                                             </td>
                                             <td className="py-2">
                                                 <span
-                                                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    className={`px-3 py-1 text-xs font-semibold rounded-full text-xs ${
                                                         statusBadge[item.status]
                                                             ?.className
                                                     }`}
                                                 >
-                                                    {statusBadge[item.status]
-                                                        ?.label ??
-                                                        "Tidak Diketahui"}
+                                                    {typeof statusBadge[
+                                                        item.status
+                                                    ]?.label === "function"
+                                                        ? statusBadge[
+                                                              item.status
+                                                          ].label(item)
+                                                        : statusBadge[
+                                                              item.status
+                                                          ]?.label}
                                                 </span>
                                             </td>
                                         </tr>

@@ -46,6 +46,7 @@ class Variant extends Model
     public function total_stock()
     {
         return $this->hasOne(VariantStock::class, 'variant_uuid', 'uuid')
+            ->whereNull('variant_stocks.deleted_at') 
             ->selectRaw('variant_uuid,
             SUM(quantity) - (
                 SELECT COALESCE(SUM(transaction_items.quantity), 0)
@@ -59,6 +60,7 @@ class Variant extends Model
                 'total_stock' => 0
             ]);
     }
+
 
     public function transactionItems()
     {

@@ -136,7 +136,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                                         />
                                     </div>
                                 ) : (
-                                    <label className="border-gray-300 bg-white flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed">
+                                    <label className="border-gray-300 bg-white flex h-64 w-64 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed aspect-square">
                                         <div className="flex flex-col items-center justify-center gap-1.5">
                                             <IoImageOutline
                                                 size={37}

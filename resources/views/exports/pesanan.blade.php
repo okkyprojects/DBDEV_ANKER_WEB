@@ -45,8 +45,8 @@
                 <td>{{ $item->variant->sku ?? '-' }}</td>
 
                 <td>{{ $item->quantity }}</td>
-                <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
-                <td>Rp {{ number_format($item->subtotal ?? $item->price * $item->quantity, 0, ',', '.') }}</td>
+                <td>{{ $item->price }}</td>
+                <td>{{ $item->subtotal ?? $item->price * $item->quantity }}</td>
                 <td>
                     @if (!empty($item->transaction->file))
                         <a href="{{ url($item->transaction->file) }}" target="_blank"

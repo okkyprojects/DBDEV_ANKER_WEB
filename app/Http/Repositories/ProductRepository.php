@@ -41,7 +41,7 @@ class ProductRepository
     private function validate()
     {
         return [
-            'name' => 'required|string|max:255|unique:products,name',
+            'name' => 'required|string|max:255',
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
             'img' => 'nullable',
@@ -254,7 +254,7 @@ class ProductRepository
         return [
             'produk_aktif' => $products->filter(fn($p) => $p->total_stock > 5)->count(),
             'produk_stok_menipis' => $products->filter(fn($p) => $p->total_stock <= 5 && $p->total_stock > 0)->count(),
-            'produk_stok_habis' => $products->filter(fn($p) => $p->total_stock <= 0)->count(),
+            'produk_stok_habis' => $products->filter(fn($p) => $p->total_stock <= 0 && $p->variants->isNotEmpty())->count(),
         ];
     }
     public function index(Request $request)

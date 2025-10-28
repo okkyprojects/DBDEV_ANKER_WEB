@@ -25,7 +25,6 @@ class VariantRepository
         return [
 
             'variants' => 'required|array',
-            'variants.*.product_uuid' => 'required|exists:products,uuid',
             'variants.*.name' => 'required',
             'variants.*.sku' => [
                 'required',

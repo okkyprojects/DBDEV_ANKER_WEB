@@ -9,14 +9,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($data as $i => $item)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $item->product_name }}</td>
-            <td>{{ $item->kuantitas }}</td>
-            <td>{{ $item->terjual }}</td>
-            <td>Rp {{ number_format($item->pendapatan, 0, ',', '.') }}</td>
-        </tr>
+        @foreach ($data as $i => $item)
+            <tr>
+                <td>{{ $i + 1 }}</td>
+                <td>{{ $item->product_name }}</td>
+                <td>{{ $item->kuantitas }}</td>
+                <td>{{ $item->terjual }}</td>
+                <td>{{ $item->pendapatan }}</td>
+            </tr>
         @endforeach
     </tbody>
 </table>

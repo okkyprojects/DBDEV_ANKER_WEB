@@ -43,22 +43,8 @@ class TransactionRepository
     private $province;
     private $city;
 
-    public function __construct(
-        Response $response,
-        Transaction $transaction,
-        TransactionItem $transactionItem,
-        TransactionAddress $transactionAddress,
-        TransactionBill $transactionBill,
-        Bill $bill,
-        Address $address,
-        Variant $variant,
-        CartItem $cartItem,
-        Cart $cart,
-        User $user,
-        Product $product,
-        Province $province,
-        City $city,
-    ) {
+    public function __construct(Response $response, Transaction $transaction, TransactionItem $transactionItem, TransactionAddress $transactionAddress, TransactionBill $transactionBill, Bill $bill, Address $address, Variant $variant, CartItem $cartItem, Cart $cart, User $user, Product $product, Province $province, City $city)
+    {
         $this->response = $response;
         $this->transaction = $transaction;
         $this->transactionItem = $transactionItem;
@@ -134,21 +120,20 @@ class TransactionRepository
                 'categories.name as category_name',
                 'brands.name as brand_name',
                 DB::raw('COALESCE((
-                SELECT SUM(vs.quantity)
-                FROM variants v
-                JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
-                WHERE v.product_uuid = products.uuid
-            ), 0) as kuantitas'),
+    SELECT SUM(vs.quantity)
+    FROM variants v
+    JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
+    WHERE v.product_uuid = products.uuid
+      AND vs.deleted_at IS NULL
+), 0) as kuantitas'),
+
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
-
             ])
             ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
             ->leftJoin('transactions', function ($join) {
-                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
-                    ->where('transactions.status', '>', 1)
-                    ->where('transactions.status', '<', 5);
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')->where('transactions.status', '>', 1)->where('transactions.status', '<', 5);
             })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
@@ -159,7 +144,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereBetween('transactions.created_at', [$start, $end]);
         }
 
@@ -174,15 +159,12 @@ class TransactionRepository
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'LIKE', $search)
-                    ->orWhere('categories.name', 'LIKE', $search)
-                    ->orWhere('brands.name', 'LIKE', $search);
+                $q->where('products.name', 'LIKE', $search)->orWhere('categories.name', 'LIKE', $search)->orWhere('brands.name', 'LIKE', $search);
             });
         }
 
         return $query->paginate(10);
     }
-
 
     public function get_chart_data(Request $request)
     {
@@ -223,17 +205,20 @@ class TransactionRepository
             return [
                 'categories' => $categories,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
         if ($filter === 'Mingguan') {
-            $weeks = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"];
+            $weeks = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
             $pendapatan = [];
             $pesanan = [];
 
             foreach (range(1, 4) as $week) {
-                $start = Carbon::createFromDate($year, $month, 1)->startOfMonth()->addWeeks($week - 1)->startOfWeek();
+                $start = Carbon::createFromDate($year, $month, 1)
+                    ->startOfMonth()
+                    ->addWeeks($week - 1)
+                    ->startOfWeek();
                 $end = (clone $start)->endOfWeek();
 
                 $pendapatan[] = $this->transaction
@@ -252,25 +237,12 @@ class TransactionRepository
             return [
                 'categories' => $weeks,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
         if ($filter === 'Bulanan') {
-            $months = [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'Mei',
-                'Jun',
-                'Jul',
-                'Agu',
-                'Sep',
-                'Okt',
-                'Nov',
-                'Des'
-            ];
+            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             $pendapatan = [];
             $pesanan = [];
 
@@ -294,14 +266,14 @@ class TransactionRepository
             return [
                 'categories' => $months,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
         return [
             'categories' => [],
             'pendapatan' => [],
-            'pesanan' => []
+            'pesanan' => [],
         ];
     }
     public function get_chart_data_by_product($request, $uuid)
@@ -312,12 +284,7 @@ class TransactionRepository
         $year = $now->year;
         $month = $now->month;
 
-        $baseQuery = $this->transaction
-            ->join('transaction_items', 'transactions.uuid', '=', 'transaction_items.transaction_uuid')
-            ->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')
-            ->join('products', 'variants.product_uuid', '=', 'products.uuid')
-            ->where('transactions.status', '>', 1)
-            ->where('transactions.status', '<', 5);
+        $baseQuery = $this->transaction->join('transaction_items', 'transactions.uuid', '=', 'transaction_items.transaction_uuid')->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')->join('products', 'variants.product_uuid', '=', 'products.uuid')->where('transactions.status', '>', 1)->where('transactions.status', '<', 5);
 
         if ($productUuid) {
             $baseQuery->where('products.uuid', $productUuid);
@@ -339,9 +306,7 @@ class TransactionRepository
                 $start = Carbon::createFromDate($year, $month, $d)->startOfDay();
                 $end = Carbon::createFromDate($year, $month, $d)->endOfDay();
 
-                $pendapatan[] = (clone $baseQuery)
-                    ->whereBetween('transactions.created_at', [$start, $end])
-                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+                $pendapatan[] = (clone $baseQuery)->whereBetween('transactions.created_at', [$start, $end])->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
 
                 $pesanan[] = (clone $baseQuery)
                     ->whereBetween('transactions.created_at', [$start, $end])
@@ -352,22 +317,23 @@ class TransactionRepository
             return [
                 'categories' => $categories,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
         if ($filter === 'Mingguan') {
-            $weeks = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"];
+            $weeks = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
             $pendapatan = [];
             $pesanan = [];
 
             foreach (range(1, 4) as $week) {
-                $start = Carbon::createFromDate($year, $month, 1)->startOfMonth()->addWeeks($week - 1)->startOfWeek();
+                $start = Carbon::createFromDate($year, $month, 1)
+                    ->startOfMonth()
+                    ->addWeeks($week - 1)
+                    ->startOfWeek();
                 $end = (clone $start)->endOfWeek();
 
-                $pendapatan[] = (clone $baseQuery)
-                    ->whereBetween('transactions.created_at', [$start, $end])
-                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+                $pendapatan[] = (clone $baseQuery)->whereBetween('transactions.created_at', [$start, $end])->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
 
                 $pesanan[] = (clone $baseQuery)
                     ->whereBetween('transactions.created_at', [$start, $end])
@@ -378,7 +344,7 @@ class TransactionRepository
             return [
                 'categories' => $weeks,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
@@ -391,9 +357,7 @@ class TransactionRepository
                 $start = Carbon::createFromDate($year, $m, 1)->startOfMonth();
                 $end = Carbon::createFromDate($year, $m, 1)->endOfMonth();
 
-                $pendapatan[] = (clone $baseQuery)
-                    ->whereBetween('transactions.created_at', [$start, $end])
-                    ->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
+                $pendapatan[] = (clone $baseQuery)->whereBetween('transactions.created_at', [$start, $end])->sum(DB::raw('transaction_items.price * transaction_items.quantity'));
 
                 $pesanan[] = (clone $baseQuery)
                     ->whereBetween('transactions.created_at', [$start, $end])
@@ -404,30 +368,20 @@ class TransactionRepository
             return [
                 'categories' => $months,
                 'pendapatan' => $pendapatan,
-                'pesanan' => $pesanan
+                'pesanan' => $pesanan,
             ];
         }
 
         return [
             'categories' => [],
             'pendapatan' => [],
-            'pesanan' => []
+            'pesanan' => [],
         ];
     }
 
-
     public function get_limit_penjualan(Request $request, $limit = 5)
     {
-        $query = $this->transaction
-            ->with([
-                'user',
-                'items',
-                'address.province',
-                'address.city',
-                'address.district',
-                'bill'
-            ])
-            ->orderBy('created_at', 'desc');
+        $query = $this->transaction->with(['user', 'items', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
             $query->where('user_id', Auth::id());
@@ -452,7 +406,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereBetween('created_at', [$start, $end]);
         }
 
@@ -461,15 +415,7 @@ class TransactionRepository
     public function summary_top_selling($request, $limit = 5)
     {
         $query = Variant::with(['product', 'total_stock'])
-            ->select(
-                'variants.uuid',
-                'variants.product_uuid',
-                'variants.name',
-                'variants.price',
-                'variants.created_at',
-                'variants.updated_at',
-                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold')
-            )
+            ->select('variants.uuid', 'variants.product_uuid', 'variants.name', 'variants.price', 'variants.created_at', 'variants.updated_at', DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold'))
             ->leftJoin('transaction_items', 'transaction_items.variant_uuid', '=', 'variants.uuid')
             ->leftJoin('transactions', 'transactions.uuid', '=', 'transaction_items.transaction_uuid')
             ->where('transactions.status', '>', 1)
@@ -483,14 +429,7 @@ class TransactionRepository
         }
 
         return $query
-            ->groupBy(
-                'variants.uuid',
-                'variants.product_uuid',
-                'variants.name',
-                'variants.price',
-                'variants.created_at',
-                'variants.updated_at'
-            )
+            ->groupBy('variants.uuid', 'variants.product_uuid', 'variants.name', 'variants.price', 'variants.created_at', 'variants.updated_at')
             ->orderByDesc('total_sold')
             ->take($limit)
             ->get()
@@ -498,26 +437,18 @@ class TransactionRepository
                 return [
                     'product' => $variant->product,
                     'stok_saat_ini' => $variant->total_stock->total_stock ?? 0,
-                    'terjual' => (int) $variant->total_sold
+                    'terjual' => (int) $variant->total_sold,
                 ];
             });
     }
 
-
     public function get_penjualan_summary(Request $request)
     {
-        $query = DB::table('transaction_items')
-            ->join('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
-            ->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')
-            ->join('products', 'variants.product_uuid', '=', 'products.uuid')
-            ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
-            ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
-            ->where('transactions.status', '>', 1)
-            ->where('transactions.status', '<', 5);
+        $query = DB::table('transaction_items')->join('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')->join('variants', 'transaction_items.variant_uuid', '=', 'variants.uuid')->join('products', 'variants.product_uuid', '=', 'products.uuid')->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')->where('transactions.status', '>', 1)->where('transactions.status', '<', 5);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereBetween('transactions.created_at', [$start, $end]);
         }
 
@@ -530,29 +461,29 @@ class TransactionRepository
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'LIKE', $search)
-                    ->orWhere('categories.name', 'LIKE', $search)
-                    ->orWhere('brands.name', 'LIKE', $search);
+                $q->where('products.name', 'LIKE', $search)->orWhere('categories.name', 'LIKE', $search)->orWhere('brands.name', 'LIKE', $search);
             });
         }
-        $result = $query->selectRaw('
+        $result = $query
+            ->selectRaw(
+                '
         COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan_kotor,
         COUNT(DISTINCT transactions.uuid) as total_pesanan,
         COALESCE(SUM(transaction_items.quantity), 0) as item_terjual
-    ')->first();
+    ',
+            )
+            ->first();
 
         return [
             'pendapatan_kotor' => (int) $result->pendapatan_kotor,
-            'total_pesanan'    => (int) $result->total_pesanan,
-            'item_terjual'     => (int) $result->item_terjual,
+            'total_pesanan' => (int) $result->total_pesanan,
+            'item_terjual' => (int) $result->item_terjual,
         ];
     }
 
     public function get_summary_detail_by_product(Request $request, $productUuid)
     {
-        $subKuantitas = DB::table('variant_stocks')
-            ->select('variant_uuid', DB::raw('SUM(quantity) as total_stok'))
-            ->groupBy('variant_uuid');
+        $subKuantitas = DB::table('variant_stocks')->select('variant_uuid', DB::raw('SUM(quantity) as total_stok'))->whereNull('deleted_at')->groupBy('variant_uuid');
 
         $rekap = DB::table('variants')
             ->leftJoinSub($subKuantitas, 'vs', function ($join) {
@@ -567,14 +498,15 @@ class TransactionRepository
                 $q->whereBetween('transactions.created_at', [$start, $end]);
             })
             ->where(function ($q) {
-                $q->where('transactions.status', '>', 0)
-                    ->where('transactions.status', '<', 5);
+                $q->where('transactions.status', '>', 0)->where('transactions.status', '<', 5);
             })
-            ->selectRaw('
+            ->selectRaw(
+                '
             COALESCE(SUM(DISTINCT vs.total_stok), 0) as total_stok,
             COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity ELSE 0 END), 0) as total_terjual,
             COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as total_pendapatan
-        ')
+        ',
+            )
             ->first();
 
         return [
@@ -596,9 +528,10 @@ class TransactionRepository
                 SELECT SUM(vs.quantity)
                 FROM variant_stocks vs
                 WHERE vs.variant_uuid = variants.uuid
+                AND vs.deleted_at IS NULL
             ), 0) as kuantitas'),
                 DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
-                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan')
+                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan'),
             ])
             ->leftJoin('products', 'variants.product_uuid', '=', 'products.uuid')
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
@@ -612,13 +545,14 @@ class TransactionRepository
                 $q->whereBetween('transactions.created_at', [$start, $end]);
             })
             ->where(function ($q) {
-                $q->whereNull('transactions.status')
-                    ->orWhereIn('transactions.status', [2, 3, 4]);
+                $q->whereNull('transactions.status')->orWhereIn('transactions.status', [2, 3, 4]);
             })
-            ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')->get();
+            ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')
+            ->get();
 
         return $query;
     }
+
     public function show_penjualan_by_product(Request $request, $productUuid)
     {
         $query = DB::table('variants')
@@ -627,23 +561,26 @@ class TransactionRepository
                 'variants.img as variant_img',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((SELECT SUM(vs.quantity) FROM variant_stocks vs WHERE vs.variant_uuid = variants.uuid), 0) as kuantitas'),
+                DB::raw('COALESCE((
+                SELECT SUM(vs.quantity)
+                FROM variant_stocks vs
+                WHERE vs.variant_uuid = variants.uuid
+                AND vs.deleted_at IS NULL
+            ), 0) as kuantitas'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
-                DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan')
+                DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
             ])
             ->leftJoin('products', 'variants.product_uuid', '=', 'products.uuid')
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
             ->leftJoin('transactions', function ($join) {
-                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
-                    ->where('transactions.status', '>', 1)
-                    ->where('transactions.status', '<', 5);
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')->where('transactions.status', '>', 1)->where('transactions.status', '<', 5);
             })
             ->where('variants.product_uuid', $productUuid)
             ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
                 $start = Carbon::parse($request->startDate)->startOfDay();
-                $end   = Carbon::parse($request->endDate)->endOfDay();
+                $end = Carbon::parse($request->endDate)->endOfDay();
                 $q->whereBetween('transactions.created_at', [$start, $end]);
             })
             ->groupBy('variants.uuid', 'variants.name', 'variants.img', 'categories.name', 'brands.name')
@@ -652,22 +589,9 @@ class TransactionRepository
         return $query;
     }
 
-
-
-
     public function index(Request $request)
     {
-        $query = $this->transaction
-            ->with([
-                'user',
-                'completedBy',
-                'items.variant',
-                'address.province',
-                'address.city',
-                'address.district',
-                'bill'
-            ])
-            ->orderBy('created_at', 'desc');
+        $query = $this->transaction->with(['user', 'completedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
             $query->where('user_id', Auth::id());
@@ -693,7 +617,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereBetween('created_at', [$start, $end]);
         }
 
@@ -722,7 +646,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $baseQuery->whereBetween('created_at', [$start, $end]);
         }
         if ($request->filled('status')) {
@@ -730,30 +654,19 @@ class TransactionRepository
         }
 
         $counts = [
-            'pesanan_belum_dibayar'        => (clone $baseQuery)->where('status', 0)->count(),
+            'pesanan_belum_dibayar' => (clone $baseQuery)->where('status', 0)->count(),
             'pesanan_konfirmasi_pembayaran' => (clone $baseQuery)->where('status', 1)->count(),
-            'pesanan_diproses'             => (clone $baseQuery)->where('status', 2)->count(),
-            'pesanan_dikirim'              => (clone $baseQuery)->where('status', 3)->count(),
-            'pesanan_selesai'              => (clone $baseQuery)->where('status', 4)->count(),
-            'pesanan_dibatalkan'           => (clone $baseQuery)->where('status', 5)->count(),
+            'pesanan_diproses' => (clone $baseQuery)->where('status', 2)->count(),
+            'pesanan_dikirim' => (clone $baseQuery)->where('status', 3)->count(),
+            'pesanan_selesai' => (clone $baseQuery)->where('status', 4)->count(),
+            'pesanan_dibatalkan' => (clone $baseQuery)->where('status', 5)->count(),
         ];
-
 
         return $counts;
     }
     public function export_pesanan(Request $request)
     {
-        $query = $this->transactionItem
-            ->with([
-                'transaction.completedBy',
-                'transaction.user',
-                'transaction.address.province',
-                'transaction.address.city',
-                'transaction.address.district',
-                'transaction.bill',
-                'variant.product'
-            ])
-            ->orderBy('created_at', 'desc');
+        $query = $this->transactionItem->with(['transaction.completedBy', 'transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
             $query->whereHas('transaction', function ($q) {
@@ -783,7 +696,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereHas('transaction', function ($q) use ($start, $end) {
                 $q->whereBetween('created_at', [$start, $end]);
             });
@@ -812,8 +725,7 @@ class TransactionRepository
             ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
             ->leftJoin('transactions', function ($join) {
-                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')
-                    ->where('transactions.status', '>=', 1);
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')->where('transactions.status', '>=', 1);
             })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
@@ -824,7 +736,7 @@ class TransactionRepository
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
-            $end   = Carbon::parse($request->endDate)->endOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
             $query->whereBetween('transactions.created_at', [$start, $end]);
         }
 
@@ -839,9 +751,7 @@ class TransactionRepository
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'LIKE', $search)
-                    ->orWhere('categories.name', 'LIKE', $search)
-                    ->orWhere('brands.name', 'LIKE', $search);
+                $q->where('products.name', 'LIKE', $search)->orWhere('categories.name', 'LIKE', $search)->orWhere('brands.name', 'LIKE', $search);
             });
         }
 
@@ -850,15 +760,7 @@ class TransactionRepository
     public function show($transaction_code)
     {
         $transaction = $this->transaction
-            ->with([
-                'user',
-                'completedBy',
-                'items.variant',
-                'address.province',
-                'address.city',
-                'address.district',
-                'bill'
-            ])
+            ->with(['user', 'completedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -899,27 +801,26 @@ class TransactionRepository
 
         foreach ($request['items'] as $item) {
             $variant = $this->variant
-                ->with(['product' => function ($q) {
-                    $q->whereNull('deleted_at');
-                }, 'total_stock'])
+                ->with([
+                    'product' => function ($q) {
+                        $q->whereNull('deleted_at');
+                    },
+                    'total_stock',
+                ])
                 ->where('uuid', $item['variant_uuid'])
                 ->whereNull('deleted_at')
                 ->first();
 
             if (!$variant || !$variant->product) {
-                return $this->response->validationError(
-                    new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']])
-                );
+                return $this->response->validationError(new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']]));
             }
 
             $availableStock = $variant->total_stock->total_stock ?? 0;
             if ($item['quantity'] > $availableStock) {
                 return $this->response->validationError(
                     new MessageBag([
-                        'items' => [
-                            "Stok untuk {$variant->product->name} - {$variant->name} tidak mencukupi. Stok tersedia: {$availableStock}"
-                        ]
-                    ])
+                        'items' => ["Stok untuk {$variant->product->name} - {$variant->name} tidak mencukupi. Stok tersedia: {$availableStock}"],
+                    ]),
                 );
             }
 
@@ -928,23 +829,19 @@ class TransactionRepository
             $total_price += $price * $quantity;
 
             $items[] = [
-                'uuid'             => Str::uuid(),
+                'uuid' => Str::uuid(),
                 'transaction_uuid' => $uuid,
                 'transaction_code' => $transaction_code,
-                'variant_uuid'     => $variant->uuid,
-                'product_name'     => $variant->product->name,
-                'variant_name'     => $variant->name,
+                'variant_uuid' => $variant->uuid,
+                'product_name' => $variant->product->name,
+                'variant_name' => $variant->name,
                 'img' => $variant->img ?? '/images/no/product.jpg',
-                'quantity'         => $quantity,
-                'price'            => $price,
+                'quantity' => $quantity,
+                'price' => $price,
             ];
         }
 
-        $variantUuids = collect($request->input('items', []))
-            ->pluck('variant_uuid')
-            ->filter()
-            ->values()
-            ->all();
+        $variantUuids = collect($request->input('items', []))->pluck('variant_uuid')->filter()->values()->all();
 
         $cart = $this->cart->where('user_id', Auth::user()->id)->first();
         if ($cart) {
@@ -956,16 +853,12 @@ class TransactionRepository
 
         $address = $this->address->where('uuid', $request['address_uuid'])->first();
         if (!$address) {
-            return $this->response->validationError(
-                new MessageBag(['address_uuid' => ['Alamat tidak ditemukan atau kosong.']])
-            );
+            return $this->response->validationError(new MessageBag(['address_uuid' => ['Alamat tidak ditemukan atau kosong.']]));
         }
 
         $bill = $this->bill->where('uuid', $request['bill_uuid'])->first();
         if (!$bill) {
-            return $this->response->validationError(
-                new MessageBag(['bill_uuid' => ['Rekening pembayaran tidak ditemukan atau kosong.']])
-            );
+            return $this->response->validationError(new MessageBag(['bill_uuid' => ['Rekening pembayaran tidak ditemukan atau kosong.']]));
         }
 
         $trxData = $this->request($request);
@@ -978,28 +871,28 @@ class TransactionRepository
         $transaction = $this->transaction->create($trxData);
 
         $this->transactionAddress->create([
-            'uuid'              => Str::uuid(),
-            'transaction_uuid'  => $uuid,
-            'user_id'           => $address->user_id,
-            'province_id'       => $address->province_id,
-            'city_id'           => $address->city_id,
-            'district_id'       => $address->district_id,
-            'category'          => $address->category,
-            'name'              => $address->name,
-            'phone_number'      => $address->phone_number,
-            'is_main'           => $address->is_main,
-            'address'           => $address->address,
-            'postal_code'       => $address->postal_code,
-            'note'              => $address->note,
+            'uuid' => Str::uuid(),
+            'transaction_uuid' => $uuid,
+            'user_id' => $address->user_id,
+            'province_id' => $address->province_id,
+            'city_id' => $address->city_id,
+            'district_id' => $address->district_id,
+            'category' => $address->category,
+            'name' => $address->name,
+            'phone_number' => $address->phone_number,
+            'is_main' => $address->is_main,
+            'address' => $address->address,
+            'postal_code' => $address->postal_code,
+            'note' => $address->note,
         ]);
 
         $this->transactionBill->create([
-            'uuid'                 => Str::uuid(),
-            'transaction_uuid'     => $uuid,
-            'account_number'       => $bill->account_number,
-            'bank_name'            => $bill->bank_name,
-            'account_holder_name'  => $bill->account_holder_name,
-            'is_main'              => $bill->is_main,
+            'uuid' => Str::uuid(),
+            'transaction_uuid' => $uuid,
+            'account_number' => $bill->account_number,
+            'bank_name' => $bill->bank_name,
+            'account_holder_name' => $bill->account_holder_name,
+            'is_main' => $bill->is_main,
         ]);
 
         foreach ($items as $itemData) {
@@ -1008,7 +901,6 @@ class TransactionRepository
 
         return $this->response->store($transaction);
     }
-
 
     private function update($request)
     {
@@ -1042,31 +934,29 @@ class TransactionRepository
         $trx->address()->delete();
         $deleted = $trx->delete();
 
-        return $deleted
-            ? $this->response->destroy($trx)
-            : $this->response->destroyError();
+        return $deleted ? $this->response->destroy($trx) : $this->response->destroyError();
     }
 
     private function request(Request $request, $trx = null): array
     {
         $data = [
-            'uuid'             => $request->input('uuid', $trx?->uuid ?? (string) Str::uuid()),
+            'uuid' => $request->input('uuid', $trx?->uuid ?? (string) Str::uuid()),
             'transaction_code' => $request->input('transaction_code', $trx?->transaction_code ?? $this->generateTransactionCode()),
-            'user_id'          => $trx?->user_id ?? Auth::id(),
-            'total_price'      => $request->input('total_price', $trx?->total_price),
-            'admin_fee'        => $request->input('admin_fee', $trx?->admin_fee),
-            'grand_total'      => $request->input('grand_total', $trx?->grand_total),
+            'user_id' => $trx?->user_id ?? Auth::id(),
+            'total_price' => $request->input('total_price', $trx?->total_price),
+            'admin_fee' => $request->input('admin_fee', $trx?->admin_fee),
+            'grand_total' => $request->input('grand_total', $trx?->grand_total),
             'status' => $request->input('status', $trx?->status ?? 0),
-            'paid_at'          => $request->input('paid_at', $trx?->paid_at),
-            'unpaid_at'        => $request->input('unpaid_at', $trx?->unpaid_at),
-            'expired_at'       => $request->input('expired_at', $trx?->expired_at),
-            'processing_at'  => $request->input('processing_at', $trx?->processing_at),
-            'shipping_at'    => $request->input('shipping_at', $trx?->shipping_at),
-            'completed_at'   => $request->input('completed_at', $trx?->completed_at),
-            'canceled_at'    => $request->input('canceled_at', $trx?->canceled_at),
-            'note'             => $request->input('note', $trx?->note),
-            'note_transaction'             => $request->input('note_transaction', $trx?->note_transaction),
-            'completed_by'             => $request->input('completed_by', $trx?->completed_by),
+            'paid_at' => $request->input('paid_at', $trx?->paid_at),
+            'unpaid_at' => $request->input('unpaid_at', $trx?->unpaid_at),
+            'expired_at' => $request->input('expired_at', $trx?->expired_at),
+            'processing_at' => $request->input('processing_at', $trx?->processing_at),
+            'shipping_at' => $request->input('shipping_at', $trx?->shipping_at),
+            'completed_at' => $request->input('completed_at', $trx?->completed_at),
+            'canceled_at' => $request->input('canceled_at', $trx?->canceled_at),
+            'note' => $request->input('note', $trx?->note),
+            'note_transaction' => $request->input('note_transaction', $trx?->note_transaction),
+            'completed_by' => $request->input('completed_by', $trx?->completed_by),
         ];
 
         if ($request->hasFile('file')) {
@@ -1093,7 +983,9 @@ class TransactionRepository
     }
     public function import(array $row)
     {
-        if (empty($row['email'])) return null;
+        if (empty($row['email'])) {
+            return null;
+        }
 
         // 1. Ambil atau buat user
         $user = $this->user->firstOrCreate(
@@ -1103,17 +995,13 @@ class TransactionRepository
                 'phone_number' => $row['no_hp'] ?? null,
                 'uuid' => Str::uuid(),
                 'password' => Hash::make('password'),
-            ]
+            ],
         );
 
         // 🔹 2. Cari provinsi dan kota berdasarkan NAMA (bukan ID)
-        $province = $this->province
-            ->whereRaw('UPPER(nama) = ?', [strtoupper($row['provinsi'] ?? '')])
-            ->first();
+        $province = $this->province->whereRaw('UPPER(nama) = ?', [strtoupper($row['provinsi'] ?? '')])->first();
 
-        $city = $this->city
-            ->whereRaw('UPPER(nama) = ?', [strtoupper($row['kota'] ?? '')])
-            ->first();
+        $city = $this->city->whereRaw('UPPER(nama) = ?', [strtoupper($row['kota'] ?? '')])->first();
 
         // 🔹 3. Ambil atau buat alamat
         $address = $this->address->firstOrCreate(
@@ -1128,7 +1016,7 @@ class TransactionRepository
                 'city_id' => $city->id ?? null,
                 'postal_code' => $row['kode_pos'] ?? null,
                 'uuid' => Str::uuid(),
-            ]
+            ],
         );
 
         // 🔹 4. Generate kode transaksi otomatis
@@ -1145,7 +1033,7 @@ class TransactionRepository
                 'admin_fee' => $row['admin_fee'] ?? 0,
                 'status' => $row['status'] ?? 0,
                 'uuid' => Str::uuid(),
-            ]
+            ],
         );
 
         // 🔹 6. Buat item transaksi (jika ada)
@@ -1159,7 +1047,7 @@ class TransactionRepository
                     [
                         'uuid' => Str::uuid(),
                         'img' => '/images/no/product.jpg',
-                    ]
+                    ],
                 );
 
                 $variant = $this->variant->firstOrCreate(
@@ -1170,7 +1058,7 @@ class TransactionRepository
                         'img' => '/images/no/product.jpg',
                         'price' => $row['harga'] ?? 0,
                         'uuid' => Str::uuid(),
-                    ]
+                    ],
                 );
             } else {
                 $product = $variant->product; // ambil produk dari relasi
@@ -1179,9 +1067,9 @@ class TransactionRepository
             $this->transactionItem->create([
                 'transaction_id' => $transaction->id,
                 'variant_id' => $variant->id,
-                'product_name' => $product->name ?? $row['product_name'] ?? 'Unknown',
-                'variant_name' => $variant->name ?? $row['variant_name'] ?? '-',
-                'img' => $variant->img ?? $row['variant_img'] ?? '-',
+                'product_name' => $product->name ?? ($row['product_name'] ?? 'Unknown'),
+                'variant_name' => $variant->name ?? ($row['variant_name'] ?? '-'),
+                'img' => $variant->img ?? ($row['variant_img'] ?? '-'),
                 'quantity' => $row['quantity'] ?? 1,
                 'price' => $row['harga'] ?? 0,
                 'subtotal' => ($row['quantity'] ?? 1) * ($row['harga'] ?? 0),

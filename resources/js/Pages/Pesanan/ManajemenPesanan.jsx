@@ -238,18 +238,6 @@ export default function ManajemenPesanan({ data }) {
                                         Nomor HP
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
-                                        Alamat
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
-                                        Provinsi
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
-                                        Kota
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
-                                        Kode Pos
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Nominal
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -290,18 +278,6 @@ export default function ManajemenPesanan({ data }) {
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item?.user?.phone_number}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item?.address?.address}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item?.address?.province?.nama}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item?.address?.city?.nama}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item?.address?.postal_code}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {formatRupiah(
