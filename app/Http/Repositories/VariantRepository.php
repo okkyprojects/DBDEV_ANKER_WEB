@@ -36,7 +36,7 @@ class VariantRepository
             'variants.*.sku' => $skuRule,
             'variants.*.price' => 'required|numeric',
             'variants.*.discount_price' => 'nullable|numeric',
-            'variants.*.img' => 'nullable|image|max:2048',
+            'variants.*.img' => 'nullable',
         ];
     }
 
@@ -69,8 +69,9 @@ class VariantRepository
             );
 
             if ($validator->fails()) {
-                throw new \Illuminate\Validation\ValidationException($validator);
+                dd($validator->errors());
             }
+
 
             $item['uuid'] = $uuid;
             $item['product_uuid'] = $productUuid;
