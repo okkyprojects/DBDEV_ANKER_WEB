@@ -74,16 +74,29 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $product = $this->product->store($request);
-        if ($request->has('variants')) {
-            $cleanVariants = collect($request->variants)->map(function ($variant) {
-                unset($variant['isOpen']);
-                return $variant;
-            })->toArray();
-            $variant = $this->variant->store($cleanVariants, $product->uuid);
-        }
+        try {
+            $product = $this->product->store($request);
 
-        return redirect()->route('produk.product.index')->with('success', 'Produk dan varian berhasil disimpan!');
+            if ($request->has('variants')) {
+                $cleanVariants = collect($request->variants)->map(function ($variant) {
+                    unset($variant['isOpen']);
+                    return $variant;
+                })->toArray();
+
+                $this->variant->store($cleanVariants, $product->uuid);
+            }
+
+            return redirect()->route('produk.product.index')
+                ->with('success', 'Produk dan varian berhasil disimpan!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
     }
 
 

@@ -401,8 +401,9 @@ class ProductRepository
         $validator = Validator::make($request->all(), $this->validate());
 
         if ($validator->fails()) {
-            return $this->response->validationError($validator->errors());
+            throw new \Illuminate\Validation\ValidationException($validator);
         }
+
 
         $data = $this->request($request);
 

@@ -20,22 +20,26 @@ class VariantRepository
         $this->variant = $variant;
     }
 
-    private function validate(): array
+    private function validate($isUpdate = false, $uuid = null): array
     {
-        return [
+        $skuRule = ['required', 'distinct'];
 
+        if ($isUpdate && $uuid) {
+            $skuRule[] = 'unique:variants,sku,' . $uuid . ',uuid';
+        } else {
+            $skuRule[] = 'unique:variants,sku';
+        }
+
+        return [
             'variants' => 'required|array',
             'variants.*.name' => 'required',
-            'variants.*.sku' => [
-                'required',
-                'distinct',
-                'unique:variants,sku',
-            ],
+            'variants.*.sku' => $skuRule,
             'variants.*.price' => 'required|numeric',
             'variants.*.discount_price' => 'nullable|numeric',
             'variants.*.img' => 'nullable|image|max:2048',
         ];
     }
+
 
     public function index(Request $request)
     {
@@ -53,33 +57,25 @@ class VariantRepository
     }
     public function store(array $variants, $productUuid)
     {
-        $validator = Validator::make(['variants' => $variants], $this->validate());
-
-        if ($validator->fails()) {
-            return $this->response->validationError($validator->errors());
-        }
         $results = [];
+
         foreach ($variants as $item) {
             $isUpdate = !empty($item['uuid']);
             $uuid = $isUpdate ? $item['uuid'] : (string) Str::uuid();
+
+            $validator = Validator::make(
+                ['variants' => [$item]],
+                $this->validate($isUpdate, $uuid)
+            );
+
+            if ($validator->fails()) {
+                throw new \Illuminate\Validation\ValidationException($validator);
+            }
 
             $item['uuid'] = $uuid;
             $item['product_uuid'] = $productUuid;
 
             $data = $this->request($item);
-
-            if ($isUpdate) {
-                $existing = $this->variant->where('uuid', $uuid)->first();
-
-                // if (
-                //     $existing &&
-                //     $existing->img &&
-                //     isset($item['img']) &&
-                //     $item['img'] instanceof \Illuminate\Http\UploadedFile
-                // ) {
-                //     Storage::disk('public')->delete(str_replace('storage/', '', $existing->img));
-                // }
-            }
 
             $variant = $this->variant->updateOrCreate(
                 ['uuid' => $uuid],
@@ -91,6 +87,7 @@ class VariantRepository
 
         return $results;
     }
+
 
 
 
