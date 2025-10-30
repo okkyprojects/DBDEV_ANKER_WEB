@@ -117,6 +117,7 @@ const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
                                         onChange={(e) =>
                                             setNoResi(e.target.value)
                                         }
+                                        required
                                         className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
                                         placeholder="Masukkan nomor resi"
                                     />

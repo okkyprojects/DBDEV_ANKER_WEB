@@ -135,6 +135,17 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                 <h4 className="font-medium mb-2">
                                     Informasi Pengiriman
                                 </h4>
+                                {item?.resi && (
+                                    <div className="flex justify-between mt-1">
+                                        <span className="text-neutral-700">
+                                            No. Resi
+                                        </span>
+                                        <div className="text-right text-neutral-700 text-sm">
+                                            <p>{item.resi}</p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between mt-1">
                                     <span className="text-neutral-700">
                                         Alamat pengiriman
