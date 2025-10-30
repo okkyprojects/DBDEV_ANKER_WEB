@@ -3,6 +3,7 @@
         <tr>
             <th>No</th>
             <th>Kode Transaksi</th>
+            <th>No Resi</th>
             <th>Tanggal</th>
             <th>Nama Pemesan</th>
             <th>Email Pemesan</th>
@@ -28,6 +29,7 @@
             <tr>
                 <td>{{ $i + 1 }}</td>
                 <td>{{ $item->transaction->transaction_code ?? '-' }}</td>
+                <td>{{ $item->transaction->resi ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->transaction->created_at)->format('d/m/Y, H:i') }}</td>
                 <td>{{ $item->transaction->user->name ?? '-' }}</td>
                 <td>{{ $item->transaction->user->email ?? '-' }}</td>

@@ -166,14 +166,13 @@ export default function ManajemenPesanan({ data }) {
                         >
                             <GrFilter size={20} />
                         </button>
-                        {/* <button
-                            onClick={() => {
-                                setShowModalImport(!showModalImport);
-                            }}
-                            className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
-                        >
-                            <HiOutlineUpload size={20} />
-                        </button> */}
+                        {/* <button onClick={()=> {
+                    setShowModalImport(!showModalImport);
+                    }}
+                    className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
+                    >
+                    <HiOutlineUpload size={20} />
+                </button> */}
                         <a
                             href={route("pesanan.manajemen.export", {
                                 search: searchParams.get("search") || "",
@@ -244,6 +243,9 @@ export default function ManajemenPesanan({ data }) {
                                         Bukti Pembayaran
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
+                                        No Resi
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Status
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -303,6 +305,15 @@ export default function ManajemenPesanan({ data }) {
                                                         Pembayaran
                                                     </p>
                                                 )}
+                                            </td>{" "}
+                                            <td className="px-4 py-5">
+                                                {item?.resi ? (
+                                                    <span>{item.resi}</span>
+                                                ) : (
+                                                    <p className="italic text-gray-400 text-xs">
+                                                        Belum Ada No Resi
+                                                    </p>
+                                                )}
                                             </td>
                                             <td className="px-4 py-5">
                                                 <span
@@ -346,11 +357,13 @@ export default function ManajemenPesanan({ data }) {
                                             {dropdownOpen === index && (
                                                 <div
                                                     ref={dropdownRef}
-                                                    className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out lg:right-18 ${
-                                                        dropdownOpen === index
-                                                            ? "opacity-100"
-                                                            : "pointer-events-none opacity-0"
-                                                    }`}
+                                                    className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white
+                                shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out
+                                lg:right-18 ${
+                                    dropdownOpen === index
+                                        ? "opacity-100"
+                                        : "pointer-events-none opacity-0"
+                                }`}
                                                 >
                                                     <div className="py-1">
                                                         <button
@@ -440,19 +453,18 @@ export default function ManajemenPesanan({ data }) {
                                                                 </button>
                                                             )}
 
-                                                        {/* <button
-                                                            onClick={() => {
-                                                                setPesanan(
-                                                                    item
-                                                                );
-                                                                setShowDeleteModal(
-                                                                    true
-                                                                );
-                                                            }}
-                                                            className="text-error-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                        >
-                                                            Hapus Pesanan
-                                                        </button> */}
+                                                        {/* <button onClick={()=> {
+                                        setPesanan(
+                                        item
+                                        );
+                                        setShowDeleteModal(
+                                        true
+                                        );
+                                        }}
+                                        className="text-error-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                        >
+                                        Hapus Pesanan
+                                    </button> */}
                                                     </div>
                                                 </div>
                                             )}

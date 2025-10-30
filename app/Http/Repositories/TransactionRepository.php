@@ -956,6 +956,7 @@ class TransactionRepository
             'canceled_at' => $request->input('canceled_at', $trx?->canceled_at),
             'note' => $request->input('note', $trx?->note),
             'note_transaction' => $request->input('note_transaction', $trx?->note_transaction),
+            'resi' => $request->input('resi', $trx?->resi),
             'completed_by' => $request->input('completed_by', $trx?->completed_by),
         ];
 
@@ -978,6 +979,7 @@ class TransactionRepository
             'address_uuid' => 'nullable|exists:addresses,uuid',
             'bill_uuid' => 'nullable|exists:bills,uuid',
             'note' => 'nullable|string',
+            'resi' => 'nullable',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
         ];
     }

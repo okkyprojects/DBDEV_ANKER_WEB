@@ -6,8 +6,10 @@ import { IoIosWarning } from "react-icons/io";
 import { toast } from "react-toastify";
 import { router } from "@inertiajs/react";
 import moment from "moment";
+import { useState } from "react";
 
 const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
+    const [noResi, setNoResi] = useState(item?.resi || "");
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
@@ -39,7 +41,7 @@ const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
 
     if (!isOpen) return null;
     const handleUpdateStatus = () => {
-        const payload = { status: aksi };
+        const payload = { status: aksi, resi: noResi };
         const now = moment().format("YYYY-MM-DD HH:mm:ss");
 
         switch (aksi) {
@@ -104,6 +106,23 @@ const ModalUpdatePesanan = ({ isOpen, onClose, item, aksi }) => {
                                     {getAksiLabel(aksi)}?
                                 </p>
                             </div>
+                            {item?.status == 2 && (
+                                <div className="w-full space-y-1">
+                                    <label className="text-sm font-medium text-neutral-700">
+                                        Nomor Resi
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={noResi}
+                                        onChange={(e) =>
+                                            setNoResi(e.target.value)
+                                        }
+                                        className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
+                                        placeholder="Masukkan nomor resi"
+                                    />
+                                </div>
+                            )}
+
                             <div className="mb-3 grid w-full grid-cols-2 gap-3 ">
                                 <button
                                     className="w-full rounded-lg  bg-primary-50 py-2 text-neutral-900"
