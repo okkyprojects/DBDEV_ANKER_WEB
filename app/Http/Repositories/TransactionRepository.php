@@ -137,9 +137,9 @@ class TransactionRepository
             })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
-            ->whereNull('products.deleted_at')
-            ->whereNull('categories.deleted_at')
-            ->whereNull('brands.deleted_at')
+            // ->whereNull('products.deleted_at')
+            // ->whereNull('categories.deleted_at')
+            // ->whereNull('brands.deleted_at')
             ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
@@ -714,24 +714,26 @@ class TransactionRepository
                 'categories.name as category_name',
                 'brands.name as brand_name',
                 DB::raw('COALESCE((
-                SELECT SUM(vs.quantity)
-                FROM variants v
-                JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
-                WHERE v.product_uuid = products.uuid
-            ), 0) as kuantitas'),
-                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
-                DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan'),
+    SELECT SUM(vs.quantity)
+    FROM variants v
+    JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
+    WHERE v.product_uuid = products.uuid
+      AND vs.deleted_at IS NULL
+), 0) as kuantitas'),
+
+                DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
+                DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
             ])
             ->leftJoin('variants', 'products.uuid', '=', 'variants.product_uuid')
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
             ->leftJoin('transactions', function ($join) {
-                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')->where('transactions.status', '>=', 1);
+                $join->on('transaction_items.transaction_uuid', '=', 'transactions.uuid')->where('transactions.status', '>', 1)->where('transactions.status', '<', 5);
             })
             ->leftJoin('categories', 'products.category_uuid', '=', 'categories.uuid')
             ->leftJoin('brands', 'products.brand_uuid', '=', 'brands.uuid')
-            ->whereNull('products.deleted_at')
-            ->whereNull('categories.deleted_at')
-            ->whereNull('brands.deleted_at')
+            // ->whereNull('products.deleted_at')
+            // ->whereNull('categories.deleted_at')
+            // ->whereNull('brands.deleted_at')
             ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {

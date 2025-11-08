@@ -136,7 +136,7 @@ class ProductRepository
                 ['name' => $row['brand_name'] ?? ''],
                 ['uuid' => Str::uuid()]
             );
-        if ($brand->trashed()) $brand->restore();
+        // if ($brand->trashed()) $brand->restore();
 
         // PRODUCT
         $product = $this->product
@@ -153,7 +153,7 @@ class ProductRepository
                     'description' => $row['description'] ?? null,
                 ]
             );
-        if ($product->trashed()) $product->restore();
+        // if ($product->trashed()) $product->restore();
 
         // VARIANT
         if (!empty($row['sku'])) {
@@ -170,7 +170,7 @@ class ProductRepository
                         'discount_price' => $row['discount_price'] ?? null,
                     ]
                 );
-            if ($variant->trashed()) $variant->restore();
+            // if ($variant->trashed()) $variant->restore();
 
             if (!empty($row['stock'])) {
                 $this->variantStock->create([
