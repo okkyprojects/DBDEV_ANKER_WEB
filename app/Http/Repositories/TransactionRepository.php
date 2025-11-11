@@ -591,7 +591,7 @@ class TransactionRepository
 
     public function index(Request $request)
     {
-        $query = $this->transaction->with(['user', 'completedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
+        $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
             $query->where('user_id', Auth::id());
@@ -666,7 +666,7 @@ class TransactionRepository
     }
     public function export_pesanan(Request $request)
     {
-        $query = $this->transactionItem->with(['transaction.completedBy', 'transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
+        $query = $this->transactionItem->with(['transaction.completedBy', 'transaction.deletedBy', 'transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->role !== 'admin') {
             $query->whereHas('transaction', function ($q) {
@@ -919,6 +919,9 @@ class TransactionRepository
         if (isset($updateData['status']) && $updateData['status'] == 4) {
             $updateData['completed_by'] = Auth::id();
         }
+        if (isset($updateData['status']) && $updateData['status'] == 5) {
+            $updateData['deleted_by'] = Auth::id();
+        }
         $trx->fill($updateData);
         $trx->save();
 
@@ -960,6 +963,7 @@ class TransactionRepository
             'note_transaction' => $request->input('note_transaction', $trx?->note_transaction),
             'resi' => $request->input('resi', $trx?->resi),
             'completed_by' => $request->input('completed_by', $trx?->completed_by),
+            'deleted_at' => $request->input('deleted_at', $trx?->deleted_at),
         ];
 
         if ($request->hasFile('file')) {

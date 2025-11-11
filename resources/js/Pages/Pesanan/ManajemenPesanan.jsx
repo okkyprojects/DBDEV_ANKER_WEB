@@ -42,6 +42,7 @@ export default function ManajemenPesanan({ data }) {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showUpdateResiModal, setShowUpdateResiModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [aksi, setAksi] = useState();
     const [showEditModal, setShowEditModal] = useState(false);
@@ -262,7 +263,8 @@ export default function ManajemenPesanan({ data }) {
                                             className="hover:bg-gray-50 text-sm text-neutral-700"
                                         >
                                             <td className="px-4 py-5 pl-9 xl:pl-11">
-                                                {index + 1}
+                                                {data?.transactions?.from +
+                                                    index}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item?.transaction_code}
@@ -452,6 +454,27 @@ export default function ManajemenPesanan({ data }) {
                                                                     Pesanan
                                                                 </button>
                                                             )}
+                                                        {item?.resi &&
+                                                            item?.status !=
+                                                                4 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setPesanan(
+                                                                            item
+                                                                        );
+                                                                        setAksi(
+                                                                            4
+                                                                        );
+                                                                        setShowUpdateResiModal(
+                                                                            true
+                                                                        );
+                                                                    }}
+                                                                    className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                                >
+                                                                    Update No
+                                                                    Resi
+                                                                </button>
+                                                            )}
 
                                                         {/* <button onClick={()=> {
                                         setPesanan(
@@ -511,6 +534,28 @@ export default function ManajemenPesanan({ data }) {
                                 isOpen={showUpdateModal}
                                 onClose={() => {
                                     setShowUpdateModal(!showUpdateModal);
+                                }}
+                                item={pesanan}
+                                aksi={aksi}
+                            />
+                        </div>
+                    </div>
+                )}
+                {showUpdateResiModal && (
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+                            showUpdateResiModal
+                                ? "animate-fadeIn"
+                                : "animate-fadeOut"
+                        }`}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <ModalUpdatePesanan
+                                isOpen={showUpdateResiModal}
+                                onClose={() => {
+                                    setShowUpdateResiModal(
+                                        !showUpdateResiModal
+                                    );
                                 }}
                                 item={pesanan}
                                 aksi={aksi}

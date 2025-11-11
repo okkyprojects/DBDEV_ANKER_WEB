@@ -19,6 +19,7 @@ class Transaction extends Model
         'transaction_code',
         'user_id',
         'completed_by',
+        'deleted_by',
         'total_price',
         'admin_fee',
         'grand_total',
@@ -42,6 +43,10 @@ class Transaction extends Model
     public function completedBy()
     {
         return $this->belongsTo(User::class, 'completed_by', 'id')->withTrashed();
+    }
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by', 'id')->withTrashed();
     }
     public function items()
     {

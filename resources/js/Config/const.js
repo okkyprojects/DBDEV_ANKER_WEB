@@ -23,7 +23,10 @@ export const statusBadge = {
         className: "bg-green-100 text-green-700",
     },
     5: {
-        label: () => "Cancel",
+        label: (item) =>
+            `Cancel${
+                item?.deleted_by?.name ? ` - ${item.deleted_by.name}` : ""
+            }`,
         className: "bg-red-100 text-red-700",
     },
 };
