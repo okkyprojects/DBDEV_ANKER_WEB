@@ -762,7 +762,7 @@ class TransactionRepository
     public function show($transaction_code)
     {
         $transaction = $this->transaction
-            ->with(['user', 'completedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])
+            ->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();
