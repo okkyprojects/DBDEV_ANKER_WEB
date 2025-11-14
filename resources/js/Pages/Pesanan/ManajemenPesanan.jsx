@@ -25,6 +25,7 @@ import { HiOutlineUpload } from "react-icons/hi";
 import ModalImport from "@/Components/Modal/Pesanan/ModalImport";
 import { toast } from "react-toastify";
 import ModalBatalPesanan from "@/Components/Modal/Pesanan/ModalBatalPesanan";
+import ModalUpdateResi from "@/Components/Modal/Pesanan/ModalUpdateResi";
 
 export default function ManajemenPesanan({ data }) {
     console.log(data);
@@ -550,7 +551,7 @@ export default function ManajemenPesanan({ data }) {
                         }`}
                     >
                         <div className="bg-white p-6 rounded shadow-lg">
-                            <ModalUpdatePesanan
+                            <ModalUpdateResi
                                 isOpen={showUpdateResiModal}
                                 onClose={() => {
                                     setShowUpdateResiModal(
