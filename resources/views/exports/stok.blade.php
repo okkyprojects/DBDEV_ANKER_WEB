@@ -4,6 +4,8 @@
             <th>No</th>
             <th>Produk</th>
             <th>Variant</th>
+            <th>Operator</th>
+            <th>Via</th>
             <th>Jumlah</th>
             <th>Tanggal</th>
             <th>Keterangan</th>
@@ -15,6 +17,8 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $item->variant?->product?->name ?? '-' }}</td>
             <td>{{ $item->variant?->name ?? '-' }}</td>
+            <td>{{ $item->user->name ?? "-" }}</td>
+            <td>{{ $item->via ?? "-" }}</td>
             <td>{{ $item->quantity ?? 0 }}</td>
             <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y, H:i') }}</td>
             <td>{{ $item->note ?? '-' }}</td>

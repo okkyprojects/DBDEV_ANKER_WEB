@@ -8,19 +8,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class BrandRepository
 {
     public function __construct(private Response $response, private Brand $brand) {}
 
-    private function validate(): array
+    private function validate($uuid = null): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('brands', 'name')
+                    ->whereNull('deleted_at')
+                    ->ignore($uuid, 'uuid'),
+            ],
             'status' => 'required|boolean',
             'img' => 'nullable|image|max:2048',
         ];
     }
+
 
     private function request(Request $request): array
     {
@@ -75,9 +84,12 @@ class BrandRepository
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->validate());
+        $validator = Validator::make(
+            $request->all(),
+            $this->validate($request->uuid)
+        );
         if ($validator->fails()) {
-            return $this->response->validationError($validator->errors());
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
 
         $data = $this->request($request);
@@ -89,14 +101,11 @@ class BrandRepository
             }
         }
 
-        $brand = $this->brand->updateOrCreate(
+
+        return $this->brand->updateOrCreate(
             ['uuid' => $request->input('uuid')],
             $data
         );
-
-        return $request->filled('uuid')
-            ? $this->response->update($brand)
-            : $this->response->store($brand);
     }
 
     public function destroy($uuid)

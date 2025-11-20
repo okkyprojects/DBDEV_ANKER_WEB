@@ -276,7 +276,10 @@ export default function StokPage({ data }) {
                                             />
                                         </td>
                                         <td className=" px-4 py-5">
-                                            {item?.name}
+                                            <p>{item?.name}</p>{" "}
+                                            <p className="text-neutral-500 text-xs mt-0.5">
+                                                {item?.code}
+                                            </p>
                                         </td>
                                         <td className=" px-4 py-5">
                                             {item?.category?.name}

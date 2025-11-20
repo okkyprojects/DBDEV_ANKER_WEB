@@ -181,6 +181,12 @@ export default function Item({ data }) {
                                         Produk
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
+                                        Operator
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
+                                        Via
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Jumlah
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -213,6 +219,12 @@ export default function Item({ data }) {
                                                 <p className="text-neutral-500 text-xs mt-0.5">
                                                     {item?.variant?.name}
                                                 </p>
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item?.user?.name}{" "}
+                                            </td>
+                                            <td className="px-4 py-5">
+                                                {item?.via}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item?.quantity}

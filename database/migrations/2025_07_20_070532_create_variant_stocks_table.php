@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('variant_stocks', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('via')->nullable();
             $table->uuid('variant_uuid')->nullable();
             $table->bigInteger('quantity');
             $table->string('note')->nullable();
             $table->timestamps();
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->softDeletes();
         });
     }

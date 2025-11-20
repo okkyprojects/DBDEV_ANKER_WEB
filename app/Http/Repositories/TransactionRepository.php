@@ -116,6 +116,7 @@ class TransactionRepository
         $query = DB::table('products')
             ->select([
                 'products.name as product_name',
+                'products.code as product_code',
                 'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
@@ -157,12 +158,13 @@ class TransactionRepository
         }
 
         if ($request->filled('search')) {
-            $search = '%' . $request->search . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'LIKE', $search)->orWhere('categories.name', 'LIKE', $search)->orWhere('brands.name', 'LIKE', $search);
+            $query->where(function ($q) use ($request) {
+                $q->where('products.name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('products.code', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('categories.name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('brands.name', 'like', '%' . $request->input('search') . '%');
             });
         }
-
         return $query->paginate(10);
     }
 
@@ -710,6 +712,7 @@ class TransactionRepository
         $query = DB::table('products')
             ->select([
                 'products.name as product_name',
+                'products.code as product_code',
                 'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
@@ -751,9 +754,11 @@ class TransactionRepository
         }
 
         if ($request->filled('search')) {
-            $search = '%' . $request->search . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'LIKE', $search)->orWhere('categories.name', 'LIKE', $search)->orWhere('brands.name', 'LIKE', $search);
+            $query->where(function ($q) use ($request) {
+                $q->where('products.name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('products.code', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('categories.name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('brands.name', 'like', '%' . $request->input('search') . '%');
             });
         }
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->string('name');
+            $table->text('code');
             $table->uuid('category_uuid')->nullable();
             $table->uuid('brand_uuid')->nullable();
             $table->text('img')->nullable();

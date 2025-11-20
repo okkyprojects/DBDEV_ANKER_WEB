@@ -44,13 +44,16 @@ class VariantStockRepository
 
     public function index(Request $request)
     {
-        $query = $this->model->with(['variant.product']);
+        $query = $this->model->with(['variant.product','user']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
-                $q->where('note', 'like', "%$search%")
+                $q->where('note', 'like', "%$search%")->orWhere('via', 'like', "%$search%")
+                    ->orWhereHas('user', function ($qUser) use ($search) {
+                        $qUser->where('name', 'like', "%$search%");
+                    })
                     ->orWhereHas('variant', function ($q1) use ($search) {
                         $q1->where('name', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
@@ -135,14 +138,17 @@ class VariantStockRepository
     {
         $query = $this->model->with([
             'variant.product.category',
-            'variant.product.brand'
+            'variant.product.brand','user'
         ]);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
-                $q->where('note', 'like', "%$search%")
+                $q->where('note', 'like', "%$search%")->orWhere('via', 'like', "%$search%")
+                    ->orWhereHas('user', function ($qUser) use ($search) {
+                        $qUser->where('name', 'like', "%$search%");
+                    })
                     ->orWhereHas('variant', function ($q1) use ($search) {
                         $q1->where('name', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
@@ -257,18 +263,25 @@ class VariantStockRepository
             if (!$existing) {
                 return $this->response->notFound();
             }
+
+            unset($data['user_id'], $data['via']);
+
             $updated = $existing->update($data);
             return $updated
                 ? $this->response->update($existing)
                 : $this->response->updateError();
         } else {
             $data['uuid'] = Str::uuid();
+            $data['user_id'] = auth()->id();
+            $data['via'] = 'Manual';
+
             $created = $this->model->create($data);
             return $created
                 ? $this->response->store($created)
                 : $this->response->storeError();
         }
     }
+
 
     public function destroy($uuid)
     {

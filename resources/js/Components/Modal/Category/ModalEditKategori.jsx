@@ -36,7 +36,7 @@ const ModalEditKategori = ({ isOpen, onClose, kategori }) => {
                 reset();
             },
             onError: () => {
-                toast.error("Gagal megnubah data.");
+                toast.error("Gagal mengubah data.");
             },
         });
     };

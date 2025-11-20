@@ -15,6 +15,8 @@ class VariantStock extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'uuid',
+        'via',
+        'user_id',
         'variant_uuid',
         'quantity',
         'note',
@@ -22,5 +24,9 @@ class VariantStock extends Model
     public function variant()
     {
         return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid')->withTrashed();
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
     }
 }

@@ -15,6 +15,7 @@ class Product extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'uuid',
+        'code',
         'name',
         'category_uuid',
         'brand_uuid',

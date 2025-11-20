@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class CategoryRepository
 {
@@ -20,10 +22,16 @@ class CategoryRepository
         $this->category = $category;
     }
 
-    private function validate(): array
+    private function validate($uuid = null): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('categories', 'name')
+                    ->whereNull('deleted_at')
+                    ->ignore($uuid, 'uuid'),
+            ],
             'status' => 'required|boolean',
             'img' => 'nullable|image|max:2048',
         ];
@@ -82,9 +90,12 @@ class CategoryRepository
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->validate());
+        $validator = Validator::make(
+            $request->all(),
+            $this->validate($request->uuid)
+        );
         if ($validator->fails()) {
-            return $this->response->validationError($validator->errors());
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
 
         $data = $this->request($request);
@@ -96,14 +107,10 @@ class CategoryRepository
             }
         }
 
-        $category = $this->category->updateOrCreate(
+        return $this->category->updateOrCreate(
             ['uuid' => $request->input('uuid')],
             $data
         );
-
-        return $request->filled('uuid')
-            ? $this->response->update($category)
-            : $this->response->store($category);
     }
 
     public function destroy($uuid)

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductRepository
 {
@@ -42,6 +43,11 @@ class ProductRepository
     {
         return [
             'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                Rule::unique('products', 'code')->whereNull('deleted_at'),
+            ],
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
             'img' => 'nullable',
@@ -116,7 +122,8 @@ class ProductRepository
 
     public function import(array $row)
     {
-        if (empty($row['product_name'])) {
+
+        if (empty($row['product_name']) || empty($row['product_code'])) {
             return false;
         }
 
@@ -127,7 +134,7 @@ class ProductRepository
                 ['name' => $row['category_name'] ?? ''],
                 ['uuid' => Str::uuid()]
             );
-        if ($category->trashed()) $category->restore();
+        // if ($category->trashed()) $category->restore();
 
         // BRAND
         $brand = $this->brand
@@ -143,6 +150,7 @@ class ProductRepository
             ->withTrashed()
             ->firstOrCreate(
                 [
+                    'code' => $row['product_code'],
                     'name' => $row['product_name'],
                     'category_uuid' => $category->uuid,
                     'brand_uuid' => $brand->uuid,
@@ -178,6 +186,8 @@ class ProductRepository
                     'variant_uuid' => $variant->uuid,
                     'quantity' => $row['stock'],
                     'note' => $row['note'] ?? null,
+                    'user_id' => auth()->id(),
+                    'via' => 'Import',
                 ]);
             }
         }
@@ -196,6 +206,7 @@ class ProductRepository
         $data = [
             'uuid' => $request->filled('uuid') ? $request->input('uuid') : Str::uuid(),
             'name' => $request->input('name'),
+            'code' => $request->input('code'),
             'category_uuid' => $request->input('category_uuid'),
             'brand_uuid' => $request->input('brand_uuid'),
             'description' => $request->input('description'),
@@ -271,7 +282,10 @@ class ProductRepository
                 $q->whereNull('variants.deleted_at');
             })
             ->when($request->filled('search'), function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('search') . '%');
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->input('search') . '%')
+                        ->orWhere('code', 'like', '%' . $request->input('search') . '%');
+                });
             })
             ->when($request->filled('category'), function ($q) use ($request) {
                 $category = $request->input('category');
@@ -334,7 +348,10 @@ class ProductRepository
                 'variants',
             ])
             ->when($request->filled('search'), function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('search') . '%');
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->input('search') . '%')
+                        ->orWhere('code', 'like', '%' . $request->input('search') . '%');
+                });
             })
             ->when($request->filled('category'), function ($q) use ($request) {
                 $category = $request->input('category');

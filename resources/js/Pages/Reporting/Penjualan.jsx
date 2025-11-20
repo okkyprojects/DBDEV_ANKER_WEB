@@ -179,10 +179,14 @@ export default function Penjualan({ data }) {
                                             className="hover:bg-gray-50 text-sm text-neutral-700"
                                         >
                                             <td className="px-4 py-5 pl-9 xl:pl-11">
-                                                {data?.transactions?.from + index}
+                                                {data?.transactions?.from +
+                                                    index}
                                             </td>
                                             <td className="px-4 py-5">
-                                                {item.product_name}
+                                                <p> {item?.product_name}</p>
+                                                <p className="text-neutral-500 text-xs mt-0.5">
+                                                    {item?.product_code}
+                                                </p>
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item.kuantitas}

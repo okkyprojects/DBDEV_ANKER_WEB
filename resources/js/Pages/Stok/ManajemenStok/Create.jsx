@@ -10,6 +10,7 @@ import { Link, router, useForm } from "@inertiajs/react";
 export default function Create({ data: initial_data }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
+        code: "",
         category_uuid: "",
         brand_uuid: "",
         seller_uuid: "",
@@ -113,6 +114,26 @@ export default function Create({ data: initial_data }) {
                                         setData("name", e.target.value)
                                     }
                                 />
+                            </div>
+                            {/* Product Code */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                <label htmlFor="code">Kode Produk</label>
+                                <input
+                                    id="code"
+                                    required
+                                    type="text"
+                                    placeholder="Masukkan kode produk"
+                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.code}
+                                    onChange={(e) =>
+                                        setData("code", e.target.value)
+                                    }
+                                />
+                                {errors.code && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.code}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Category */}

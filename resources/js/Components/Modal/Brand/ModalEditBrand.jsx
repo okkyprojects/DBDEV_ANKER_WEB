@@ -36,7 +36,7 @@ const ModalEditBrand = ({ isOpen, onClose, brand }) => {
                 reset();
             },
             onError: () => {
-                toast.error("Gagal megnubah data.");
+                toast.error("Gagal mengubah data.");
             },
         });
     };

@@ -46,14 +46,14 @@ class Variant extends Model
     public function total_stock()
     {
         return $this->hasOne(VariantStock::class, 'variant_uuid', 'uuid')
-            ->whereNull('variant_stocks.deleted_at') 
+            ->whereNull('variant_stocks.deleted_at')
             ->selectRaw('variant_uuid,
             SUM(quantity) - (
                 SELECT COALESCE(SUM(transaction_items.quantity), 0)
                 FROM transaction_items
                 JOIN transactions ON transactions.uuid = transaction_items.transaction_uuid
                 WHERE transaction_items.variant_uuid = variant_stocks.variant_uuid
-                AND transactions.status IN (2,3,4)
+                AND transactions.status IN (1,2,3,4)
             ) as total_stock')
             ->groupBy('variant_uuid')
             ->withDefault([
