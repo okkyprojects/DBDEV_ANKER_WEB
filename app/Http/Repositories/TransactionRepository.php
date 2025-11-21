@@ -141,7 +141,7 @@ class TransactionRepository
             // ->whereNull('products.deleted_at')
             // ->whereNull('categories.deleted_at')
             // ->whereNull('brands.deleted_at')
-            ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
+            ->groupBy('products.uuid', 'products.name', 'products.code',  'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
@@ -737,7 +737,7 @@ class TransactionRepository
             // ->whereNull('products.deleted_at')
             // ->whereNull('categories.deleted_at')
             // ->whereNull('brands.deleted_at')
-            ->groupBy('products.uuid', 'products.name', 'categories.name', 'brands.name');
+            ->groupBy('products.uuid', 'products.name', 'products.code', 'categories.name', 'brands.name');
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $start = Carbon::parse($request->startDate)->startOfDay();
