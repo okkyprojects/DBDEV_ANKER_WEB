@@ -34,7 +34,7 @@ class AuthController extends Controller
                 'errors'  => $e->errors(),
             ], 422);
         }
-        $existingUser = User::where('email', $request->email)->first();
+        $existingUser = User::where('email', $request->email)->whereNull('deleted_at')->first();
 
         if ($existingUser) {
             if (!is_null($existingUser->email_verified_at)) {
@@ -171,7 +171,9 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+            ->whereNull('deleted_at')
+            ->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([

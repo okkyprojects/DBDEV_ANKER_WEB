@@ -39,14 +39,18 @@ class ProductRepository
         $this->category = $category;
         $this->variantStock = $variantStock;
     }
-    private function validate()
+    private function validate($request = null)
     {
+        $uuid = $request?->input('uuid');
+
         return [
             'name' => 'required|string|max:255',
             'code' => [
                 'required',
                 'string',
-                Rule::unique('products', 'code')->whereNull('deleted_at'),
+                Rule::unique('products', 'code')
+                    ->whereNull('deleted_at')
+                    ->ignore($uuid, 'uuid'),
             ],
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
@@ -415,7 +419,7 @@ class ProductRepository
 
     public function store($request)
     {
-        $validator = Validator::make($request->all(), $this->validate());
+        $validator = Validator::make($request->all(), $this->validate($request));
 
         if ($validator->fails()) {
             throw new \Illuminate\Validation\ValidationException($validator);
