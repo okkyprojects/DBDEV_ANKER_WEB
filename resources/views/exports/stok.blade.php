@@ -3,6 +3,7 @@
         <tr>
             <th>No</th>
             <th>Produk</th>
+            <th>SKU</th>
             <th>Variant</th>
             <th>Operator</th>
             <th>Via</th>
@@ -16,6 +17,7 @@
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $item->variant?->product?->name ?? '-' }}</td>
+            <td>{{ $item->variant?->sku ?? '-' }}</td>
             <td>{{ $item->variant?->name ?? '-' }}</td>
             <td>{{ $item->user->name ?? "-" }}</td>
             <td>{{ $item->via ?? "-" }}</td>

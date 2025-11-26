@@ -48,9 +48,6 @@ class ProductRepository
             'code' => [
                 'required',
                 'string',
-                Rule::unique('products', 'code')
-                    ->whereNull('deleted_at')
-                    ->ignore($uuid, 'uuid'),
             ],
             'category_uuid' => 'required|exists:categories,uuid',
             'brand_uuid' => 'required|exists:brands,uuid',
@@ -414,6 +411,22 @@ class ProductRepository
 
         return $data;
     }
+    public function single_withoout_delete($uuid)
+    {
+        $data = $this->product->withTrashed()
+            ->with([
+                'brand',
+                'category',
+                'variants' => function ($q) {
+                    $q->whereNull('deleted_at')
+                        ->with('total_stock');
+                },
+            ])
+            ->where('uuid', $uuid)
+            ->first();
+
+        return $data;
+    }
 
 
 
@@ -424,6 +437,24 @@ class ProductRepository
         if ($validator->fails()) {
             throw new \Illuminate\Validation\ValidationException($validator);
         }
+
+        $code = $request->input('code');
+        $uuid = $request->input('uuid');
+
+        $variantExists = $this->product->where('code', $code)
+            ->whereNull('deleted_at')
+            ->whereHas('variants', function ($q) {
+                $q->whereNull('deleted_at');
+            }, '>', 0)
+            ->when($uuid, fn($q) => $q->where('uuid', '!=', $uuid))
+            ->exists();
+
+        if ($variantExists) {
+            $validator->errors()->add('code', 'The code has already been taken');
+            throw new \Illuminate\Validation\ValidationException($validator);
+        }
+
+
 
 
         $data = $this->request($request);

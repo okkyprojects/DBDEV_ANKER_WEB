@@ -110,7 +110,7 @@ export default function Index({ data, uuid }) {
             preserveState: true,
         });
     };
-    const filters = ["Harian", "Mingguan", "Bulanan"];
+    const filters = ["Harian",  "Bulanan"];
     const mantap = {
         variant_stocks: {
             data: [

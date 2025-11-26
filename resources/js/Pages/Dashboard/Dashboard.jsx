@@ -134,7 +134,7 @@ export default function Dashboard({ data }) {
             preserveScroll: true,
         });
     };
-    const filters = ["Harian", "Mingguan", "Bulanan"];
+    const filters = ["Harian",  "Bulanan"];
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">

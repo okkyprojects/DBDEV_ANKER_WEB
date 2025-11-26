@@ -46,7 +46,7 @@ class PenjualanController extends Controller
     }
     public function show(Request $request, $uuid)
     {
-        $data['product'] = $this->productRepository->single($uuid);
+        $data['product'] = $this->productRepository->single_withoout_delete($uuid);
         $data['transactions'] = $this->transactionRepository->show_penjualan_by_product($request, $uuid);
         $data['summary'] = $this->transactionRepository->get_summary_detail_by_product($request, $uuid);
         $data['chart'] = $this->transactionRepository->get_chart_data_by_product($request, $uuid);

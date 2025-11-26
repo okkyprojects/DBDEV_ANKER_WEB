@@ -217,6 +217,7 @@ export default function Item({ data }) {
                                                     }
                                                 </p>
                                                 <p className="text-neutral-500 text-xs mt-0.5">
+                                                    {item?.variant?.sku}{" "} - {" "}
                                                     {item?.variant?.name}
                                                 </p>
                                             </td>

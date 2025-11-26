@@ -44,7 +44,7 @@ class VariantStockRepository
 
     public function index(Request $request)
     {
-        $query = $this->model->with(['variant.product','user']);
+        $query = $this->model->with(['variant.product', 'user']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -55,7 +55,7 @@ class VariantStockRepository
                         $qUser->where('name', 'like', "%$search%");
                     })
                     ->orWhereHas('variant', function ($q1) use ($search) {
-                        $q1->where('name', 'like', "%$search%")
+                        $q1->where('name', 'like', "%$search%")->orWhere('sku', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
                                 $q2->where('name', 'like', "%$search%");
                             });
@@ -138,7 +138,8 @@ class VariantStockRepository
     {
         $query = $this->model->with([
             'variant.product.category',
-            'variant.product.brand','user'
+            'variant.product.brand',
+            'user'
         ]);
 
         if ($request->filled('search')) {
@@ -150,7 +151,7 @@ class VariantStockRepository
                         $qUser->where('name', 'like', "%$search%");
                     })
                     ->orWhereHas('variant', function ($q1) use ($search) {
-                        $q1->where('name', 'like', "%$search%")
+                        $q1->where('name', 'like', "%$search%")->orWhere('sku', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
                                 $q2->where('name', 'like', "%$search%")
                                     ->orWhereHas('category', function ($q3) use ($search) {
@@ -200,7 +201,7 @@ class VariantStockRepository
             $query->where(function ($q) use ($search) {
                 $q->where('note', 'like', "%$search%")
                     ->orWhereHas('variant', function ($q1) use ($search) {
-                        $q1->where('name', 'like', "%$search%")
+                        $q1->where('name', 'like', "%$search%")->orWhere('sku', 'like', "%$search%")
                             ->orWhereHas('product', function ($q2) use ($search) {
                                 $q2->where('name', 'like', "%$search%")
                                     ->orWhereHas('category', function ($q3) use ($search) {
