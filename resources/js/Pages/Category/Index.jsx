@@ -6,7 +6,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import ModalTambahKategori from "@/Components/Modal/Category/ModalTambahKategori";
 import ModalEditKategori from "@/Components/Modal/Category/ModalEditKategori";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 export default function Index({ data }) {
