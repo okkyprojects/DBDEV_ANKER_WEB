@@ -432,7 +432,7 @@ class TransactionRepository
             ->map(function ($variant) {
                 return [
                     'product' => $variant->product,
-                    'stok_saat_ini' => $variant->total_stock->total_stock ?? 0,
+                    'stok_saat_ini' => $variant->stock ?? 0,
                     'terjual' => (int) $variant->total_sold,
                 ];
             });
