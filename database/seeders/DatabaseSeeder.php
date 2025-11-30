@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call(LocationSeeder::class);
         $this->call(UserSeeder::class);
-        User::factory()->count(5)->create();
+        // User::factory()->count(5)->create();
         // Category::factory()->count(5)->create();
         // Brand::factory()->count(5)->create();
         // Product::factory()->count(30)->create()->each(function ($product) {
