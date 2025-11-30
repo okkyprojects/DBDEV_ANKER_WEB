@@ -378,7 +378,8 @@ class TransactionRepository
     {
         $query = $this->transaction->with(['user', 'items', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
-        if (Auth::user()->role !== 'admin') {
+        if (!Auth::user()->hasRole('admin')) {
+
             $query->where('user_id', Auth::id());
         }
 
@@ -501,7 +502,7 @@ class TransactionRepository
             'total_stok' => (int) $rekap->total_stok,
             'total_terjual' => (int) $rekap->total_terjual,
             'total_pendapatan' => (int) $rekap->total_pendapatan,
-            'stok_tersisa' => (int) $rekap->total_stok ,
+            'stok_tersisa' => (int) $rekap->total_stok,
         ];
     }
 
@@ -570,7 +571,8 @@ class TransactionRepository
     {
         $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
-        if (Auth::user()->role !== 'admin') {
+        if (!Auth::user()->hasRole('admin')) {
+
             $query->where('user_id', Auth::id());
         }
 
@@ -604,7 +606,8 @@ class TransactionRepository
     {
         $baseQuery = $this->transaction->query();
 
-        if (Auth::user()->role !== 'admin') {
+        if (!Auth::user()->hasRole('admin')) {
+
             $baseQuery->where('user_id', Auth::id());
         }
 
@@ -645,7 +648,8 @@ class TransactionRepository
     {
         $query = $this->transactionItem->with(['transaction.completedBy', 'transaction.deletedBy', 'transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
 
-        if (Auth::user()->role !== 'admin') {
+        if (!Auth::user()->hasRole('admin')) {
+
             $query->whereHas('transaction', function ($q) {
                 $q->where('user_id', Auth::id());
             });
