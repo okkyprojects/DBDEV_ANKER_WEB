@@ -69,7 +69,7 @@ class CartRepository
                     'product_uuid'    => $variant->product->uuid,
                     'product_name'    => $variant->product->name,
                     'img'             => $variant->img,
-                    'total_stock'     => $variant->total_stock,
+                    'stock'     => $variant->stock,
                 ];
             }
         }
