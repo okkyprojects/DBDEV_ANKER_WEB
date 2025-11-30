@@ -105,7 +105,7 @@ export default function Index({ data }) {
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Kategori</p>
                         <div className="flex gap-2">
-                            {selected.length > 0 && (
+                            {permissions.includes("category-delete") &&selected.length > 0 && (
                                 <button
                                     onClick={handleBulkDelete}
                                     className="flex gap-1 items-center bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-full"

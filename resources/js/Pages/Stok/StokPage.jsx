@@ -232,15 +232,16 @@ export default function StokPage({ data }) {
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Produk</p>
                         <div className="flex gap-2 items-center">
-                            {selected.length > 0 && (
-                                <button
-                                    onClick={handleBulkDelete}
-                                    className="flex gap-1 items-center bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-full"
-                                >
-                                    <FaTrash />
-                                    Hapus Terpilih ({selected.length})
-                                </button>
-                            )}{" "}
+                            {permissions.includes("product-delete") &&
+                                selected.length > 0 && (
+                                    <button
+                                        onClick={handleBulkDelete}
+                                        className="flex gap-1 items-center bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-full"
+                                    >
+                                        <FaTrash />
+                                        Hapus Terpilih ({selected.length})
+                                    </button>
+                                )}{" "}
                             {permissions.includes("product-add") && (
                                 <Link
                                     href="/produk/data-produk/create"
