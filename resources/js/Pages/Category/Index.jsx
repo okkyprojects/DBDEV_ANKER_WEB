@@ -10,6 +10,7 @@ import { router } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 export default function Index({ data }) {
+    const { permissions } = usePage().props;
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -113,13 +114,15 @@ export default function Index({ data }) {
                                     Hapus Terpilih ({selected.length})
                                 </button>
                             )}
-                            <button
-                                onClick={() => setShowAddModal(true)}
-                                className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
-                            >
-                                <FaPlus />
-                                Tambah Kategori
-                            </button>
+                            {permissions.includes("category-add") && (
+                                <button
+                                    onClick={() => setShowAddModal(true)}
+                                    className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                                >
+                                    <FaPlus />
+                                    Tambah Kategori
+                                </button>
+                            )}
                         </div>
                     </div>
 

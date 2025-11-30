@@ -4,7 +4,7 @@ import { useForm } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
-const ModalTambahUser = ({ isOpen, onClose }) => {
+const ModalTambahUser = ({ isOpen, onClose,roles }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
@@ -145,8 +145,13 @@ const ModalTambahUser = ({ isOpen, onClose }) => {
                                         setData("role", e.target.value)
                                     }
                                 >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
+                                    <option value="">Pilih Role</option>
+
+                                    {roles?.map((role, idx) => (
+                                        <option key={idx} value={role.name}>
+                                            {role.name}
+                                        </option>
+                                    ))}
                                 </select>
                                 {errors.role && (
                                     <span className="text-xs text-red-500">

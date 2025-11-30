@@ -120,13 +120,6 @@ class TransactionRepository
                 'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((
-    SELECT SUM(vs.quantity)
-    FROM variants v
-    JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
-    WHERE v.product_uuid = products.uuid
-      AND vs.deleted_at IS NULL
-), 0) as kuantitas'),
 
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
@@ -485,39 +478,33 @@ class TransactionRepository
 
     public function get_summary_detail_by_product(Request $request, $productUuid)
     {
-        $subKuantitas = DB::table('variant_stocks')->select('variant_uuid', DB::raw('SUM(quantity) as total_stok'))->whereNull('deleted_at')->groupBy('variant_uuid');
-
         $rekap = DB::table('variants')
-            ->leftJoinSub($subKuantitas, 'vs', function ($join) {
-                $join->on('variants.uuid', '=', 'vs.variant_uuid');
-            })
             ->leftJoin('transaction_items', 'variants.uuid', '=', 'transaction_items.variant_uuid')
             ->leftJoin('transactions', 'transaction_items.transaction_uuid', '=', 'transactions.uuid')
             ->where('variants.product_uuid', $productUuid)
-            ->when($request->filled('startDate') && $request->filled('endDate'), function ($q) use ($request) {
-                $start = Carbon::parse($request->startDate)->startOfDay();
-                $end = Carbon::parse($request->endDate)->endOfDay();
-                $q->whereBetween('transactions.created_at', [$start, $end]);
-            })
-            ->where(function ($q) {
-                $q->where('transactions.status', '>', 0)->where('transactions.status', '<', 5);
-            })
-            ->selectRaw(
-                '
-            COALESCE(SUM(DISTINCT vs.total_stok), 0) as total_stok,
-            COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity ELSE 0 END), 0) as total_terjual,
-            COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as total_pendapatan
-        ',
+            ->when(
+                $request->filled('startDate') && $request->filled('endDate'),
+                function ($q) use ($request) {
+                    $start = Carbon::parse($request->startDate)->startOfDay();
+                    $end = Carbon::parse($request->endDate)->endOfDay();
+                    $q->whereBetween('transactions.created_at', [$start, $end]);
+                }
             )
+            ->selectRaw("
+            COALESCE(SUM(variants.stock), 0) AS total_stok,
+            COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity ELSE 0 END), 0) AS total_terjual,
+            COALESCE(SUM(CASE WHEN transactions.status IN (2,3,4) THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) AS total_pendapatan
+        ")
             ->first();
 
         return [
             'total_stok' => (int) $rekap->total_stok,
             'total_terjual' => (int) $rekap->total_terjual,
             'total_pendapatan' => (int) $rekap->total_pendapatan,
-            'stok_tersisa' => (int) $rekap->total_stok - (int) $rekap->total_terjual,
+            'stok_tersisa' => (int) $rekap->total_stok ,
         ];
     }
+
     public function export_penjualan_by_product(Request $request, $productUuid)
     {
         $query = DB::table('variants')
@@ -526,12 +513,6 @@ class TransactionRepository
                 'variants.img as variant_img',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((
-                SELECT SUM(vs.quantity)
-                FROM variant_stocks vs
-                WHERE vs.variant_uuid = variants.uuid
-                AND vs.deleted_at IS NULL
-            ), 0) as kuantitas'),
                 DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as terjual'),
                 DB::raw('COALESCE(SUM(transaction_items.quantity * transaction_items.price), 0) as pendapatan'),
             ])
@@ -563,12 +544,6 @@ class TransactionRepository
                 'variants.img as variant_img',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((
-                SELECT SUM(vs.quantity)
-                FROM variant_stocks vs
-                WHERE vs.variant_uuid = variants.uuid
-                AND vs.deleted_at IS NULL
-            ), 0) as kuantitas'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
             ])
@@ -716,14 +691,6 @@ class TransactionRepository
                 'products.uuid as uuid',
                 'categories.name as category_name',
                 'brands.name as brand_name',
-                DB::raw('COALESCE((
-    SELECT SUM(vs.quantity)
-    FROM variants v
-    JOIN variant_stocks vs ON vs.variant_uuid = v.uuid
-    WHERE v.product_uuid = products.uuid
-      AND vs.deleted_at IS NULL
-), 0) as kuantitas'),
-
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity ELSE 0 END), 0) as terjual'),
                 DB::raw('COALESCE(SUM(CASE WHEN transactions.status > 1 AND transactions.status < 5 THEN transaction_items.quantity * transaction_items.price ELSE 0 END), 0) as pendapatan'),
             ])
@@ -812,7 +779,6 @@ class TransactionRepository
                     'product' => function ($q) {
                         $q->whereNull('deleted_at');
                     },
-                    'total_stock',
                 ])
                 ->where('uuid', $item['variant_uuid'])
                 ->whereNull('deleted_at')
@@ -822,12 +788,12 @@ class TransactionRepository
                 return $this->response->validationError(new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']]));
             }
 
-            $availableStock = $variant->total_stock->total_stock ?? 0;
+            $availableStock = $variant->stock;
             if ($item['quantity'] > $availableStock) {
                 return $this->response->validationError(
                     new MessageBag([
                         'items' => ["Stok untuk {$variant->product->name} - {$variant->name} tidak mencukupi. Stok tersedia: {$availableStock}"],
-                    ]),
+                    ])
                 );
             }
 
@@ -847,6 +813,7 @@ class TransactionRepository
                 'price' => $price,
             ];
         }
+
 
         $variantUuids = collect($request->input('items', []))->pluck('variant_uuid')->filter()->values()->all();
 
@@ -924,11 +891,36 @@ class TransactionRepository
         if (isset($updateData['status']) && $updateData['status'] == 4) {
             $updateData['completed_by'] = Auth::id();
         }
+
         if (isset($updateData['status']) && $updateData['status'] == 5) {
             $updateData['deleted_by'] = Auth::id();
         }
+
         $trx->fill($updateData);
         $trx->save();
+        $items = $this->transactionItem
+            ->where('transaction_uuid', $trx->uuid)
+            ->get();
+
+        if ($updateData['status'] == 1) {
+
+            foreach ($items as $item) {
+                $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
+                if ($variant) {
+                    $variant->decrement('stock', $item->quantity);
+                }
+            }
+        }
+        if ($updateData['status'] == 5) {
+
+            foreach ($items as $item) {
+                $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
+                if ($variant) {
+                    $variant->increment('stock', $item->quantity);
+                }
+            }
+        }
+
 
         return $this->response->update($trx);
     }

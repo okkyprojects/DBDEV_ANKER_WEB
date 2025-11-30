@@ -13,11 +13,12 @@ import {
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 export default function Penjualan({ data }) {
+    const { permissions } = usePage().props;
     console.log(data);
     const [showModalFilter, setShowModalFilter] = useState(false);
     const debounceRef = useRef(null);
@@ -107,19 +108,23 @@ export default function Penjualan({ data }) {
                             className="p-2.5 rounded-xl border border-neutral-400 text-neutral-400 hover:bg-gray-100 transition"
                         >
                             <GrFilter size={20} />
-                        </button>
-                        <a
-                            href={route("reporting.penjualan.export", {
-                                search: searchParams.get("search") || "",
-                                brand: searchParams.get("brand") || "",
-                                category: searchParams.get("category") || "",
-                                startDate: searchParams.get("startDate") || "",
-                                endDate: searchParams.get("endDate") || "",
-                            })}
-                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
-                        >
-                            <HiOutlinePrinter size={20} />
-                        </a>
+                        </button>{" "}
+                        {permissions.includes("transaction-export") && (
+                            <a
+                                href={route("reporting.penjualan.export", {
+                                    search: searchParams.get("search") || "",
+                                    brand: searchParams.get("brand") || "",
+                                    category:
+                                        searchParams.get("category") || "",
+                                    startDate:
+                                        searchParams.get("startDate") || "",
+                                    endDate: searchParams.get("endDate") || "",
+                                })}
+                                className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                            >
+                                <HiOutlinePrinter size={20} />
+                            </a>
+                        )}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -160,9 +165,6 @@ export default function Penjualan({ data }) {
                                         Produk
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
-                                        Stok Masuk
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Terjual
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -187,9 +189,6 @@ export default function Penjualan({ data }) {
                                                 <p className="text-neutral-500 text-xs mt-0.5">
                                                     {item?.product_code}
                                                 </p>
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {item.kuantitas}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item.terjual}

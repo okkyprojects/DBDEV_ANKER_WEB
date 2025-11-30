@@ -13,6 +13,10 @@ class TermController extends Controller
 
     public function __construct(TermRepository $term)
     {
+        $this->middleware('permission:term-index', ['only' => ['index', 'show']]);
+        $this->middleware('permission:term-add', ['only' => ['store']]);
+        $this->middleware('permission:term-update', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:term-delete', ['only' => ['destroy']]);
         $this->term = $term;
     }
 

@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useForm, router } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
-const ModalEditUser = ({ isOpen, onClose, user }) => {
+const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
+    console.log(user);
+    const { permissions } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         id: user?.id || "",
         name: user?.name || "",
@@ -12,7 +14,7 @@ const ModalEditUser = ({ isOpen, onClose, user }) => {
         password: "",
         phone_number: user?.phone_number || "",
         gender: user?.gender || "",
-        role: user?.role || "",
+        role: user?.roles?.[0]?.name || "",
         dob: user?.dob || "",
         status: user?.status?.toString() || "1",
         img: null,
@@ -159,8 +161,11 @@ const ModalEditUser = ({ isOpen, onClose, user }) => {
                                         setData("role", e.target.value)
                                     }
                                 >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
+                                    {roles?.map((role, idx) => (
+                                        <option key={idx} value={role.name}>
+                                            {role.name}
+                                        </option>
+                                    ))}
                                 </select>
                                 {errors.role && (
                                     <span className="text-xs text-red-500">
@@ -284,13 +289,15 @@ const ModalEditUser = ({ isOpen, onClose, user }) => {
 
                             {/* Action buttons */}
                             <div className="flex items-center justify-between pt-4 border-t mt-4">
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="text-red-600 text-sm font-medium hover:underline"
-                                >
-                                    Hapus
-                                </button>
+                                {permissions.includes("user-delete") && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="text-red-600 text-sm font-medium hover:underline"
+                                    >
+                                        Hapus
+                                    </button>
+                                )}
                                 <div className="flex gap-3">
                                     <button
                                         type="button"
@@ -299,13 +306,17 @@ const ModalEditUser = ({ isOpen, onClose, user }) => {
                                     >
                                         Batal
                                     </button>
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
-                                    >
-                                        {processing ? "Menyimpan..." : "Simpan"}
-                                    </button>
+                                    {permissions.includes("user-update") && (
+                                        <button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
+                                        >
+                                            {processing
+                                                ? "Menyimpan..."
+                                                : "Simpan"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </form>

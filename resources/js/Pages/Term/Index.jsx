@@ -1,10 +1,11 @@
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { useState, useEffect, useRef } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 export default function Index({ data }) {
+    const { permissions } = usePage().props;
     const initialContent = data?.term?.content || "";
     const [content, setContent] = useState(initialContent);
     const [errors, setErrors] = useState({});
@@ -43,17 +44,19 @@ export default function Index({ data }) {
                     <h1 className="text-2xl font-semibold">
                         Syarat Dan Ketentuan
                     </h1>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={saving}
-                        className={`px-4 py-2 rounded-full text-white ${
-                            saving
-                                ? "bg-primary-600/60"
-                                : "bg-primary-600 hover:bg-primary-600/90"
-                        }`}
-                    >
-                        {saving ? "Menyimpan..." : "Simpan"}
-                    </button>
+                    {permissions.includes("term-add") && (
+                        <button
+                            onClick={handleSubmit}
+                            disabled={saving}
+                            className={`px-4 py-2 rounded-full text-white ${
+                                saving
+                                    ? "bg-primary-600/60"
+                                    : "bg-primary-600 hover:bg-primary-600/90"
+                            }`}
+                        >
+                            {saving ? "Menyimpan..." : "Simpan"}
+                        </button>
+                    )}
                 </div>
 
                 <div className="bg-white rounded-2xl p-5 shadow-sm">

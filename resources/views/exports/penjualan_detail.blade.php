@@ -5,7 +5,6 @@
             <th>Variant</th>
             <th>Kategori</th>
             <th>Brand</th>
-            <th>Kuantitas</th>
             <th>Terjual</th>
             <th>Pendapatan</th>
         </tr>
@@ -17,7 +16,6 @@
                 <td>{{ $item->variant_name }}</td>
                 <td>{{ $item->category_name }}</td>
                 <td>{{ $item->brand_name }}</td>
-                <td>{{ (int) $item->kuantitas }}</td>
                 <td>{{ (int) $item->terjual }}</td>
                 <td>{{ $item->pendapatan }}</td>
             </tr>

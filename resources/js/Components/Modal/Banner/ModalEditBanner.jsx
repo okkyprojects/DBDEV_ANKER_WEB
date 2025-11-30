@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useForm, router } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
 const ModalEditBanner = ({ isOpen, onClose, banner }) => {
+    const { permissions } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         uuid: banner?.uuid || "",
         img: null,
@@ -86,7 +87,6 @@ const ModalEditBanner = ({ isOpen, onClose, banner }) => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-
                             {/* Gambar */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Gambar</label>
@@ -146,13 +146,15 @@ const ModalEditBanner = ({ isOpen, onClose, banner }) => {
                             {/* Action buttons */}
                             <div className="flex items-center justify-between pt-4 border-t mt-4">
                                 {/* Hapus (kiri) */}
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="text-red-600 text-sm font-medium hover:underline"
-                                >
-                                    Hapus
-                                </button>
+                                {permissions.includes("banner-delete") && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="text-red-600 text-sm font-medium hover:underline"
+                                    >
+                                        Hapus
+                                    </button>
+                                )}
 
                                 <div className="flex gap-3">
                                     {/* Batal */}
@@ -165,13 +167,17 @@ const ModalEditBanner = ({ isOpen, onClose, banner }) => {
                                     </button>
 
                                     {/* Simpan */}
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
-                                    >
-                                        {processing ? "Menyimpan..." : "Simpan"}
-                                    </button>
+                                    {permissions.includes("banner-update") && (
+                                        <button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
+                                        >
+                                            {processing
+                                                ? "Menyimpan..."
+                                                : "Simpan"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </form>

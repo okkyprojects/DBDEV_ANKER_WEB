@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
     use SoftDeletes;
 
     /**
@@ -19,10 +20,10 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $guard_name = 'web';
     protected $fillable = [
         'name',
         'img',
-        'role',
         'email',
         'gender',
         'dob',
@@ -68,4 +69,8 @@ class User extends Authenticatable
         return $this->hasOne(Address::class)->where('is_main', true)
             ->with(['province', 'city', 'district']);
     }
+    // public function roles()
+    // {
+    //     return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'model_has_roles', 'model_id', 'role_id');
+    // }
 }

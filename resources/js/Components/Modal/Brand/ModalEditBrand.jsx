@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useForm, router } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
 const ModalEditBrand = ({ isOpen, onClose, brand }) => {
+    const { permissions } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         uuid: brand?.uuid || "",
         name: brand?.name || "",
@@ -188,13 +189,15 @@ const ModalEditBrand = ({ isOpen, onClose, brand }) => {
                             {/* Action buttons */}
                             <div className="flex items-center justify-between pt-4 border-t mt-4">
                                 {/* Hapus (kiri) */}
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="text-red-600 text-sm font-medium hover:underline"
-                                >
-                                    Hapus
-                                </button>
+                                {permissions.includes("brand-delete") && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="text-red-600 text-sm font-medium hover:underline"
+                                    >
+                                        Hapus
+                                    </button>
+                                )}
 
                                 <div className="flex gap-3">
                                     {/* Batal */}
@@ -207,13 +210,17 @@ const ModalEditBrand = ({ isOpen, onClose, brand }) => {
                                     </button>
 
                                     {/* Simpan */}
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
-                                    >
-                                        {processing ? "Menyimpan..." : "Simpan"}
-                                    </button>
+                                    {permissions.includes("brand-update") && (
+                                        <button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
+                                        >
+                                            {processing
+                                                ? "Menyimpan..."
+                                                : "Simpan"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </form>

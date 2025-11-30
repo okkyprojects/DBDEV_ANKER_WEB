@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { useRef } from "react";
 
 export default function Index({ data, uuid }) {
+    const { permissions } = usePage().props;
     const [filter, setFilter] = useState("Harian");
     const debounceRef = useRef(null);
     const chartData = data.chart;
@@ -110,7 +111,7 @@ export default function Index({ data, uuid }) {
             preserveState: true,
         });
     };
-    const filters = ["Harian",  "Bulanan"];
+    const filters = ["Harian", "Bulanan"];
     const mantap = {
         variant_stocks: {
             data: [
@@ -174,18 +175,20 @@ export default function Index({ data, uuid }) {
                 <div className="flex items-center justify-between gap-4">
                     <p className="text-xl sm:text-2xl font-semibold">
                         Detail Penjualan
-                    </p>
-                    <button
-                        onClick={() =>
-                            (window.location.href = route(
-                                "reporting.penjualan.export.detail",
-                                data?.product?.uuid
-                            ))
-                        }
-                        className="p-2.5 rounded-xl bg-primary-600 w-fit hover:bg-primary-600/90 transition text-white"
-                    >
-                        <HiOutlinePrinter size={20} />
-                    </button>
+                    </p>{" "}
+                    {permissions.includes("transaction-export") && (
+                        <button
+                            onClick={() =>
+                                (window.location.href = route(
+                                    "reporting.penjualan.export.detail",
+                                    data?.product?.uuid
+                                ))
+                            }
+                            className="p-2.5 rounded-xl bg-primary-600 w-fit hover:bg-primary-600/90 transition text-white"
+                        >
+                            <HiOutlinePrinter size={20} />
+                        </button>
+                    )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
                     {/* Gambar Produk */}
@@ -330,9 +333,6 @@ export default function Index({ data, uuid }) {
                                         Brand
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
-                                        Kuantitas
-                                    </th>
-                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Terjual
                                     </th>
                                     <th className="px-4 py-4 ">Pendapatan</th>
@@ -356,9 +356,6 @@ export default function Index({ data, uuid }) {
                                             </td>
                                             <td className="px-4 py-5">
                                                 {item.brand_name}
-                                            </td>
-                                            <td className="px-4 py-5">
-                                                {Number(item.kuantitas)}
                                             </td>
                                             <td className="px-4 py-5">
                                                 {Number(item.terjual)}

@@ -35,8 +35,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = auth()->user();
 
-        if ($user->role !== 'admin') {
-            Auth::logout(); 
+        if ($user->role === 'user') {
+            Auth::logout();
             return redirect()->route('login')->withErrors([
                 'email' => 'Akun ini tidak memiliki akses.',
             ]);

@@ -13,88 +13,96 @@ import { PiBuildingApartmentLight } from "react-icons/pi";
 import styles from "./Sidebar.module.css";
 import { PiUsersLight } from "react-icons/pi";
 import { usePage } from "@inertiajs/react";
-const sidebarMenu = {
-    MAIN: [
-        {
-            id: 1,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Dashboard",
-            url: "/dashboard",
-        },
-    ],
-    PRODUK: [
-        {
-            id: 2,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Data Produk",
-            url: "/produk/data-produk",
-        },
-    ],
-    REPORTING: [
-        {
-            id: 3,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Penjualan",
-            url: "/reporting/penjualan",
-        },
-        {
-            id: 4,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Barang Masuk",
-            url: "/reporting/item",
-        },
-    ],
-    PESANAN: [
-        {
-            id: 5,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Manajemen Pesanan",
-            url: "/pesanan/manajemen-pesanan",
-        },
-    ],
-    MASTER: [
-        {
-            id: 6,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Kategori",
-            url: "/master/category",
-        },
-        {
-            id: 7,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Brand",
-            url: "/master/brand",
-        },
-        // {
-        //     id: 8,
-        //     icon: <PiCirclesFourLight size={21} className="mr-4" />,
-        //     text: "Banner",
-        //     url: "/master/banner",
-        // },
-        {
-            id: 9,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Rekening",
-            url: "/master/bill",
-        },
-    ],
-    SETTING: [
-        {
-            id: 10,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "Syarat Dan Ketentuan",
-            url: "/setting/term",
-        },
-        {
-            id: 11,
-            icon: <PiCirclesFourLight size={21} className="mr-4" />,
-            text: "User",
-            url: "/setting/user",
-        },
-    ],
-};
 
 const Sidebar = ({ isOpen, onToggle }) => {
+    const { permissions } = usePage().props;
+
+    const sidebarMenu = Object.entries({
+        MAIN: [
+            {
+                id: 1,
+                icon: <PiCirclesFourLight size={21} className="mr-4" />,
+                text: "Dashboard",
+                url: "/dashboard",
+            },
+        ],
+        PRODUK: [
+            permissions.includes("product-index") && {
+                id: 2,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Data Produk",
+                url: "/produk/data-produk",
+            },
+        ],
+        REPORTING: [
+            permissions.includes("transaction-index") && {
+                id: 3,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Penjualan",
+                url: "/reporting/penjualan",
+            },
+        ],
+        PESANAN: [
+            permissions.includes("transaction-index") && {
+                id: 5,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Manajemen Pesanan",
+                url: "/pesanan/manajemen-pesanan",
+            },
+        ],
+        MASTER: [
+            permissions.includes("banner-index") && {
+                id: 6,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Banner",
+                url: "/master/banner",
+            },
+            permissions.includes("category-index") && {
+                id: 7,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Kategori",
+                url: "/master/category",
+            },
+            permissions.includes("brand-index") && {
+                id: 8,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Brand",
+                url: "/master/brand",
+            },
+            permissions.includes("bill-index") && {
+                id: 9,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "Rekening",
+                url: "/master/bill",
+            },
+        ],
+        SETTING: [
+            permissions.includes("term-index") && {
+                id: 10,
+                icon: <PiGearSixLight size={21} className="mr-4" />,
+                text: "Syarat Dan Ketentuan",
+                url: "/setting/term",
+            },
+            permissions.includes("role-index") && {
+                id: 11,
+                icon: <PiKeyLight size={21} className="mr-4" />,
+                text: "Role & Permission",
+                url: "/setting/role",
+            },
+            permissions.includes("user-index") && {
+                id: 12,
+                icon: <PiUserLight size={21} className="mr-4" />,
+                text: "User",
+                url: "/setting/user",
+            },
+        ],
+    }).reduce((acc, [category, items]) => {
+        const filteredItems = items.filter(Boolean);
+        if (filteredItems.length > 0) acc[category] = filteredItems;
+        return acc;
+    }, {});
+
+
     const [menuItems, setMenuItems] = useState({});
     const [activeSubMenuIndexes, setActiveSubMenuIndexes] = useState([]);
     const activeItemRef = useRef(null);

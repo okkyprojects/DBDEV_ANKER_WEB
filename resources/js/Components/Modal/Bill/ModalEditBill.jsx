@@ -182,13 +182,15 @@ const ModalEditBill = ({ isOpen, onClose, bill }) => {
                             {/* Action buttons */}
                             <div className="flex items-center justify-between pt-4 border-t mt-4">
                                 {/* Hapus (kiri) */}
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="text-red-600 text-sm font-medium hover:underline"
-                                >
-                                    Hapus
-                                </button>
+                                {permissions.includes("bill-delete") && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="text-red-600 text-sm font-medium hover:underline"
+                                    >
+                                        Hapus
+                                    </button>
+                                )}
 
                                 <div className="flex gap-3">
                                     {/* Batal */}
@@ -201,13 +203,17 @@ const ModalEditBill = ({ isOpen, onClose, bill }) => {
                                     </button>
 
                                     {/* Simpan */}
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
-                                    >
-                                        {processing ? "Menyimpan..." : "Simpan"}
-                                    </button>
+                                    {permissions.includes("bill-update") && (
+                                        <button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="rounded-xl bg-primary-600 text-white text-sm px-5 py-2 hover:bg-primary-700"
+                                        >
+                                            {processing
+                                                ? "Menyimpan..."
+                                                : "Simpan"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </form>

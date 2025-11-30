@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('phone_number')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('gender', ['L', 'P'])->nullable();
-            $table->enum('role', ['user', 'admin'])->default('user');
             $table->string('img')->nullable();
             $table->date('dob')->nullable();
             $table->string('password');

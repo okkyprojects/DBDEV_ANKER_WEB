@@ -5,7 +5,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus, FaTrash } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
@@ -14,7 +14,10 @@ import ModalImport from "@/Components/Modal/Stok/ManajemenStok/ModalImport";
 import { toast } from "react-toastify";
 
 export default function StokPage({ data }) {
+    const { permissions } = usePage().props;
     console.log(data);
+    const [openVariants, setOpenVariants] = useState({});
+
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -49,6 +52,13 @@ export default function StokPage({ data }) {
             iconColor: "text-red-500",
         },
     ];
+    const toggleVariant = (productUuid) => {
+        setOpenVariants((prev) => ({
+            ...prev,
+            [productUuid]: !prev[productUuid],
+        }));
+    };
+
     const handleClickOutside = (event) => {
         if (
             dropdownRef.current &&
@@ -132,6 +142,14 @@ export default function StokPage({ data }) {
             },
         });
     };
+    // useEffect(() => {
+    //     const init = {};
+    //     data?.products?.data?.forEach((p) => {
+    //         init[p.uuid] = true;
+    //     });
+    //     setOpenVariants(init);
+    // }, [data]);
+
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -161,24 +179,29 @@ export default function StokPage({ data }) {
                         >
                             <GrFilter size={20} />
                         </button>
-                        <button
-                            onClick={() => {
-                                setShowModalImport(!showModalImport);
-                            }}
-                            className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
-                        >
-                            <HiOutlineUpload size={20} />
-                        </button>
-                        <a
-                            href={route("variant.export", {
-                                search: searchParams.get("search") || "",
-                                brand: searchParams.get("brand") || "",
-                                category: searchParams.get("category") || "",
-                            })}
-                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
-                        >
-                            <HiOutlinePrinter size={20} />
-                        </a>
+                        {permissions.includes("product-add") && (
+                            <button
+                                onClick={() =>
+                                    setShowModalImport(!showModalImport)
+                                }
+                                className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
+                            >
+                                <HiOutlineUpload size={20} />
+                            </button>
+                        )}
+                        {permissions.includes("product-export") && (
+                            <a
+                                href={route("variant.export", {
+                                    search: searchParams.get("search") || "",
+                                    brand: searchParams.get("brand") || "",
+                                    category:
+                                        searchParams.get("category") || "",
+                                })}
+                                className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                            >
+                                <HiOutlinePrinter size={20} />
+                            </a>
+                        )}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -217,14 +240,16 @@ export default function StokPage({ data }) {
                                     <FaTrash />
                                     Hapus Terpilih ({selected.length})
                                 </button>
+                            )}{" "}
+                            {permissions.includes("product-add") && (
+                                <Link
+                                    href="/produk/data-produk/create"
+                                    className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                                >
+                                    <FaPlus />
+                                    Tambah Produk
+                                </Link>
                             )}
-                            <Link
-                                href="/produk/data-produk/create"
-                                className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
-                            >
-                                <FaPlus />
-                                Tambah Produk
-                            </Link>
                         </div>
                     </div>
                     <div className="max-w-full overflow-x-auto ">
@@ -259,85 +284,202 @@ export default function StokPage({ data }) {
                             </thead>
                             <tbody>
                                 {data?.products?.data?.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                        className="hover:bg-gray-50 text-sm text-neutral-700"
-                                    >
-                                        <td className="px-4 py-5">
-                                            <input
-                                                type="checkbox"
-                                                checked={selected.includes(
-                                                    item?.uuid
-                                                )}
-                                                onChange={() =>
-                                                    handleSelect(item?.uuid)
-                                                }
-                                                className="accent-primary-600 checked:text-white"
-                                            />
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            <p>{item?.name}</p>{" "}
-                                            <p className="text-neutral-500 text-xs mt-0.5">
-                                                {item?.code}
-                                            </p>
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            {item?.category?.name}
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            {item?.brand?.name}
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            {item?.variant_count}
-                                        </td>
-                                        <td className=" px-4 py-5">
-                                            {item?.total_stock}
-                                        </td>
-                                        <td className="relative px-4 py-5">
-                                            <button
-                                                onClick={() =>
-                                                    toggleDropdown(index)
-                                                }
-                                                className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-primary"
-                                            >
-                                                Aksi <FaChevronDown size={14} />
-                                            </button>
-                                        </td>
-                                        {dropdownOpen === index && (
-                                            <div
-                                                ref={dropdownRef}
-                                                className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out lg:right-18 ${
-                                                    dropdownOpen === index
-                                                        ? "opacity-100"
-                                                        : "pointer-events-none opacity-0"
-                                                }`}
-                                            >
-                                                <div className="py-1">
-                                                    <Link
-                                                        href={route(
-                                                            "produk.product.edit",
-                                                            item?.uuid
-                                                        )}
-                                                        className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                    >
-                                                        Detail
-                                                    </Link>
+                                    <>
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-gray-50 text-sm text-neutral-700"
+                                        >
+                                            <td className="px-4 py-5">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selected.includes(
+                                                        item?.uuid
+                                                    )}
+                                                    onChange={() =>
+                                                        handleSelect(item?.uuid)
+                                                    }
+                                                    className="accent-primary-600 checked:text-white"
+                                                />
+                                            </td>
 
-                                                    <button
-                                                        onClick={() => {
-                                                            setProduk(item);
-                                                            setShowDeleteModal(
-                                                                true
-                                                            );
-                                                        }}
-                                                        className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                    >
-                                                        Hapus
-                                                    </button>
+                                            <td className="px-4 py-5">
+                                                <p>{item?.name}</p>
+                                                <p className="text-neutral-500 text-xs mt-0.5">
+                                                    {item?.code}
+                                                </p>
+                                            </td>
+
+                                            <td className="px-4 py-5">
+                                                {item?.category?.name}
+                                            </td>
+                                            <td className="px-4 py-5 ">
+                                                {item?.brand?.name}
+                                            </td>
+
+                                            <td className="px-4 py-5">
+                                                <button
+                                                    onClick={() =>
+                                                        toggleVariant(item.uuid)
+                                                    }
+                                                    className="flex items-center gap-1 text-primary-600"
+                                                >
+                                                    {item?.variant_count} Varian
+                                                    <FaChevronDown
+                                                        className={`${
+                                                            openVariants[
+                                                                item.uuid
+                                                            ]
+                                                                ? "rotate-180"
+                                                                : ""
+                                                        } transition`}
+                                                    />
+                                                </button>
+                                            </td>
+
+                                            <td className="px-4 py-5">
+                                                {item?.total_stock}
+                                            </td>
+
+                                            <td className="relative px-4 py-5">
+                                                <button
+                                                    onClick={() =>
+                                                        toggleDropdown(index)
+                                                    }
+                                                    className="rounded-full border border-primary-600 text-primary-600 flex items-center gap-1.5 px-3 py-1 text-sm font-medium"
+                                                >
+                                                    Aksi{" "}
+                                                    <FaChevronDown size={14} />
+                                                </button>
+                                            </td>
+                                            {dropdownOpen === index && (
+                                                <div
+                                                    ref={dropdownRef}
+                                                    className={`absolute right-10 z-10 mt-14 w-40 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out lg:right-18 ${
+                                                        dropdownOpen === index
+                                                            ? "opacity-100"
+                                                            : "pointer-events-none opacity-0"
+                                                    }`}
+                                                >
+                                                    <div className="py-1">
+                                                        {" "}
+                                                        {permissions.includes(
+                                                            "product-update"
+                                                        ) && (
+                                                            <Link
+                                                                href={route(
+                                                                    "produk.product.edit",
+                                                                    item?.uuid
+                                                                )}
+                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                            >
+                                                                Detail
+                                                            </Link>
+                                                        )}
+                                                        {permissions.includes(
+                                                            "product-delete"
+                                                        ) && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setProduk(
+                                                                        item
+                                                                    );
+                                                                    setShowDeleteModal(
+                                                                        true
+                                                                    );
+                                                                }}
+                                                                className="text-gray-700 flex w-full items-center justify-start px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                            >
+                                                                Hapus
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
+                                        </tr>
+
+                                        {openVariants[item.uuid] && (
+                                            <tr className="bg-white">
+                                                <td colSpan={7} className="p-0">
+                                                    <table className="w-full table-auto border-t">
+                                                        <tbody>
+                                                            {item?.variants?.map(
+                                                                (v, vi) => (
+                                                                    <tr
+                                                                        key={vi}
+                                                                        className="text-sm border-b"
+                                                                    >
+                                                                        {/* 1. Checkbox column spacer */}
+                                                                        <td className="px-4 py-4 w-[50px]"></td>
+
+                                                                        {/* 2. Product Name + SKU */}
+                                                                        <td className="px-4 py-4 min-w-[280px]">
+                                                                            <p className="text-gray-600">
+                                                                                {
+                                                                                    v.name
+                                                                                }
+                                                                            </p>
+                                                                            <p className="text-xs text-neutral-500">
+                                                                                SKU:{" "}
+                                                                                {
+                                                                                    v.sku
+                                                                                }
+                                                                            </p>
+                                                                        </td>
+
+                                                                        {/* 3. Category spacer */}
+                                                                        <td className="min-w-[200px] px-4 py-4"></td>
+
+                                                                        {/* 4. Brand spacer */}
+                                                                        <td className="min-w-[200px] px-4 py-4"></td>
+
+                                                                        {/* 5. Harga */}
+                                                                        <td className="min-w-[200px] px-4 py-4">
+                                                                            <div className="flex flex-col leading-tight">
+                                                                                <span
+                                                                                    className={
+                                                                                        v.discount_price
+                                                                                            ? "text-neutral-400 line-through text-sm"
+                                                                                            : " text-sm"
+                                                                                    }
+                                                                                >
+                                                                                    Rp{" "}
+                                                                                    {v.price?.toLocaleString(
+                                                                                        "id-ID"
+                                                                                    )}
+                                                                                </span>
+
+                                                                                {v.discount_price ? (
+                                                                                    <span className=" text-gray-600">
+                                                                                        Rp{" "}
+                                                                                        {v.discount_price?.toLocaleString(
+                                                                                            "id-ID"
+                                                                                        )}
+                                                                                    </span>
+                                                                                ) : (
+                                                                                    <span className="text-neutral-400">
+                                                                                        -
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
+                                                                        </td>
+
+                                                                        {/* 6. Stock */}
+                                                                        <td className="min-w-[200px] px-4 py-4 text-gray-500">
+                                                                            {
+                                                                                v.stock
+                                                                            }
+                                                                        </td>
+
+                                                                        <td className="px-4 py-4 min-w-[100px]"></td>
+                                                                    </tr>
+                                                                )
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
                                         )}
-                                    </tr>
+                                    </>
                                 ))}
                             </tbody>
                         </table>

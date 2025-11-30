@@ -19,7 +19,7 @@
             <td>{{ $variant->product->brand->name ?? '-' }}</td>
             <td>{{ $variant->name }}</td>
             <td>{{ $variant->sku }}</td>
-            <td>{{ $variant->total_stock->total_stock ?? 0 }}</td>
+            <td>{{ $variant->stock ?? 0 }}</td>
         </tr>
         @endforeach
     </tbody>

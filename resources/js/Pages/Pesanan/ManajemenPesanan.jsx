@@ -16,7 +16,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDetailPesanan from "@/Components/Modal/Pesanan/ModalDetailPesanan";
 import ModalDeletePesanan from "@/Components/Modal/Pesanan/ModalDeletePesanan";
 import ModalFilter from "@/Components/Modal/Pesanan/ModalFilter";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { statusBadge } from "@/Config/const";
 import moment from "moment";
 import ModalUpdatePesanan from "@/Components/Modal/Pesanan/ModalUpdatePesanan";
@@ -28,6 +28,7 @@ import ModalBatalPesanan from "@/Components/Modal/Pesanan/ModalBatalPesanan";
 import ModalUpdateResi from "@/Components/Modal/Pesanan/ModalUpdateResi";
 
 export default function ManajemenPesanan({ data }) {
+    const { permissions } = usePage().props;
     console.log(data);
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
@@ -174,20 +175,24 @@ export default function ManajemenPesanan({ data }) {
                     className="p-2.5 rounded-xl bg-info-600 hover:bg-info-600/90 transition text-white cursor-pointer"
                     >
                     <HiOutlineUpload size={20} />
-                </button> */}
-                        <a
-                            href={route("pesanan.manajemen.export", {
-                                search: searchParams.get("search") || "",
-                                brand: searchParams.get("brand") || "",
-                                category: searchParams.get("category") || "",
-                                status: searchParams.get("status") || "",
-                                startDate: searchParams.get("startDate") || "",
-                                endDate: searchParams.get("endDate") || "",
-                            })}
-                            className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
-                        >
-                            <HiOutlinePrinter size={20} />
-                        </a>
+                </button> */}{" "}
+                        {permissions.includes("transaction-export") && (
+                            <a
+                                href={route("pesanan.manajemen.export", {
+                                    search: searchParams.get("search") || "",
+                                    brand: searchParams.get("brand") || "",
+                                    category:
+                                        searchParams.get("category") || "",
+                                    status: searchParams.get("status") || "",
+                                    startDate:
+                                        searchParams.get("startDate") || "",
+                                    endDate: searchParams.get("endDate") || "",
+                                })}
+                                className="p-2.5 rounded-xl bg-primary-600 hover:bg-primary-600/90 transition text-white"
+                            >
+                                <HiOutlinePrinter size={20} />
+                            </a>
+                        )}
                     </div>
                 </div>
                 {/* KARTU STATISTIK */}
@@ -382,61 +387,86 @@ export default function ManajemenPesanan({ data }) {
                                                         >
                                                             Detail Pesanan
                                                         </button>
+                                                        {permissions.includes(
+                                                            "transaction-update"
+                                                        ) &&
+                                                            item.status ==
+                                                                1 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setPesanan(
+                                                                            item
+                                                                        );
+                                                                        setAksi(
+                                                                            2
+                                                                        );
+                                                                        setShowUpdateModal(
+                                                                            true
+                                                                        );
+                                                                    }}
+                                                                    className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                                >
+                                                                    Konfirmasi
+                                                                    Pembayaran
+                                                                </button>
+                                                            )}
 
-                                                        {item.status == 1 && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPesanan(
-                                                                        item
-                                                                    );
-                                                                    setAksi(2);
-                                                                    setShowUpdateModal(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                            >
-                                                                Konfirmasi
-                                                                Pembayaran
-                                                            </button>
-                                                        )}
-                                                        {item.status == 2 && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPesanan(
-                                                                        item
-                                                                    );
-                                                                    setAksi(3);
-                                                                    setShowUpdateModal(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                            >
-                                                                Konfirmasi
-                                                                Pesanan Dikirim
-                                                            </button>
-                                                        )}
-                                                        {item.status == 3 && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setPesanan(
-                                                                        item
-                                                                    );
-                                                                    setAksi(4);
-                                                                    setShowUpdateModal(
-                                                                        true
-                                                                    );
-                                                                }}
-                                                                className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
-                                                            >
-                                                                Konfirmasi
-                                                                Pesanan Selesai
-                                                            </button>
-                                                        )}
-                                                        {item.status != 5 &&
+                                                        {permissions.includes(
+                                                            "transaction-update"
+                                                        ) &&
+                                                            item.status ==
+                                                                2 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setPesanan(
+                                                                            item
+                                                                        );
+                                                                        setAksi(
+                                                                            3
+                                                                        );
+                                                                        setShowUpdateModal(
+                                                                            true
+                                                                        );
+                                                                    }}
+                                                                    className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                                >
+                                                                    Konfirmasi
+                                                                    Pesanan
+                                                                    Dikirim
+                                                                </button>
+                                                            )}
+
+                                                        {permissions.includes(
+                                                            "transaction-update"
+                                                        ) &&
+                                                            item.status ==
+                                                                3 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setPesanan(
+                                                                            item
+                                                                        );
+                                                                        setAksi(
+                                                                            4
+                                                                        );
+                                                                        setShowUpdateModal(
+                                                                            true
+                                                                        );
+                                                                    }}
+                                                                    className="text-gray-700 flex w-full items-center justify-start text-left px-4 py-2 text-sm hover:bg-slate-100 hover:bg-opacity-30"
+                                                                >
+                                                                    Konfirmasi
+                                                                    Pesanan
+                                                                    Selesai
+                                                                </button>
+                                                            )}
+
+                                                        {permissions.includes(
+                                                            "transaction-update"
+                                                        ) &&
+                                                            item.status != 4 &&
                                                             item.status !=
-                                                                4 && (
+                                                                5 && (
                                                                 <button
                                                                     onClick={() => {
                                                                         setPesanan(
@@ -455,8 +485,12 @@ export default function ManajemenPesanan({ data }) {
                                                                     Pesanan
                                                                 </button>
                                                             )}
-                                                        {item?.resi &&
-                                                            item?.status !=
+
+                                                        {permissions.includes(
+                                                            "transaction-update"
+                                                        ) &&
+                                                            item?.resi &&
+                                                            item.status !=
                                                                 4 && (
                                                                 <button
                                                                     onClick={() => {

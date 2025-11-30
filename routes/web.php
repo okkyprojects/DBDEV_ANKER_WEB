@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\PenjualanController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\VariantStockController;
 use App\Http\Controllers\HomeController;
@@ -79,10 +81,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/penjualan-export/{uuid}', [PenjualanController::class, 'show_export'])->name('penjualan.export.detail');
             Route::get('/export-penjualan', [PenjualanController::class, 'export'])->name('penjualan.export');
             // Route::get('/item', fn() => Inertia::render('Reporting/Item'));
-            Route::get('/item', [VariantStockController::class, 'index'])->name('item.index');
-            Route::get('/item-export', [VariantStockController::class, 'export'])->name('item.export');
-            Route::post('/item', [VariantStockController::class, 'store'])->name('item.store');
-            Route::delete('/item/{uuid}', [VariantStockController::class, 'destroy'])->name('item.destroy');
+            // Route::get('/item', [VariantStockController::class, 'index'])->name('item.index');
+            // Route::get('/item-export', [VariantStockController::class, 'export'])->name('item.export');
+            // Route::post('/item', [VariantStockController::class, 'store'])->name('item.store');
+            // Route::delete('/item/{uuid}', [VariantStockController::class, 'destroy'])->name('item.destroy');
         });
     Route::prefix('pesanan')
         ->name('pesanan.')
@@ -135,6 +137,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/user', [UserController::class, 'index'])->name('user.index');
             Route::post('/user', [UserController::class, 'store'])->name('user.store');
             Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+
+            Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+            Route::post('/role', [RoleController::class, 'store'])->name('role.store');
+            Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
+            Route::get('/permission/{role_id}', [PermissionController::class, 'index'])->name('permission.index');
+            Route::post('/permission', [PermissionController::class, 'store'])->name('permission.store');
         });
 });
 // Route::get('/checkout', function () {

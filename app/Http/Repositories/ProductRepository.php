@@ -123,7 +123,6 @@ class ProductRepository
 
     public function import(array $row)
     {
-
         if (empty($row['product_name']) || empty($row['product_code'])) {
             return false;
         }
@@ -135,7 +134,6 @@ class ProductRepository
                 ['name' => $row['category_name'] ?? ''],
                 ['uuid' => Str::uuid()]
             );
-        // if ($category->trashed()) $category->restore();
 
         // BRAND
         $brand = $this->brand
@@ -144,7 +142,6 @@ class ProductRepository
                 ['name' => $row['brand_name'] ?? ''],
                 ['uuid' => Str::uuid()]
             );
-        // if ($brand->trashed()) $brand->restore();
 
         // PRODUCT
         $product = $this->product
@@ -158,11 +155,10 @@ class ProductRepository
                 ],
                 [
                     'uuid' => Str::uuid(),
-                    'img' => !empty($row['product_img']) ? $row['product_img'] : '/images/no/product.jpg',
+                    'img' => $row['product_img'] ?? '/images/no/product.jpg',
                     'description' => $row['description'] ?? null,
                 ]
             );
-        // if ($product->trashed()) $product->restore();
 
         // VARIANT
         if (!empty($row['sku'])) {
@@ -174,27 +170,23 @@ class ProductRepository
                         'uuid' => Str::uuid(),
                         'product_uuid' => $product->uuid,
                         'name' => $row['variant_name'] ?? '',
-                        'img' => !empty($row['variant_img']) ? $row['variant_img'] : '/images/no/product.jpg',
+                        'img' => $row['variant_img'] ?? '/images/no/product.jpg',
                         'price' => $row['price'] ?? 0,
                         'discount_price' => $row['discount_price'] ?? null,
                     ]
                 );
-            // if ($variant->trashed()) $variant->restore();
-
             if (!empty($row['stock'])) {
-                $this->variantStock->create([
-                    'uuid' => Str::uuid(),
-                    'variant_uuid' => $variant->uuid,
-                    'quantity' => $row['stock'],
-                    'note' => $row['note'] ?? null,
-                    'user_id' => auth()->id(),
-                    'via' => 'Import',
+                $newStock =  (int) $row['stock'];
+
+                $variant->update([
+                    'stock' => $newStock,
                 ]);
             }
         }
 
         return true;
     }
+
 
 
 
@@ -257,9 +249,7 @@ class ProductRepository
         $products = $query->get();
 
         $products->transform(function ($product) {
-            $product->total_stock = $product->variants->sum(function ($variant) {
-                return $variant->total_stock->total_stock ?? 0;
-            });
+            $product->total_stock = $product->variants->sum('stock') ?? 0;
             return $product;
         });
 
@@ -334,7 +324,9 @@ class ProductRepository
         $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
-            $product->total_stock = $product->variants->sum(fn($variant) => $variant->total_stock->total_stock ?? 0);
+            $product->total_stock = $product->variants
+                ->whereNull('deleted_at')
+                ->sum('stock');
             return $product;
         });
 

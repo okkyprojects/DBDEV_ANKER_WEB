@@ -5,9 +5,10 @@ import { FaChevronUp } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, router, useForm } from "@inertiajs/react";
+import { Link, router, useForm, usePage } from "@inertiajs/react";
 
 export default function Edit({ data: initial_data }) {
+    const { permissions } = usePage().props;
     console.log(initial_data);
     const { data, setData, post, processing, errors, reset } = useForm({
         uuid: initial_data.product.uuid,
@@ -28,6 +29,7 @@ export default function Edit({ data: initial_data }) {
                 discount_price: v.discount_price,
                 img: v.img || null,
                 status: v.status || "1",
+                stock: v.stock || "1",
                 isOpen: true,
             })) || [],
     });
@@ -354,18 +356,20 @@ export default function Edit({ data: initial_data }) {
                                             }`}
                                         />
                                         <p>Varian {index + 1}</p>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            handleDeleteVarian(
-                                                index,
-                                                varian.uuid
-                                            )
-                                        }
-                                    >
-                                        <IoClose />
-                                    </button>
+                                    </button>{" "}
+                                    {permissions.includes("product-delete") && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleDeleteVarian(
+                                                    index,
+                                                    varian.uuid
+                                                )
+                                            }
+                                        >
+                                            <IoClose />
+                                        </button>
+                                    )}
                                 </div>
 
                                 <AnimatePresence>
@@ -444,23 +448,31 @@ export default function Edit({ data: initial_data }) {
                                                     </div>
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <span className="">
-                                                            Stok Saat Ini{" "}
-                                                            <span className="text-neutral-500 italic text-xs">
-                                                                {" "}
-                                                                (Untuk melakukan
-                                                                restok barang
-                                                                melalui menu
-                                                                barang masuk)
-                                                            </span>
+                                                            Stok
                                                         </span>
-                                                        <span className="px-3 py-2 rounded-xl text-sm border bg-gray-100 border-neutral-400 text-neutral-800">
-                                                            {initial_data
-                                                                ?.variants?.[
-                                                                index
-                                                            ]?.total_stock
-                                                                ?.total_stock ??
-                                                                "0"}
-                                                        </span>
+                                                        <input
+                                                            id={`varianStok-${index}`}
+                                                            type="number"
+                                                            placeholder="0"
+                                                            required
+                                                            min={0}
+                                                            value={varian.stock}
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].stock =
+                                                                    e.target.value;
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
+                                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                                        />
                                                     </div>
 
                                                     {/* Harga */}

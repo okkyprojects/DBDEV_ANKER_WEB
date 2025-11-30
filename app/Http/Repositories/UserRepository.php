@@ -31,7 +31,6 @@ class UserRepository
             'password' => request()->filled('id') ? 'nullable|min:6' : 'required|min:6',
             'gender' => 'nullable|in:L,P',
             'dob' => 'nullable|date',
-            'role' => 'required|in:admin,user',
             'img' => 'nullable|image|max:2048',
         ];
     }
@@ -45,7 +44,6 @@ class UserRepository
             'phone_number' => $request->input('phone_number'),
             'gender' => $request->input('gender'),
             'dob' => $request->input('dob'),
-            'role' => $request->input('role', 'user'),
         ];
 
         if ($request->filled('password')) {
@@ -67,27 +65,35 @@ class UserRepository
 
     public function index(Request $request)
     {
-        $query = $this->user->query();
+        $query = $this->user->with('roles');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->input('search') . '%')
-                ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+            });
         }
 
         return $query->orderBy('created_at', 'desc')->get();
     }
 
+
+
     public function index_pagination(Request $request)
     {
-        $query = $this->user->query();
+        $query = $this->user->with('roles');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->input('search') . '%')
-                ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+            });
         }
 
         return $query->orderBy('created_at', 'desc')->paginate(10);
     }
+
+
 
     public function store(Request $request)
     {
@@ -109,6 +115,7 @@ class UserRepository
             ['id' => $request->input('id')],
             $data
         );
+        $user->syncRoles([$request->role]);
 
         return $request->filled('id')
             ? $this->response->update($user)

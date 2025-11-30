@@ -27,6 +27,10 @@ class TransactionController extends Controller
         BrandRepository $brandRepository,
         CategoryRepository $categoryRepository
     ) {
+        $this->middleware('permission:transaction-index', ['only' => ['index', 'show']]);
+        $this->middleware('permission:transaction-add', ['only' => ['store']]);
+        $this->middleware('permission:transaction-update', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:transaction-delete', ['only' => ['destroy']]);
         $this->response = $response;
         $this->transactionRepository = $transactionRepository;
         $this->brandRepository = $brandRepository;

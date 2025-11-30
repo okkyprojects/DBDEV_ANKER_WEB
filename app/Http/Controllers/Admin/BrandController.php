@@ -12,6 +12,10 @@ class BrandController extends Controller
     private $brand;
     public function __construct(BrandRepository $brand)
     {
+        $this->middleware('permission:brand-index', ['only' => ['index', 'show']]);
+        $this->middleware('permission:brand-add', ['only' => ['store']]);
+        $this->middleware('permission:brand-update', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:brand-delete', ['only' => ['destroy']]);
         $this->brand = $brand;
     }
     public function index(Request $request)

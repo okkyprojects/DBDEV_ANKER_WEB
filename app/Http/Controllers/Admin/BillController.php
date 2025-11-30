@@ -12,6 +12,10 @@ class BillController extends Controller
     private $bill;
     public function __construct(BillRepository $bill)
     {
+        $this->middleware('permission:bill-index', ['only' => ['index', 'show']]);
+        $this->middleware('permission:bill-add', ['only' => ['store']]);
+        $this->middleware('permission:bill-update', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:bill-delete', ['only' => ['destroy']]);
         $this->bill = $bill;
     }
     public function index(Request $request)

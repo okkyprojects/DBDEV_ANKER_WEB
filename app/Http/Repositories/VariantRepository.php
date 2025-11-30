@@ -37,6 +37,7 @@ class VariantRepository
             'variants.*.price' => 'required|numeric',
             'variants.*.discount_price' => 'nullable|numeric',
             'variants.*.img' => 'nullable',
+            'variants.*.stock' => 'nullable',
         ];
     }
 
@@ -48,7 +49,6 @@ class VariantRepository
         }
 
         $variants = $this->variant
-            ->with('total_stock')
             ->where('product_uuid', $request->input('product_uuid'))
             ->orderBy('created_at', 'desc')
             ->get();
@@ -102,6 +102,7 @@ class VariantRepository
             'sku' => $item['sku'],
             'price' => $item['price'],
             'discount_price' => $item['discount_price'] ?? null,
+            'stock' => $item['stock'] ?? 0,
         ];
 
         if (isset($item['img']) && $item['img'] instanceof \Illuminate\Http\UploadedFile) {

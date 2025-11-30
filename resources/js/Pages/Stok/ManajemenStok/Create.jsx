@@ -26,6 +26,7 @@ export default function Create({ data: initial_data }) {
                 img: null,
                 status: "1",
                 isOpen: true,
+                stock: true,
             },
         ],
     });
@@ -412,23 +413,31 @@ export default function Create({ data: initial_data }) {
                                                     </div>
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <span className="">
-                                                            Stok Saat Ini
-                                                            <span className="text-neutral-500 italic text-xs">
-                                                                {" "}
-                                                                (Untuk melakukan
-                                                                restok barang
-                                                                melalui menu
-                                                                barang masuk)
-                                                            </span>
-                                                        </span>
-                                                        <span className="px-3 py-2 rounded-xl text-sm border bg-gray-100 border-neutral-400 text-neutral-800">
-                                                            {initial_data
-                                                                ?.variants?.[
-                                                                index
-                                                            ]?.total_stock
-                                                                ?.total_stock ??
-                                                                "0"}
-                                                        </span>
+                                                            Stok
+                                                        </span>{" "}
+                                                        <input
+                                                            id={`varianStok-${index}`}
+                                                            type="number"
+                                                            placeholder="0"
+                                                            required
+                                                            min={0}
+                                                            value={varian.stock}
+                                                            onChange={(e) => {
+                                                                const updated =
+                                                                    [
+                                                                        ...data.variants,
+                                                                    ];
+                                                                updated[
+                                                                    index
+                                                                ].stock =
+                                                                    e.target.value;
+                                                                setData(
+                                                                    "variants",
+                                                                    updated
+                                                                );
+                                                            }}
+                                                            className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                                        />
                                                     </div>
                                                     {/* Harga */}
                                                     <div className="flex flex-col gap-2 text-sm">

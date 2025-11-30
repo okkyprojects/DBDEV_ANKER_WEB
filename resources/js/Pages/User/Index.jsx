@@ -4,11 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import ModalTambahUser from "@/Components/Modal/User/ModalTambahUser";
 import ModalEditUser from "@/Components/Modal/User/ModalEditUser";
 
 export default function Index({ data }) {
+    const { permissions } = usePage().props;
     const debounceRef = useRef(null);
     const searchParams = new URLSearchParams(window.location.search);
     const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -60,13 +61,15 @@ export default function Index({ data }) {
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar User</p>
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
-                        >
-                            <FaPlus />
-                            Tambah User
-                        </button>
+                        {permissions.includes("user-add") && (
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                            >
+                                <FaPlus />
+                                Tambah User
+                            </button>
+                        )}
                     </div>
                     <div className="max-w-full overflow-x-auto ">
                         <table className="w-full table-auto">
@@ -88,6 +91,10 @@ export default function Index({ data }) {
                                     <th className="min-w-[120px] px-4 py-4">
                                         Gender
                                     </th>
+                                    <th className="min-w-[150px] px-4 py-4">
+                                        Role
+                                    </th>
+
                                     <th className="px-4 py-4">Aksi</th>
                                 </tr>
                             </thead>
@@ -131,6 +138,12 @@ export default function Index({ data }) {
                                                 : "-"}
                                         </td>
                                         <td className="px-4 py-5">
+                                            {item.roles?.length > 0
+                                                ? item.roles[0].name
+                                                : "-"}
+                                        </td>
+
+                                        <td className="px-4 py-5">
                                             <button
                                                 onClick={() => {
                                                     setUser(item);
@@ -162,6 +175,7 @@ export default function Index({ data }) {
                             <ModalTambahUser
                                 isOpen={showAddModal}
                                 onClose={() => setShowAddModal(!showAddModal)}
+                                roles={data.roles}
                             />
                         </div>
                     </div>
@@ -175,6 +189,7 @@ export default function Index({ data }) {
                                 isOpen={showEditModal}
                                 onClose={() => setShowEditModal(!showEditModal)}
                                 user={user}
+                                roles={data.roles}
                             />
                         </div>
                     </div>

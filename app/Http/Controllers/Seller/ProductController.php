@@ -23,6 +23,10 @@ class ProductController extends Controller
     private $variant;
     public function __construct(ProductRepository $product, CategoryRepository $category, BrandRepository $brand, VariantRepository $variant)
     {
+        $this->middleware('permission:product-index', ['only' => ['index', 'show']]);
+        $this->middleware('permission:product-add', ['only' => ['store']]);
+        $this->middleware('permission:product-update', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:product-delete', ['only' => ['destroy']]);
         $this->product = $product;
         $this->category = $category;
         $this->brand = $brand;

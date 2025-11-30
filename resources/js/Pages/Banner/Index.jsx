@@ -8,8 +8,10 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import ModalTambahBanner from "@/Components/Modal/Banner/ModalTambahBanner";
 import ModalEditBanner from "@/Components/Modal/Banner/ModalEditBanner";
+import { usePage } from "@inertiajs/react";
 
 export default function Index({ data }) {
+    const { permissions } = usePage().props;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [banner, setBanner] = useState();
@@ -18,7 +20,9 @@ export default function Index({ data }) {
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <p className="text-base sm:text-2xl font-semibold">Banner</p>
+                    <p className="text-base sm:text-2xl font-semibold">
+                        Banner
+                    </p>
                     <div className="flex items-center gap-2 w-full sm:max-w-sm">
                         {/* <div className="relative w-full">
                             <FiSearch
@@ -42,13 +46,15 @@ export default function Index({ data }) {
                 <div className="bg-white rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-lg font-medium">Daftar Banner</p>
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
-                        >
-                            <FaPlus />
-                            Tambah Banner
-                        </button>
+                        {permissions.includes("banner-add") && (
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="flex gap-1 items-center bg-primary-600 hover:bg-primary-600/90 text-neutral-50 text-sm px-5 py-2 rounded-full"
+                            >
+                                <FaPlus />
+                                Tambah Banner
+                            </button>
+                        )}
                     </div>
                     <div className="max-w-full overflow-x-auto ">
                         <table className="w-full table-auto">
