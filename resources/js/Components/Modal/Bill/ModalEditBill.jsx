@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useForm, router } from "@inertiajs/react";
+import { useForm, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 import { IoImageOutline } from "react-icons/io5";
 
 const ModalEditBill = ({ isOpen, onClose, bill }) => {
+    const { permissions } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         uuid: bill?.uuid || "",
         account_number: bill?.account_number || "",
