@@ -12,6 +12,7 @@ import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
 import { HiOutlineUpload } from "react-icons/hi";
 import ModalImport from "@/Components/Modal/Stok/ManajemenStok/ModalImport";
 import { toast } from "react-toastify";
+import { formatRupiah } from "@/Utils/utils";
 
 export default function StokPage({ data }) {
     const { permissions } = usePage().props;
@@ -443,17 +444,16 @@ export default function StokPage({ data }) {
                                                                                             : " text-sm"
                                                                                     }
                                                                                 >
-                                                                                    Rp{" "}
-                                                                                    {v.price?.toLocaleString(
-                                                                                        "id-ID"
+                                                                                    {formatRupiah(
+                                                                                        v.price +
+                                                                                            v.discount_price
                                                                                     )}
                                                                                 </span>
 
-                                                                                {v.discount_price ? (
+                                                                                {v.price ? (
                                                                                     <span className=" text-gray-600">
-                                                                                        Rp{" "}
-                                                                                        {v.discount_price?.toLocaleString(
-                                                                                            "id-ID"
+                                                                                        {formatRupiah(
+                                                                                            v.price
                                                                                         )}
                                                                                     </span>
                                                                                 ) : (
