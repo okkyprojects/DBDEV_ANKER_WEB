@@ -171,6 +171,15 @@ class CartRepository
                     new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']])
                 );
             }
+            if ($item->quantity > $variant->stock) {
+                return $this->response->validationError(
+                    new MessageBag([
+                        'quantity' => [
+                            "Jumlah produk '{$variant->product->name}' melebihi stok tersedia ({$variant->stock})."
+                        ]
+                    ])
+                );
+            }
 
             $existingItem = $this->cartItem
                 ->where('cart_uuid', $cart->uuid)
