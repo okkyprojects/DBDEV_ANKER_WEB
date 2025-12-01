@@ -334,7 +334,7 @@ class CartRepository
 
             if ($newQty > $variant->stock) {
                 $errors = new MessageBag([
-                    'quantity' => ["Total quantity tidak boleh melebihi stok ({$variant->stock})."]
+                    'quantity' => ["Jumlah di keranjang tidak dapat melebihi stok yang tersedia ({$variant->stock})."]
                 ]);
                 return $this->response->validationError($errors);
             }
@@ -392,7 +392,7 @@ class CartRepository
 
         if ($newQty > $variant->stock) {
             $errors = new MessageBag([
-                'quantity' => ["Quantity tidak boleh melebihi stok ({$variant->stock})."]
+                'quantity' => ["Jumlah di keranjang tidak dapat melebihi stok yang tersedia ({$variant->stock})."]
             ]);
             return $this->response->validationError($errors);
         }
