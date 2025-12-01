@@ -445,8 +445,12 @@ export default function StokPage({ data }) {
                                                                                     }
                                                                                 >
                                                                                     {formatRupiah(
-                                                                                        v.price +
-                                                                                            v.discount_price
+                                                                                        Number(
+                                                                                            v.price
+                                                                                        ) +
+                                                                                            Number(
+                                                                                                v.discount_price
+                                                                                            )
                                                                                     )}
                                                                                 </span>
 

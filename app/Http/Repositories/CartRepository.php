@@ -229,12 +229,67 @@ class CartRepository
     //         : $this->response->storeError();
     // }
 
+    // public function store($request)
+    // {
+    //     $validator = Validator::make($request->all(), $this->validate());
+    //     if ($validator->fails()) {
+    //         return $this->response->validationError($validator->errors());
+    //     }
+    //     $validated = $validator->validated();
+
+    //     $variant = $this->variant
+    //         ->with(['product' => function ($q) {
+    //             $q->whereNull('deleted_at');
+    //         }])
+    //         ->where('uuid', $validated['variant_uuid'])
+    //         ->whereNull('deleted_at')
+    //         ->first();
+
+    //     if (!$variant || !$variant->product) {
+    //         $errors = new MessageBag([
+    //             'variant_uuid' => ['Variant atau Product sudah dihapus, tidak bisa dimasukkan ke keranjang.']
+    //         ]);
+    //         return $this->response->validationError($errors);
+    //     }
+
+    //     $userId = Auth::id();
+    //     $cart = $this->cart->firstOrCreate(
+    //         ['user_id' => $userId],
+    //         ['uuid' => Str::uuid()]
+    //     );
+
+    //     if (!empty($request['uuid'])) {
+    //         return $this->update($request);
+    //     }
+
+    //     $existingItem = $this->cartItem
+    //         ->where('cart_uuid', $cart->uuid)
+    //         ->where('variant_uuid', $validated['variant_uuid'])
+    //         ->first();
+
+    //     if ($existingItem) {
+    //         $existingItem->quantity += $validated['quantity'] ?? 1;
+    //         $existingItem->save();
+    //         return $this->response->update($existingItem);
+    //     }
+
+    //     $data = $this->cartItem->create(array_merge(
+    //         ['uuid' => Str::uuid()],
+    //         $this->request($request, $cart->uuid)
+    //     ));
+
+    //     return $data
+    //         ? $this->response->store($data)
+    //         : $this->response->storeError();
+    // }
+
     public function store($request)
     {
         $validator = Validator::make($request->all(), $this->validate());
         if ($validator->fails()) {
             return $this->response->validationError($validator->errors());
         }
+
         $validated = $validator->validated();
 
         $variant = $this->variant
@@ -252,6 +307,13 @@ class CartRepository
             return $this->response->validationError($errors);
         }
 
+        if (isset($validated['quantity']) && $validated['quantity'] > $variant->stock) {
+            $errors = new MessageBag([
+                'quantity' => ["Quantity tidak boleh melebihi stok ({$variant->stock})."]
+            ]);
+            return $this->response->validationError($errors);
+        }
+
         $userId = Auth::id();
         $cart = $this->cart->firstOrCreate(
             ['user_id' => $userId],
@@ -261,14 +323,23 @@ class CartRepository
         if (!empty($request['uuid'])) {
             return $this->update($request);
         }
-
         $existingItem = $this->cartItem
             ->where('cart_uuid', $cart->uuid)
             ->where('variant_uuid', $validated['variant_uuid'])
             ->first();
 
         if ($existingItem) {
-            $existingItem->quantity += $validated['quantity'] ?? 1;
+
+            $newQty = $existingItem->quantity + ($validated['quantity'] ?? 1);
+
+            if ($newQty > $variant->stock) {
+                $errors = new MessageBag([
+                    'quantity' => ["Total quantity tidak boleh melebihi stok ({$variant->stock})."]
+                ]);
+                return $this->response->validationError($errors);
+            }
+
+            $existingItem->quantity = $newQty;
             $existingItem->save();
             return $this->response->update($existingItem);
         }
@@ -284,19 +355,57 @@ class CartRepository
     }
 
 
+
+    // private function update($request)
+    // {
+    //     $item = $this->cartItem->where('uuid', $request['uuid'])->first();
+    //     if (!$item) {
+    //         return $this->response->notFound();
+    //     }
+    //     $updated = $item->fill($this->request($request, $item->cart_uuid))->save();
+    //     if (!$updated) {
+    //         return $this->response->updateError();
+    //     } else {
+    //         return $this->response->update($item);
+    //     }
+    // }
     private function update($request)
     {
         $item = $this->cartItem->where('uuid', $request['uuid'])->first();
         if (!$item) {
             return $this->response->notFound();
         }
+
+        $variant = $this->variant
+            ->where('uuid', $item->variant_uuid)
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$variant) {
+            $errors = new MessageBag([
+                'variant_uuid' => ['Variant sudah tidak tersedia.']
+            ]);
+            return $this->response->validationError($errors);
+        }
+
+        $newQty = $request['quantity'] ?? $item->quantity;
+
+        if ($newQty > $variant->stock) {
+            $errors = new MessageBag([
+                'quantity' => ["Quantity tidak boleh melebihi stok ({$variant->stock})."]
+            ]);
+            return $this->response->validationError($errors);
+        }
+
         $updated = $item->fill($this->request($request, $item->cart_uuid))->save();
+
         if (!$updated) {
             return $this->response->updateError();
-        } else {
-            return $this->response->update($item);
         }
+
+        return $this->response->update($item);
     }
+
 
     public function destroy($uuid)
     {
