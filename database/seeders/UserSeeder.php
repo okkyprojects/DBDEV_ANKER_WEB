@@ -35,11 +35,11 @@ class UserSeeder extends Seeder
             'bill-delete',
             'bill-export',
 
-            'address-index',
-            'address-add',
-            'address-update',
-            'address-delete',
-            'address-export',
+            // 'address-index',
+            // 'address-add',
+            // 'address-update',
+            // 'address-delete',
+            // 'address-export',
 
             'category-index',
             'category-add',

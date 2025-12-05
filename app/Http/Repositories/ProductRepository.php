@@ -121,6 +121,71 @@ class ProductRepository
     //     return true;
     // }
 
+    // public function import(array $row)
+    // {
+    //     if (empty($row['product_name']) || empty($row['product_code'])) {
+    //         return false;
+    //     }
+
+    //     // CATEGORY
+    //     $category = $this->category
+    //         ->withTrashed()
+    //         ->firstOrCreate(
+    //             ['name' => $row['category_name'] ?? ''],
+    //             ['uuid' => Str::uuid()]
+    //         );
+
+    //     // BRAND
+    //     $brand = $this->brand
+    //         ->withTrashed()
+    //         ->firstOrCreate(
+    //             ['name' => $row['brand_name'] ?? ''],
+    //             ['uuid' => Str::uuid()]
+    //         );
+
+    //     // PRODUCT
+    //     $product = $this->product
+    //         ->withTrashed()
+    //         ->firstOrCreate(
+    //             [
+    //                 'code' => $row['product_code'],
+    //                 'name' => $row['product_name'],
+    //                 'category_uuid' => $category->uuid,
+    //                 'brand_uuid' => $brand->uuid,
+    //             ],
+    //             [
+    //                 'uuid' => Str::uuid(),
+    //                 'img' => $row['product_img'] ?? '/images/no/product.jpg',
+    //                 'description' => $row['description'] ?? null,
+    //             ]
+    //         );
+
+    //     // VARIANT
+    //     if (!empty($row['sku'])) {
+    //         $variant = $this->variant
+    //             ->withTrashed()
+    //             ->firstOrCreate(
+    //                 ['sku' => $row['sku']],
+    //                 [
+    //                     'uuid' => Str::uuid(),
+    //                     'product_uuid' => $product->uuid,
+    //                     'name' => $row['variant_name'] ?? '',
+    //                     'img' => $row['variant_img'] ?? '/images/no/product.jpg',
+    //                     'price' => $row['price'] ?? 0,
+    //                 ]
+    //             );
+    //         if (!empty($row['stock'])) {
+    //             $newStock =  (int) $row['stock'];
+
+    //             $variant->update([
+    //                 'stock' => $newStock,
+    //             ]);
+    //         }
+    //     }
+
+    //     return true;
+    // }
+
     public function import(array $row)
     {
         if (empty($row['product_name']) || empty($row['product_code'])) {
@@ -135,6 +200,13 @@ class ProductRepository
                 ['uuid' => Str::uuid()]
             );
 
+        // 🔥 UPDATE CATEGORY NAME kalau sudah ada
+        if (!empty($row['category_name'])) {
+            $category->update([
+                'name' => $row['category_name'],
+            ]);
+        }
+
         // BRAND
         $brand = $this->brand
             ->withTrashed()
@@ -142,6 +214,13 @@ class ProductRepository
                 ['name' => $row['brand_name'] ?? ''],
                 ['uuid' => Str::uuid()]
             );
+
+        // 🔥 UPDATE BRAND NAME kalau sudah ada
+        if (!empty($row['brand_name'])) {
+            $brand->update([
+                'name' => $row['brand_name'],
+            ]);
+        }
 
         // PRODUCT
         $product = $this->product
@@ -160,8 +239,18 @@ class ProductRepository
                 ]
             );
 
+        // UPDATE PRODUCT
+        $product->update([
+            'name' => $row['product_name'],
+            'category_uuid' => $category->uuid,
+            'brand_uuid' => $brand->uuid,
+            'img' => $row['product_img'] ?? $product->img,
+            'description' => $row['description'] ?? $product->description,
+        ]);
+
         // VARIANT
         if (!empty($row['sku'])) {
+
             $variant = $this->variant
                 ->withTrashed()
                 ->firstOrCreate(
@@ -172,20 +261,23 @@ class ProductRepository
                         'name' => $row['variant_name'] ?? '',
                         'img' => $row['variant_img'] ?? '/images/no/product.jpg',
                         'price' => $row['price'] ?? 0,
-                        'discount_price' => $row['discount_price'] ?? null,
                     ]
                 );
-            if (!empty($row['stock'])) {
-                $newStock =  (int) $row['stock'];
 
-                $variant->update([
-                    'stock' => $newStock,
-                ]);
-            }
+            // UPDATE VARIANT
+            $variant->update([
+                'product_uuid' => $product->uuid,
+                'name' => $row['variant_name'] ?? $variant->name,
+                'img' => $row['variant_img'] ?? $variant->img,
+                'price' => $row['price'] ?? $variant->price,
+                'stock' => !empty($row['stock']) ? (int)$row['stock'] : ($variant->stock ?? 0),
+            ]);
         }
 
         return true;
     }
+
+
 
 
 
@@ -316,7 +408,7 @@ class ProductRepository
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
             );
         } else {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('updated_at', 'desc');
         }
 
         $products = $query->paginate(10);

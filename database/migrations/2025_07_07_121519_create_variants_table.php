@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('sku');
             $table->text('img')->nullable();
             $table->bigInteger('price')->default(0);
-            $table->bigInteger('discount_price')->nullable();
             $table->bigInteger('stock')->default(0);
             $table->timestamps();
             $table->foreign('product_uuid')->references('uuid')->on('products')->nullOnDelete();

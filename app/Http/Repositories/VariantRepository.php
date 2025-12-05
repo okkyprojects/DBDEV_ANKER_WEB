@@ -35,7 +35,6 @@ class VariantRepository
             'variants.*.name' => 'required',
             'variants.*.sku' => $skuRule,
             'variants.*.price' => 'required|numeric',
-            'variants.*.discount_price' => 'nullable|numeric',
             'variants.*.img' => 'nullable',
             'variants.*.stock' => 'nullable',
         ];
@@ -101,7 +100,6 @@ class VariantRepository
             'name' => $item['name'],
             'sku' => $item['sku'],
             'price' => $item['price'],
-            'discount_price' => $item['discount_price'] ?? null,
             'stock' => $item['stock'] ?? 0,
         ];
 

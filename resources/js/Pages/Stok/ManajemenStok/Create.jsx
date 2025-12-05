@@ -22,7 +22,6 @@ export default function Create({ data: initial_data }) {
                 name: "",
                 sku: "",
                 price: "",
-                discount_price: "",
                 img: null,
                 status: "1",
                 isOpen: true,
@@ -438,45 +437,6 @@ export default function Create({ data: initial_data }) {
                                                             }}
                                                             className="px-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
                                                         />
-                                                    </div>
-                                                    {/* Harga */}
-                                                    <div className="flex flex-col gap-2 text-sm">
-                                                        <label
-                                                            htmlFor={`varianPrice-${index}`}
-                                                        >
-                                                            Harga Diskon
-                                                        </label>
-                                                        <div className="relative">
-                                                            <div className="absolute inset-y-0 left-0 flex items-center px-3 bg-neutral-100 text-neutral-600 rounded-l-xl border-r border-neutral-300">
-                                                                Rp
-                                                            </div>
-                                                            <input
-                                                                id={`varianPrice-${index}`}
-                                                                type="number"
-                                                                placeholder="0"
-                                                                min={0}
-                                                                value={
-                                                                    varian.discount_price
-                                                                }
-                                                                onChange={(
-                                                                    e
-                                                                ) => {
-                                                                    const updated =
-                                                                        [
-                                                                            ...data.variants,
-                                                                        ];
-                                                                    updated[
-                                                                        index
-                                                                    ].discount_price =
-                                                                        e.target.value;
-                                                                    setData(
-                                                                        "variants",
-                                                                        updated
-                                                                    );
-                                                                }}
-                                                                className="w-full pl-12 pr-3 py-2 rounded-xl text-sm border border-neutral-400 placeholder:text-neutral-400 focus:border-primary-600 focus:ring-0 focus:outline-none"
-                                                            />
-                                                        </div>
                                                     </div>
                                                     <div className="flex flex-col gap-2 text-sm">
                                                         <label

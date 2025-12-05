@@ -427,32 +427,10 @@ export default function StokPage({ data }) {
                                                                                 }
                                                                             </p>
                                                                         </td>
-
-                                                                        {/* 3. Category spacer */}
                                                                         <td className="min-w-[200px] px-4 py-4"></td>
-
-                                                                        {/* 4. Brand spacer */}
                                                                         <td className="min-w-[200px] px-4 py-4"></td>
-
-                                                                        {/* 5. Harga */}
                                                                         <td className="min-w-[200px] px-4 py-4">
                                                                             <div className="flex flex-col leading-tight">
-                                                                                <span
-                                                                                    className={
-                                                                                        v.discount_price
-                                                                                            ? "text-neutral-400 line-through text-sm"
-                                                                                            : " text-sm"
-                                                                                    }
-                                                                                >
-                                                                                    {formatRupiah(
-                                                                                        Number(
-                                                                                            v.price
-                                                                                        ) +
-                                                                                            Number(
-                                                                                                v.discount_price
-                                                                                            )
-                                                                                    )}
-                                                                                </span>
 
                                                                                 {v.price ? (
                                                                                     <span className=" text-gray-600">
