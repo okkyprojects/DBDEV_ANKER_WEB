@@ -29,7 +29,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        $data = $this->transactionRepository->index($request);
+        $data = $this->transactionRepository->index_api($request);
         return $this->response->index($data);
     }
 

@@ -571,10 +571,41 @@ class TransactionRepository
     {
         $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
-        if (!Auth::user()->hasRole('admin')) {
+        if (Auth::user()->hasRole('user')) {
 
             $query->where('user_id', Auth::id());
         }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('uuid', 'like', "%$search%")
+                    ->orWhere('transaction_code', 'like', "%$search%")
+                    ->orWhere('note', 'like', "%$search%")
+                    ->orWhere('note_transaction', 'like', "%$search%")
+                    ->orWhere('total_price', 'like', "%$search%")
+                    ->orWhere('grand_total', 'like', "%$search%")
+                    ->orWhere('admin_fee', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        return $query->paginate(10);
+    }
+    public function index_api(Request $request)
+    {
+        $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
+        $query->where('user_id', Auth::id());
 
         if ($request->filled('search')) {
             $search = $request->search;
