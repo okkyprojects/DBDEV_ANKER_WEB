@@ -6,6 +6,7 @@ import { FiPlus } from "react-icons/fi";
 import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, router, useForm, usePage } from "@inertiajs/react";
+import { toast } from "react-toastify";
 
 export default function Edit({ data: initial_data }) {
     const { permissions } = usePage().props;
@@ -14,10 +15,10 @@ export default function Edit({ data: initial_data }) {
         uuid: initial_data.product.uuid,
         code: initial_data.product.code,
         name: initial_data.product.name,
+        status: initial_data.product.status,
         category_uuid: initial_data.product.category_uuid,
         brand_uuid: initial_data.product.brand_uuid,
         seller_uuid: initial_data.product.seller_uuid,
-        status: initial_data.product.status,
         img: initial_data.product.img || null,
         description: initial_data.product.description,
         variants:
@@ -92,6 +93,10 @@ export default function Edit({ data: initial_data }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(data);
+        if (!data.variants || data.variants.length === 0) {
+            toast.error("Minimal harus ada 1 varian produk");
+            return;
+        }
         const formData = new FormData();
 
         for (const key in data) {
@@ -159,7 +164,27 @@ export default function Edit({ data: initial_data }) {
                                     </span>
                                 )}
                             </div>
-
+                            <div className="flex flex-col gap-2 text-sm">
+                                <label htmlFor="status">Status</label>
+                                <select
+                                    id="status"
+                                    required
+                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.status}
+                                    onChange={(e) =>
+                                        setData("status", e.target.value)
+                                    }
+                                >
+                                    <option value="">Pilih Status</option>
+                                    <option value={1}>Aktif</option>
+                                    <option value={0}>Tidak Aktif</option>
+                                </select>
+                                {errors.status && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.status}
+                                    </span>
+                                )}
+                            </div>
                             {/* Category */}
                             <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="category_uuid">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\Product;
 use App\Models\Variant;
 use App\Traits\Response;
 use Illuminate\Http\Request;
@@ -13,11 +14,13 @@ class VariantRepository
 {
     private $response;
     private $variant;
+    private $product;
 
-    public function __construct(Response $response, Variant $variant)
+    public function __construct(Response $response, Variant $variant, Product $product)
     {
         $this->response = $response;
         $this->variant = $variant;
+        $this->product = $product;
     }
 
     private function validate($isUpdate = false, $uuid = null): array
@@ -117,39 +120,42 @@ class VariantRepository
     public function destroy($uuid)
     {
         $variant = $this->variant->where('uuid', $uuid)->first();
+
         if (!$variant) {
             return $this->response->notFound();
         }
-
-        // if ($variant->img && Storage::disk('public')->exists(str_replace('storage/', '', $variant->img))) {
-        //     Storage::disk('public')->delete(str_replace('storage/', '', $variant->img));
-        // }
-
+        $productUuid = $variant->product_uuid;
         $variant->delete();
+        $variantCount = $this->variant
+            ->where('product_uuid', $productUuid)
+            ->count();
+
+        if ($variantCount === 0) {
+
+            $this->product->where('uuid', $productUuid)->delete();
+        }
+
         return $this->response->destroy($variant);
     }
+
 
     public function export(Request $request)
     {
         $variants = $this->variant
-            ->whereNull('variants.deleted_at')
             ->with([
                 'product' => function ($q) {
-                    $q->whereNull('products.deleted_at')
-                        ->with(['category' => function ($q) {
-                            $q->whereNull('categories.deleted_at');
-                        }, 'brand' => function ($q) {
-                            $q->whereNull('brands.deleted_at');
-                        }]);
+                    $q->with(['category', 'brand']);
                 },
                 'total_stock'
             ])
-            ->whereHas('product', function ($q) {
-                $q->whereNull('products.deleted_at');
-            })
             ->when($request->input('search'), function ($q, $search) {
                 $q->whereHas('product', function ($q) use ($search) {
                     $q->where('products.name', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->input('status'), function ($q, $status) {
+                $q->whereHas('product', function ($q) use ($status) {
+                    $q->where('products.status', 'like', "%{$status}%");
                 });
             })
             ->when($request->input('category'), function ($q, $categoryName) {

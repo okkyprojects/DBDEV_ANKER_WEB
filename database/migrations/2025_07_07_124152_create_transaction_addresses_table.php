@@ -29,7 +29,6 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('transaction_uuid')->references('uuid')->on('transactions')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->softDeletes();
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Transaction;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ExpireTransaction extends Command
 {
@@ -27,14 +28,28 @@ class ExpireTransaction extends Command
      */
     public function handle()
     {
-        $count = Transaction::where('status', 0)
-            ->where('expired_at', '<', Carbon::now())
-            ->update([
-                'status' => 5,
-                'note_transaction' => 'Kadaluarsa',
-                'updated_at' => now()
-            ]);
+        DB::transaction(function () {
+            $transactions = Transaction::with('items.variant')
+                ->where('status', 0)
+                ->where('expired_at', '<', Carbon::now())
+                ->lockForUpdate()
+                ->get();
 
-        $this->info("Total transaksi expired: {$count}");
+            foreach ($transactions as $transaction) {
+                foreach ($transaction->items as $item) {
+                    if ($item->variant) {
+                        $item->variant->increment('stock', $item->qty);
+                    }
+                }
+                $transaction->update([
+                    'status' => 5, 
+                    'note_transaction' => 'Kadaluarsa',
+                ]);
+            }
+
+            $this->info(
+                'Total transaksi expired: ' . $transactions->count()
+            );
+        });
     }
 }

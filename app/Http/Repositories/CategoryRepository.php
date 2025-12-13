@@ -29,7 +29,6 @@ class CategoryRepository
                 'required',
                 'string',
                 Rule::unique('categories', 'name')
-                    ->whereNull('deleted_at')
                     ->ignore($uuid, 'uuid'),
             ],
             'status' => 'required|boolean',

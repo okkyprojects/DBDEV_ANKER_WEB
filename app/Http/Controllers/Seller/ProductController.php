@@ -105,12 +105,24 @@ class ProductController extends Controller
 
 
 
-
     public function destroy($uuid)
     {
-        $data = $this->product->destroy($uuid);
-        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+        $result = $this->product->destroy($uuid);
+
+        if ($result['status'] === false) {
+            return redirect()->back()
+                ->withErrors([
+                    'product' => $result['message']
+                ]);
+        }
+
+        return redirect()->back()
+            ->with('success', $result['message']);
     }
+
+
+
+
     public function downloadTemplate()
     {
         $filePath = public_path('files/product.xlsx');
@@ -118,7 +130,12 @@ class ProductController extends Controller
     }
     public function bulk_destroy(Request $request)
     {
-        $this->product->bulk_destroy($request);
-        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+        try {
+            $this->product->bulk_destroy($request);
+
+            return redirect()->back()->with('success', 'Berhasil menghapus beberapa data!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors());
+        }
     }
 }

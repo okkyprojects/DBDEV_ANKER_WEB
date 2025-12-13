@@ -569,7 +569,7 @@ class TransactionRepository
 
     public function index(Request $request)
     {
-        $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
+        $query = $this->transaction->with(['user', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
 
         if (Auth::user()->hasRole('user')) {
 
@@ -604,7 +604,7 @@ class TransactionRepository
     }
     public function index_api(Request $request)
     {
-        $query = $this->transaction->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
+        $query = $this->transaction->with(['user',  'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])->orderBy('created_at', 'desc');
         $query->where('user_id', Auth::id());
 
         if ($request->filled('search')) {
@@ -677,7 +677,7 @@ class TransactionRepository
     }
     public function export_pesanan(Request $request)
     {
-        $query = $this->transactionItem->with(['transaction.completedBy', 'transaction.deletedBy', 'transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
+        $query = $this->transactionItem->with(['transaction.user', 'transaction.address.province', 'transaction.address.city', 'transaction.address.district', 'transaction.bill', 'variant.product'])->orderBy('created_at', 'desc');
 
         if (!Auth::user()->hasRole('admin')) {
 
@@ -769,7 +769,7 @@ class TransactionRepository
     public function show($transaction_code)
     {
         $transaction = $this->transaction
-            ->with(['user', 'completedBy', 'deletedBy', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])
+            ->with(['user', 'items.variant', 'address.province', 'address.city', 'address.district', 'bill'])
             ->where('transaction_code', $transaction_code)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -810,14 +810,10 @@ class TransactionRepository
 
         foreach ($request['items'] as $item) {
             $variant = $this->variant
-                ->with([
-                    'product' => function ($q) {
-                        $q->whereNull('deleted_at');
-                    },
-                ])
+                ->with(['product']) 
                 ->where('uuid', $item['variant_uuid'])
-                ->whereNull('deleted_at')
                 ->first();
+
 
             if (!$variant || !$variant->product) {
                 return $this->response->validationError(new MessageBag(['items' => ['Variant atau produk tidak ditemukan untuk salah satu item.']]));
@@ -924,11 +920,11 @@ class TransactionRepository
             Storage::disk('public')->delete(str_replace('storage/', '', $trx->file));
         }
         if (isset($updateData['status']) && $updateData['status'] == 4) {
-            $updateData['completed_by'] = Auth::id();
+            $updateData['completed_by'] = Auth::user()->name;
         }
 
         if (isset($updateData['status']) && $updateData['status'] == 5) {
-            $updateData['deleted_by'] = Auth::id();
+            $updateData['deleted_by'] = Auth::user()->name;
         }
 
         $trx->fill($updateData);
@@ -995,7 +991,6 @@ class TransactionRepository
             'note_transaction' => $request->input('note_transaction', $trx?->note_transaction),
             'resi' => $request->input('resi', $trx?->resi),
             'completed_by' => $request->input('completed_by', $trx?->completed_by),
-            'deleted_at' => $request->input('deleted_at', $trx?->deleted_at),
         ];
 
         if ($request->hasFile('file')) {

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Category extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $fillable = [
         'uuid',
         'name',
@@ -21,6 +20,6 @@ class Category extends Model
     protected $keyType = 'string';
     public function products()
     {
-        return $this->hasMany(Product::class, 'category_uuid', 'uuid')->withTrashed();;
+        return $this->hasMany(Product::class, 'category_uuid', 'uuid');
     }
 }

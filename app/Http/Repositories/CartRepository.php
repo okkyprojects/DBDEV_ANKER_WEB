@@ -44,12 +44,9 @@ class CartRepository
     public function index()
     {
         $cart = $this->cart
-            ->with(['variants' => function ($q) {
-                $q->whereNull('deleted_at') // hanya yang variant belum dihapus
-                    ->whereHas('product', function ($q2) {
-                        $q2->whereNull('deleted_at'); // hanya yang product belum dihapus
-                    });
-            }, 'variants.product'])
+            ->with([
+                'variants.product'
+            ])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->first();
@@ -159,11 +156,8 @@ class CartRepository
 
         foreach ($items as $item) {
             $variant = $this->variant
-                ->with(['product' => function ($q) {
-                    $q->whereNull('deleted_at');
-                }])
+                ->with('product')
                 ->where('uuid', $item->variant_uuid)
-                ->whereNull('deleted_at')
                 ->first();
 
             if (!$variant || !$variant->product) {
@@ -302,11 +296,8 @@ class CartRepository
         $validated = $validator->validated();
 
         $variant = $this->variant
-            ->with(['product' => function ($q) {
-                $q->whereNull('deleted_at');
-            }])
+            ->with('product')
             ->where('uuid', $validated['variant_uuid'])
-            ->whereNull('deleted_at')
             ->first();
 
         if (!$variant || !$variant->product) {
@@ -388,7 +379,6 @@ class CartRepository
 
         $variant = $this->variant
             ->where('uuid', $item->variant_uuid)
-            ->whereNull('deleted_at')
             ->first();
 
         if (!$variant) {

@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\MessageBag;
 
 class ProductRepository
 {
@@ -53,6 +55,7 @@ class ProductRepository
             'brand_uuid' => 'required|exists:brands,uuid',
             'img' => 'nullable',
             'description' => 'nullable|string',
+            'status' => 'nullable',
         ];
     }
     // public function import(array $row)
@@ -188,13 +191,12 @@ class ProductRepository
 
     public function import(array $row)
     {
-        if (empty($row['product_name']) || empty($row['product_code'])) {
+        if (empty($row['product_code'])) {
             return false;
         }
 
         // CATEGORY
         $category = $this->category
-            ->withTrashed()
             ->firstOrCreate(
                 ['name' => $row['category_name'] ?? ''],
                 ['uuid' => Str::uuid()]
@@ -209,7 +211,6 @@ class ProductRepository
 
         // BRAND
         $brand = $this->brand
-            ->withTrashed()
             ->firstOrCreate(
                 ['name' => $row['brand_name'] ?? ''],
                 ['uuid' => Str::uuid()]
@@ -224,7 +225,6 @@ class ProductRepository
 
         // PRODUCT
         $product = $this->product
-            ->withTrashed()
             ->firstOrCreate(
                 [
                     'code' => $row['product_code'],
@@ -236,6 +236,7 @@ class ProductRepository
                     'uuid' => Str::uuid(),
                     'img' => $row['product_img'] ?? '/images/no/product.jpg',
                     'description' => $row['description'] ?? null,
+                    'status' => $row['status'] == "Tidak Aktif" ? 0 : 1,
                 ]
             );
 
@@ -246,13 +247,13 @@ class ProductRepository
             'brand_uuid' => $brand->uuid,
             'img' => $row['product_img'] ?? $product->img,
             'description' => $row['description'] ?? $product->description,
+            'status' => $row['status'] == "Tidak Aktif" ? 0 : 1,
         ]);
 
         // VARIANT
         if (!empty($row['sku'])) {
 
             $variant = $this->variant
-                ->withTrashed()
                 ->firstOrCreate(
                     ['sku' => $row['sku']],
                     [
@@ -295,6 +296,7 @@ class ProductRepository
             'category_uuid' => $request->input('category_uuid'),
             'brand_uuid' => $request->input('brand_uuid'),
             'description' => $request->input('description'),
+            'status' => $request->input('status'),
         ];
 
         if ($request->hasFile('img')) {
@@ -312,7 +314,7 @@ class ProductRepository
             ->with([
                 'category:uuid,name',
                 'brand:uuid,name',
-                'variants.total_stock',
+                'variants',
             ])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
@@ -358,16 +360,19 @@ class ProductRepository
                 'category:uuid,name',
                 'brand:uuid,name',
                 'variants' => function ($q) {
-                    $q->whereNull('variants.deleted_at')
-                        ->with('total_stock');
+                    $q->with('total_stock');
                 },
-            ])->whereHas('variants', function ($q) {
-                $q->whereNull('variants.deleted_at');
-            })
+            ])
+            ->whereHas('variants')
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where(function ($q2) use ($request) {
                     $q2->where('name', 'like', '%' . $request->input('search') . '%')
                         ->orWhere('code', 'like', '%' . $request->input('search') . '%');
+                });
+            })
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('status', 'like', '%' . $request->input('status') . '%');
                 });
             })
             ->when($request->filled('category'), function ($q) use ($request) {
@@ -401,8 +406,13 @@ class ProductRepository
 
         if ($request->input('sort_by') === 'best_seller') {
             $query->orderByDesc('total_sold');
-        } elseif ($request->input('sort_by') === 'lowest_price' || $request->input('sort_by') === 'highest_price') {
-            $query->withMin('variants', 'price')->withMax('variants', 'price');
+        } elseif (
+            $request->input('sort_by') === 'lowest_price' ||
+            $request->input('sort_by') === 'highest_price'
+        ) {
+            $query->withMin('variants', 'price')
+                ->withMax('variants', 'price');
+
             $query->orderBy(
                 'variants_min_price',
                 $request->input('sort_by') === 'lowest_price' ? 'asc' : 'desc'
@@ -416,14 +426,13 @@ class ProductRepository
         $products->getCollection()->transform(function ($product) {
             $product->price = $product->variants->min('price');
             $product->variant_count = $product->variants->count();
-            $product->total_stock = $product->variants
-                ->whereNull('deleted_at')
-                ->sum('stock');
+            $product->total_stock = $product->variants->sum('stock');
             return $product;
         });
 
         return $products;
     }
+
     public function export(Request $request)
     {
         $query = $this->product
@@ -484,27 +493,19 @@ class ProductRepository
             ->with([
                 'brand',
                 'category',
-                'variants' => function ($q) {
-                    $q->whereNull('deleted_at')
-                        ->with('total_stock');
-                },
+                'variants'
             ])
             ->where('uuid', $uuid)
-            ->whereNull('deleted_at')
             ->first();
 
         return $data;
     }
     public function single_withoout_delete($uuid)
     {
-        $data = $this->product->withTrashed()
+        $data = $this->product
             ->with([
                 'brand',
                 'category',
-                'variants' => function ($q) {
-                    $q->whereNull('deleted_at')
-                        ->with('total_stock');
-                },
             ])
             ->where('uuid', $uuid)
             ->first();
@@ -525,13 +526,13 @@ class ProductRepository
         $code = $request->input('code');
         $uuid = $request->input('uuid');
 
-        $variantExists = $this->product->where('code', $code)
-            ->whereNull('deleted_at')
+        $variantExists = $this->product
+            ->where('code', $code)
             ->whereHas('variants', function ($q) {
-                $q->whereNull('deleted_at');
             }, '>', 0)
             ->when($uuid, fn($q) => $q->where('uuid', '!=', $uuid))
             ->exists();
+
 
         if ($variantExists) {
             $validator->errors()->add('code', 'The code has already been taken');
@@ -561,35 +562,87 @@ class ProductRepository
 
     public function destroy($uuid)
     {
-        $product = $this->product->where('uuid', $uuid)->first();
+        $product = $this->product
+            ->with(['variants.transactionItems'])
+            ->where('uuid', $uuid)
+            ->first();
 
         if (!$product) {
-            return $this->response->notFound();
+            return [
+                'status' => false,
+                'message' => 'Produk tidak ditemukan'
+            ];
         }
+
+        $hasTransaction = $product->variants->contains(function ($variant) {
+            return $variant->transactionItems->isNotEmpty();
+        });
+
+        if ($hasTransaction) {
+            return [
+                'status' => false,
+                'message' => 'Produk tidak dapat dihapus karena sudah digunakan dalam transaksi'
+            ];
+        }
+
         if ($product->img && Storage::disk('public')->exists(str_replace('storage/', '', $product->img))) {
             Storage::disk('public')->delete(str_replace('storage/', '', $product->img));
         }
 
+        $product->variants()->delete();
         $product->delete();
-        return $this->response->destroy($product);
+
+        return [
+            'status' => true,
+            'message' => 'Berhasil menghapus data!'
+        ];
     }
-    public function bulk_destroy($request)
+
+
+    public function bulk_destroy(Request $request)
     {
         $uuids = $request->input('uuids', []);
-
         if (empty($uuids)) {
-            return $this->response->validationError(['uuids' => ['Data tidak boleh kosong']]);
+            throw ValidationException::withMessages([
+                'uuids' => ['Data tidak boleh kosong']
+            ]);
         }
 
-        $products = $this->product->whereIn('uuid', $uuids)->get();
+        $products = $this->product
+            ->with(['variants.transactionItems'])
+            ->whereIn('uuid', $uuids)
+            ->get();
 
+        if ($products->isEmpty()) {
+            throw ValidationException::withMessages([
+                'product' => ['Produk tidak ditemukan']
+            ]);
+        }
         foreach ($products as $product) {
-            if ($product->img && Storage::disk('public')->exists(str_replace('storage/', '', $product->img))) {
+            $hasTransaction = $product->variants->contains(function ($variant) {
+                return $variant->transactionItems->isNotEmpty();
+            });
+
+            if ($hasTransaction) {
+                throw ValidationException::withMessages([
+                    'product' => [
+                        "Produk {$product->name} tidak dapat dihapus karena sudah digunakan dalam transaksi"
+                    ]
+                ]);
+            }
+        }
+        foreach ($products as $product) {
+            if (
+                $product->img &&
+                Storage::disk('public')->exists(str_replace('storage/', '', $product->img))
+            ) {
                 Storage::disk('public')->delete(str_replace('storage/', '', $product->img));
             }
+
+            $product->variants()->delete();
             $product->delete();
         }
 
-        return $this->response->destroy('Berhasil menghapus beberapa data!');
+        return true;
     }
 }

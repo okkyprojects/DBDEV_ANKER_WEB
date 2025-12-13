@@ -18,14 +18,14 @@ export const statusBadge = {
     4: {
         label: (item) =>
             `Pesanan Selesai${
-                item?.completed_by?.name ? ` - ${item.completed_by.name}` : ""
+                item?.completed_by ? ` - ${item.completed_by}` : ""
             }`,
         className: "bg-green-100 text-green-700",
     },
     5: {
         label: (item) =>
             `Cancel${
-                item?.deleted_by?.name ? ` - ${item.deleted_by.name}` : ""
+                item?.deleted_by ? ` - ${item.deleted_by}` : ""
             }`,
         className: "bg-red-100 text-red-700",
     },

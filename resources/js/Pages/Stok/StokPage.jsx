@@ -16,6 +16,7 @@ import { formatRupiah } from "@/Utils/utils";
 
 export default function StokPage({ data }) {
     const { permissions } = usePage().props;
+    const { errors, flash } = usePage().props;
     console.log(data);
     const [openVariants, setOpenVariants] = useState({});
 
@@ -141,16 +142,31 @@ export default function StokPage({ data }) {
                 setSelectAll(false);
                 toast.success("Berhasil menghapus data!");
             },
+            onError: (errors) => {
+                toast.error(errors.product);
+                console.error("Gagal menghapus produk:", errors);
+            },
         });
     };
-    // useEffect(() => {
-    //     const init = {};
-    //     data?.products?.data?.forEach((p) => {
-    //         init[p.uuid] = true;
-    //     });
-    //     setOpenVariants(init);
-    // }, [data]);
-
+    const handleDeleteVarian = (uuid = null) => {
+        if (uuid) {
+            if (confirm("Yakin ingin menghapus varian ini?")) {
+                router.delete(route("variant.destroy", uuid), {
+                    preserveState: true,
+                    onSuccess: () => {
+                        const updated = [...data.variants];
+                        updated.splice(index, 1);
+                        setData("variants", updated);
+                        console.log("SUKSES");
+                        toast.success("Berhasil menghapus data!");
+                    },
+                    onError: (errors) => {
+                        console.error("ERROR:", errors);
+                    },
+                });
+            }
+        }
+    };
     return (
         <DefaultLayout>
             <div className="flex flex-col gap-5">
@@ -270,6 +286,9 @@ export default function StokPage({ data }) {
                                         Produk
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
+                                        Status
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4 ">
                                         Kategori
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4 ">
@@ -281,7 +300,9 @@ export default function StokPage({ data }) {
                                     <th className="min-w-[200px] px-4 py-4 ">
                                         Total Stok Saat ini
                                     </th>
-                                    <th className="px-4 py-4 ">Aksi</th>
+                                    <th className="min-w-[170px] px-4 py-4 ">
+                                        Aksi
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -311,6 +332,11 @@ export default function StokPage({ data }) {
                                                 </p>
                                             </td>
 
+                                            <td className="px-4 py-5">
+                                                {item?.status
+                                                    ? "Aktif"
+                                                    : "Tidak Aktif"}
+                                            </td>
                                             <td className="px-4 py-5">
                                                 {item?.category?.name}
                                             </td>
@@ -401,7 +427,7 @@ export default function StokPage({ data }) {
 
                                         {openVariants[item.uuid] && (
                                             <tr className="bg-white">
-                                                <td colSpan={7} className="p-0">
+                                                <td colSpan={8} className="p-0">
                                                     <table className="w-full table-auto border-t">
                                                         <tbody>
                                                             {item?.variants?.map(
@@ -412,7 +438,6 @@ export default function StokPage({ data }) {
                                                                     >
                                                                         {/* 1. Checkbox column spacer */}
                                                                         <td className="px-4 py-4 w-[50px]"></td>
-
                                                                         {/* 2. Product Name + SKU */}
                                                                         <td className="px-4 py-4 min-w-[280px]">
                                                                             <p className="text-gray-600">
@@ -426,12 +451,12 @@ export default function StokPage({ data }) {
                                                                                     v.sku
                                                                                 }
                                                                             </p>
-                                                                        </td>
-                                                                        <td className="min-w-[200px] px-4 py-4"></td>
-                                                                        <td className="min-w-[200px] px-4 py-4"></td>
+                                                                        </td>{" "}
+                                                                        <td className="px-4 py-4 w-[200px]"></td>{" "}
+                                                                        <td className="px-4 py-4 w-[200px]"></td>
+                                                                        <td className="px-4 py-4 w-[200px]"></td>
                                                                         <td className="min-w-[200px] px-4 py-4">
                                                                             <div className="flex flex-col leading-tight">
-
                                                                                 {v.price ? (
                                                                                     <span className=" text-gray-600">
                                                                                         {formatRupiah(
@@ -445,15 +470,26 @@ export default function StokPage({ data }) {
                                                                                 )}
                                                                             </div>
                                                                         </td>
-
                                                                         {/* 6. Stock */}
                                                                         <td className="min-w-[200px] px-4 py-4 text-gray-500">
                                                                             {
                                                                                 v.stock
                                                                             }
                                                                         </td>
-
-                                                                        <td className="px-4 py-4 min-w-[100px]"></td>
+                                                                        <td className="px-4 py-4 min-w-[170px] ">
+                                                                            <button
+                                                                                className="bg-red-500 text-gray-50 px-5 py-2 text-sm hover:bg-opacity-90 rounded-lg"
+                                                                                onClick={() =>
+                                                                                    handleDeleteVarian(
+                                                                                        v.uuid
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {" "}
+                                                                                Hapus
+                                                                                Varian
+                                                                            </button>{" "}
+                                                                        </td>
                                                                     </tr>
                                                                 )
                                                             )}

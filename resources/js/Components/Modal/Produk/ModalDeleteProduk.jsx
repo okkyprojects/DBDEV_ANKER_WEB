@@ -25,7 +25,7 @@ const ModalDeleteProduk = ({ isOpen, onClose, item }) => {
                 onClose();
             },
             onError: (errors) => {
-                console.error("Gagal menghapus:", errors);
+                toast.error(errors.product);
             },
         });
     };

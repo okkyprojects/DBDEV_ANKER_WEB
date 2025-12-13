@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Transaction extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -38,26 +37,18 @@ class Transaction extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
-    }
-    public function completedBy()
-    {
-        return $this->belongsTo(User::class, 'completed_by', 'id')->withTrashed();
-    }
-    public function deletedBy()
-    {
-        return $this->belongsTo(User::class, 'deleted_by', 'id')->withTrashed();
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
     public function items()
     {
-        return $this->hasMany(TransactionItem::class, 'transaction_uuid', 'uuid')->withTrashed();
+        return $this->hasMany(TransactionItem::class, 'transaction_uuid', 'uuid');
     }
     public function address()
     {
-        return $this->hasOne(TransactionAddress::class)->withTrashed();
+        return $this->hasOne(TransactionAddress::class);
     }
     public function bill()
     {
-        return $this->hasOne(TransactionBill::class)->withTrashed();
+        return $this->hasOne(TransactionBill::class);
     }
 }

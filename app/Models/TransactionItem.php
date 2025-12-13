@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TransactionItem extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -25,7 +24,7 @@ class TransactionItem extends Model
 
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class, 'transaction_uuid', 'uuid')->withTrashed();;
+        return $this->belongsTo(Transaction::class, 'transaction_uuid', 'uuid');
     }
 
     /**
@@ -33,6 +32,6 @@ class TransactionItem extends Model
      */
     public function variant()
     {
-        return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid')->withTrashed();;
+        return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid');
     }
 }

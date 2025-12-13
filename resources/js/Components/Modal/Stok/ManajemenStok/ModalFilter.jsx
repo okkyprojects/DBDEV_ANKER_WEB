@@ -7,6 +7,7 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedBrand, setSelectedBrand] = useState("");
+    const [status, setStatus] = useState("");
     const [dateValue, setDateValue] = useState({
         startDate: null,
         endDate: null,
@@ -28,6 +29,7 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
         onApplyFilter({
             category: selectedCategory,
             brand: selectedBrand,
+            status: status,
         });
         onClose();
     };
@@ -127,6 +129,29 @@ const ModalFilter = ({ isOpen, onClose, data, onApplyFilter }) => {
                                                         {brand.name}
                                                     </option>
                                                 ))}
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col gap-2 text-sm">
+                                            <label htmlFor="status">
+                                                Status
+                                            </label>
+                                            <select
+                                                id="status"
+                                                value={status}
+                                                onChange={(e) =>
+                                                    setStatus(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
+                                                className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                            >
+                                                <option value="">
+                                                    Pilih Status
+                                                </option>
+                                                <option value={1}>Aktif</option>
+                                                <option value={0}>
+                                                    Tidak Aktif
+                                                </option>
                                             </select>
                                         </div>
 

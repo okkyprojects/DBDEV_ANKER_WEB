@@ -21,7 +21,6 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->softDeletes();
         });
     }
 

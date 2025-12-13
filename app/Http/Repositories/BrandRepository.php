@@ -22,7 +22,6 @@ class BrandRepository
                 'required',
                 'string',
                 Rule::unique('brands', 'name')
-                    ->whereNull('deleted_at')
                     ->ignore($uuid, 'uuid'),
             ],
             'status' => 'required|boolean',

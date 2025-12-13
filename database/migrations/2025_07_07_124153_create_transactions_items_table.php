@@ -23,7 +23,6 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('transaction_uuid')->references('uuid')->on('transactions')->nullOnDelete();
             $table->foreign('variant_uuid')->references('uuid')->on('variants')->nullOnDelete();
-            $table->softDeletes();
         });
     }
 

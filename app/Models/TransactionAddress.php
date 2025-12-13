@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TransactionAddress extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -30,7 +29,7 @@ class TransactionAddress extends Model
     ];
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class)->withTrashed();;
+        return $this->belongsTo(Transaction::class);
     }
     public function province()
     {

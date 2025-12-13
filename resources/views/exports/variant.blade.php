@@ -7,6 +7,7 @@
             <th>Kode Produk</th>
             <th>Gambar Produk</th>
             <th>Produk</th>
+            <th>Status</th>
             <th>Deskripsi Produk</th>
             <th>Varian</th>
             <th>Gambar Varian</th>
@@ -27,6 +28,7 @@
                 </td>
 
                 <td>{{ $variant->product->name ?? '-' }}</td>
+                <td>{{ $variant->product->status ? 'Aktif' : 'Tidak Aktid' }}</td>
                 <td>{{ $variant->product->description ?? '-' }}</td>
                 <td>{{ $variant->name ?? '-' }}</td>
                 <td>

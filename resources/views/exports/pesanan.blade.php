@@ -72,9 +72,9 @@
                         ];
                         $statusText = $statusList[$item->transaction->status] ?? 'Tidak Diketahui';
                         if ($item->transaction->status == 4 && $item->transaction->completedBy) {
-                            $statusText .= ' - ' . $item->transaction->completedBy->name;
+                            $statusText .= ' - ' . $item->transaction->completedBy;
                         } elseif ($item->transaction->status == 5 && $item->transaction->deletedBy) {
-                            $statusText .= ' - ' . $item->transaction->deletedBy->name;
+                            $statusText .= ' - ' . $item->transaction->deletedBy;
                         }
                     @endphp
                     {{ $statusText }}

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
-    use SoftDeletes;
     use HasUuids;
 
     protected $primaryKey = 'uuid';
@@ -32,7 +31,7 @@ class Address extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withTrashed();
+        return $this->belongsTo(User::class);
     }
     public function province()
     {

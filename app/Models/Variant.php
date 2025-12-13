@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Variant extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -26,7 +25,7 @@ class Variant extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_uuid', 'uuid')->withTrashed();
+        return $this->belongsTo(Product::class, 'product_uuid', 'uuid');
     }
     public function carts()
     {
@@ -38,16 +37,15 @@ class Variant extends Model
             'uuid',
             'uuid'
         )->withPivot('uuid', 'quantity', 'created_at', 'updated_at')
-            ->withTimestamps()->withTrashed();
+            ->withTimestamps();
     }
     public function stocks()
     {
-        return $this->hasMany(VariantStock::class, 'variant_uuid', 'uuid')->withTrashed();
+        return $this->hasMany(VariantStock::class, 'variant_uuid', 'uuid');
     }
     public function total_stock()
     {
         return $this->hasOne(VariantStock::class, 'variant_uuid', 'uuid')
-            ->whereNull('variant_stocks.deleted_at')
             ->selectRaw('variant_uuid,
             SUM(quantity) - (
                 SELECT COALESCE(SUM(transaction_items.quantity), 0)
@@ -65,6 +63,6 @@ class Variant extends Model
 
     public function transactionItems()
     {
-        return $this->hasMany(TransactionItem::class, 'variant_uuid', 'uuid')->withTrashed();
+        return $this->hasMany(TransactionItem::class, 'variant_uuid', 'uuid');
     }
 }

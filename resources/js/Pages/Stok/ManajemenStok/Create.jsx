@@ -6,15 +6,16 @@ import { FiPlus } from "react-icons/fi";
 import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, router, useForm } from "@inertiajs/react";
+import { toast } from "react-toastify";
 
 export default function Create({ data: initial_data }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         code: "",
         category_uuid: "",
+        status: "",
         brand_uuid: "",
         seller_uuid: "",
-        status: "",
         img: null,
         description: "",
         variants: [
@@ -67,6 +68,10 @@ export default function Create({ data: initial_data }) {
     };
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!data.variants || data.variants.length === 0) {
+            toast.error("Minimal harus ada 1 varian produk");
+            return;
+        }
         console.log(data);
         const formData = new FormData();
 
@@ -135,7 +140,28 @@ export default function Create({ data: initial_data }) {
                                     </span>
                                 )}
                             </div>
-
+                            {/* Status */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                <label htmlFor="status">Status</label>
+                                <select
+                                    id="status"
+                                    required
+                                    className="px-3 py-2 rounded-xl text-sm border border-neutral-400 text-neutral-700 focus:border-primary-600 focus:ring-0 focus:outline-none"
+                                    value={data.status}
+                                    onChange={(e) =>
+                                        setData("status", e.target.value)
+                                    }
+                                >
+                                    <option value="">Pilih Status</option>
+                                    <option value={1}>Aktif</option>
+                                    <option value={0}>Tidak Aktif</option>
+                                </select>
+                                {errors.status && (
+                                    <span className="text-red-500 text-xs">
+                                        {errors.status}
+                                    </span>
+                                )}
+                            </div>
                             {/* Category */}
                             <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="category_uuid">
@@ -166,7 +192,6 @@ export default function Create({ data: initial_data }) {
                                     </span>
                                 )}
                             </div>
-
                             {/* Brand */}
                             <div className="flex flex-col gap-2 text-sm">
                                 <label htmlFor="brand_uuid">Brand</label>
