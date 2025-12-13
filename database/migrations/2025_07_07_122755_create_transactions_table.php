@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('user_id')->nullable();
             $table->unsignedBigInteger('completed_by')->nullable();
             $table->string('transaction_code')->unique();
             $table->bigInteger('total_price');
@@ -31,7 +31,6 @@ return new class extends Migration
             $table->text('note_transaction')->nullable();
             $table->string('file')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('completed_by')->references('id')->on('users')->nullOnDelete();
         });
     }

@@ -16,13 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('status')->default(1);
             $table->text('code');
-            $table->uuid('category_uuid')->nullable();
-            $table->uuid('brand_uuid')->nullable();
+            $table->string('category_uuid')->nullable();
+            $table->string('brand_uuid')->nullable();
             $table->text('img')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
-            $table->foreign('category_uuid')->references('uuid')->on('categories')->nullOnDelete();
-            $table->foreign('brand_uuid')->references('uuid')->on('brands')->nullOnDelete();
             $table->softDeletes();
         });
     }
