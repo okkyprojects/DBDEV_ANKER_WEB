@@ -810,7 +810,7 @@ class TransactionRepository
 
         foreach ($request['items'] as $item) {
             $variant = $this->variant
-                ->with(['product']) 
+                ->with(['product'])
                 ->where('uuid', $item['variant_uuid'])
                 ->first();
 
@@ -991,6 +991,7 @@ class TransactionRepository
             'note_transaction' => $request->input('note_transaction', $trx?->note_transaction),
             'resi' => $request->input('resi', $trx?->resi),
             'completed_by' => $request->input('completed_by', $trx?->completed_by),
+            'deleted_by' => $request->input('deleted_by', $trx?->deleted_by),
         ];
 
         if ($request->hasFile('file')) {
