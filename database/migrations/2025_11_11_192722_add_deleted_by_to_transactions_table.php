@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->unsignedBigInteger('deleted_by')->nullable();
-            $table->foreign('deleted_by')->references('id')->on('users')->nullOnDelete();
+            $table->string('deleted_by')->nullable();
         });
     }
 
