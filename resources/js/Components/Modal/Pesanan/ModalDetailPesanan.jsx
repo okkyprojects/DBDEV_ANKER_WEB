@@ -80,28 +80,28 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                         <div className="w-full" key={index}>
                                             <div className="flex gap-3 items-center">
                                                 <img
-                                                    src={product.img}
-                                                    alt={product.product_name}
+                                                    src={product?.img}
+                                                    alt={product?.product_name}
                                                     className="w-16 h-16 object-cover bg-neutral-200 rounded-lg"
                                                 />
                                                 <div className="flex-1">
                                                     <div className="text-sm font-medium text-neutral-800">
-                                                        {product.product_name}
+                                                        {product?.product_name}
                                                     </div>
                                                     <div className="text-xs text-neutral-600">
                                                         SKU :{" "}
-                                                        {product.variant.sku}
+                                                        {product?.variant.sku}
                                                     </div>
                                                     <div className="text-xs text-neutral-600">
-                                                        {product.variant_name}
+                                                        {product?.variant_name}
                                                     </div>
                                                     <div className="text-xs text-neutral-600 mt-0.5 mb-1">
                                                         Jumlah :{" "}
-                                                        {product.quantity}
+                                                        {product?.quantity}
                                                     </div>
                                                     <div className="text-sm text-neutral-800">
                                                         {formatRupiah(
-                                                            product.price
+                                                            product?.price
                                                         )}
                                                     </div>
                                                 </div>

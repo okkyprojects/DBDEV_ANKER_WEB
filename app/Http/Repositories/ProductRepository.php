@@ -317,42 +317,52 @@ class ProductRepository
                 'variants',
             ])
             ->when($request->filled('search'), function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('search') . '%');
+                $q->where('name', 'like', '%' . $request->search . '%');
             })
             ->when($request->filled('category'), function ($q) use ($request) {
-                $category = $request->input('category');
+                $category = $request->category;
                 $q->whereHas('category', function ($subQuery) use ($category) {
-                    $subQuery->when(is_array($category), function ($q) use ($category) {
-                        $q->whereIn('name', $category);
-                    }, function ($q) use ($category) {
-                        $q->where('name', 'like', '%' . $category . '%');
-                    });
+                    is_array($category)
+                        ? $subQuery->whereIn('name', $category)
+                        : $subQuery->where('name', 'like', '%' . $category . '%');
                 });
             })
             ->when($request->filled('brand'), function ($q) use ($request) {
-                $brand = $request->input('brand');
+                $brand = $request->brand;
                 $q->whereHas('brand', function ($subQuery) use ($brand) {
-                    $subQuery->when(is_array($brand), function ($q) use ($brand) {
-                        $q->whereIn('name', $brand);
-                    }, function ($q) use ($brand) {
-                        $q->where('name', 'like', '%' . $brand . '%');
-                    });
+                    is_array($brand)
+                        ? $subQuery->whereIn('name', $brand)
+                        : $subQuery->where('name', 'like', '%' . $brand . '%');
                 });
+            })
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $status = $request->status;
+                is_array($status)
+                    ? $q->whereIn('status', $status)
+                    : $q->where('status', $status);
             });
 
         $products = $query->get();
-
         $products->transform(function ($product) {
             $product->total_stock = $product->variants->sum('stock') ?? 0;
             return $product;
         });
 
         return [
-            'produk_aktif' => $products->filter(fn($p) => $p->total_stock > 5)->count(),
-            'produk_stok_menipis' => $products->filter(fn($p) => $p->total_stock <= 5 && $p->total_stock > 0)->count(),
-            'produk_stok_habis' => $products->filter(fn($p) => $p->total_stock <= 0 && $p->variants->isNotEmpty())->count(),
+            'produk_aktif' => $products->filter(fn($p) => $p->status == 1)->count(),
+            'produk_tidak_aktif' => $products->filter(fn($p) => $p->status == 0)->count(),
+            'produk_stok_menipis' => $products->filter(
+                fn($p) =>
+                $p->status == 1 && $p->total_stock > 0 && $p->total_stock <= 5
+            )->count(),
+
+            'produk_stok_habis' => $products->filter(
+                fn($p) =>
+                $p->status == 1 && $p->total_stock <= 0 && $p->variants->isNotEmpty()
+            )->count(),
         ];
     }
+
     public function index(Request $request)
     {
         $query = $this->product

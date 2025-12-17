@@ -71,7 +71,8 @@ export default function Edit({ data: initial_data }) {
                         console.log("SUKSES");
                     },
                     onError: (errors) => {
-                        console.error("ERROR:", errors);
+                        toast.error(errors.product);
+                        console.error("Gagal menghapus produk:", errors);
                     },
                 });
             }

@@ -24,9 +24,19 @@ class VariantController extends Controller
 
     public function destroy($uuid)
     {
-        $data =  $this->variant->destroy($uuid);
-        return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
+        $result = $this->variant->destroy($uuid);
+
+        if ($result['status'] === false) {
+            return redirect()->back()
+                ->withErrors([
+                    'product' => $result['message']
+                ]);
+        }
+
+        return redirect()->back()
+            ->with('success', $result['message']);
     }
+
     public function export(Request $request)
     {
         return Excel::download(

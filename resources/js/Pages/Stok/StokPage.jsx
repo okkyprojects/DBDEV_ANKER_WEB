@@ -36,6 +36,12 @@ export default function StokPage({ data }) {
     const [selectAll, setSelectAll] = useState(false);
     const dataCard = [
         {
+            title: "Produk Tidak Aktif",
+            count: data?.summary?.produk_tidak_aktif,
+            iconBg: "bg-orange-100",
+            iconColor: "text-orange-500",
+        },
+        {
             title: "Produk Aktif",
             count: data?.summary?.produk_aktif,
             iconBg: "bg-green-100",
@@ -161,7 +167,8 @@ export default function StokPage({ data }) {
                         toast.success("Berhasil menghapus data!");
                     },
                     onError: (errors) => {
-                        console.error("ERROR:", errors);
+                        toast.error(errors.product);
+                        console.error("Gagal menghapus produk:", errors);
                     },
                 });
             }

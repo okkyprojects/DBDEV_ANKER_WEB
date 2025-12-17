@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+
 
 class VariantRepository
 {
@@ -119,24 +121,42 @@ class VariantRepository
 
     public function destroy($uuid)
     {
-        $variant = $this->variant->where('uuid', $uuid)->first();
+        $variant = $this->variant
+            ->with('transactionItems')
+            ->where('uuid', $uuid)
+            ->first();
 
         if (!$variant) {
-            return $this->response->notFound();
+            return [
+                'status' => false,
+                'message' => 'Varian tidak ditemukan'
+            ];
         }
+        if ($variant->transactionItems->isNotEmpty()) {
+            return [
+                'status' => false,
+                'message' => 'Varian tidak dapat dihapus karena sudah digunakan dalam transaksi'
+            ];
+        }
+
         $productUuid = $variant->product_uuid;
         $variant->delete();
+
         $variantCount = $this->variant
             ->where('product_uuid', $productUuid)
             ->count();
-
         if ($variantCount === 0) {
-
-            $this->product->where('uuid', $productUuid)->delete();
+            $this->product
+                ->where('uuid', $productUuid)
+                ->delete();
         }
 
-        return $this->response->destroy($variant);
+        return [
+            'status' => true,
+            'message' => 'Berhasil menghapus varian'
+        ];
     }
+
 
 
     public function export(Request $request)
