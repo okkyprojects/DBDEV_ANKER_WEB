@@ -28,7 +28,7 @@
                 </td>
 
                 <td>{{ $variant->product->name ?? '-' }}</td>
-                <td>{{ $variant->product->status ? 'Aktif' : 'Tidak Aktid' }}</td>
+                <td>{{ $variant->product->status == 1 ? 'Aktif' : 'Tidak Aktid' }}</td>
                 <td>{{ $variant->product->description ?? '-' }}</td>
                 <td>{{ $variant->name ?? '-' }}</td>
                 <td>

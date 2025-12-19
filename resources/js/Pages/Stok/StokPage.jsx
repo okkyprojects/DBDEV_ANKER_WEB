@@ -340,7 +340,7 @@ export default function StokPage({ data }) {
                                             </td>
 
                                             <td className="px-4 py-5">
-                                                {item?.status
+                                                {item?.status == 1
                                                     ? "Aktif"
                                                     : "Tidak Aktif"}
                                             </td>
