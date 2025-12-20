@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Repositories\TransactionRepository;
 use App\Traits\Response;
 use Maatwebsite\Excel\Excel as ExcelType;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
@@ -59,15 +60,19 @@ class TransactionController extends Controller
     public function export(Request $request)
     {
         try {
-            $excelBinary = Excel::raw(
+            $filename = 'pesanan_' . now()->format('Ymd_His') . '.xlsx';
+            $path = 'exports/' . $filename;
+
+            Excel::store(
                 new PesananExport($request, $this->transactionRepository),
+                $path,
+                'public',
                 ExcelType::XLSX
             );
 
-            $base64 = base64_encode($excelBinary);
             $data = [
-                'filename' => 'pesanan.xlsx',
-                'file_base64' => $base64,
+                'filename' => $filename,
+                'url' => Storage::disk('public')->url($path),
             ];
 
             return $this->response->index($data);

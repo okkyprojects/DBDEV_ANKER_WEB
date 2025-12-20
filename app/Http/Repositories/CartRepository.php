@@ -377,34 +377,52 @@ class CartRepository
             return $this->response->notFound();
         }
 
-        $variant = $this->variant
-            ->where('uuid', $item->variant_uuid)
-            ->first();
+        $variantUuid = $request['variant_uuid'] ?? $item->variant_uuid;
 
+        $variant = $this->variant->where('uuid', $variantUuid)->first();
         if (!$variant) {
-            $errors = new MessageBag([
-                'variant_uuid' => ['Variant sudah tidak tersedia.']
-            ]);
-            return $this->response->validationError($errors);
+            return $this->response->validationError(
+                new MessageBag(['variant_uuid' => ['Variant sudah tidak tersedia.']])
+            );
         }
 
         $newQty = $request['quantity'] ?? $item->quantity;
+        $existingItem = $this->cartItem
+            ->where('cart_uuid', $item->cart_uuid)
+            ->where('variant_uuid', $variantUuid)
+            ->where('uuid', '!=', $item->uuid)
+            ->first();
 
-        if ($newQty > $variant->stock) {
-            $errors = new MessageBag([
-                'quantity' => ["Jumlah di keranjang tidak dapat melebihi stok yang tersedia ({$variant->stock})."]
+        $totalQty = $existingItem
+            ? $existingItem->quantity + $newQty
+            : $newQty;
+        if ($totalQty > $variant->stock) {
+            return $this->response->validationError(
+                new MessageBag([
+                    'quantity' => [
+                        "Total jumlah di keranjang tidak dapat melebihi stok ({$variant->stock})."
+                    ]
+                ])
+            );
+        }
+        if ($existingItem) {
+            $existingItem->update([
+                'quantity' => $totalQty
             ]);
-            return $this->response->validationError($errors);
-        }
 
-        $updated = $item->fill($this->request($request, $item->cart_uuid))->save();
+            $item->delete();
 
-        if (!$updated) {
-            return $this->response->updateError();
+            return $this->response->update($existingItem);
         }
+        $item->update([
+            'variant_uuid' => $variantUuid,
+            'quantity'     => $newQty,
+        ]);
 
         return $this->response->update($item);
     }
+
+
 
 
     public function destroy($uuid)
