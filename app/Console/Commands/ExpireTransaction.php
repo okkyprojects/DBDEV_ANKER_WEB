@@ -38,11 +38,11 @@ class ExpireTransaction extends Command
             foreach ($transactions as $transaction) {
                 foreach ($transaction->items as $item) {
                     if ($item->variant) {
-                        $item->variant->increment('stock', $item->qty);
+                        $item->variant->increment('stock', $item->quantity);
                     }
                 }
                 $transaction->update([
-                    'status' => 5, 
+                    'status' => 5,
                     'note_transaction' => 'Kadaluarsa',
                 ]);
             }
