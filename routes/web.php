@@ -44,6 +44,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('home.index');
     Route::get('/daftar-seller', [HomeController::class, 'daftar_seller'])->name('home.seller.daftar_seller');
     Route::post('/store-seller', [HomeController::class, 'store_seller'])->name('home.seller.store_seller');
     Route::resource('/cart', CartController::class);
@@ -159,7 +160,6 @@ Route::middleware('auth')->group(function () {
 //     return Inertia::render('DetailProduct');
 // });
 
-Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('home.index');
 
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
