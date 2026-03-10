@@ -27,7 +27,7 @@ export default function AuthLayout({ children }) {
                         <div
                             className="w-full h-full bg-cover bg-center relative"
                             style={{
-                                backgroundImage: "url(/images/auth/1.svg)",
+                                backgroundImage: "url(/images/auth/1.webp)",
                             }}
                         >
                             <div className="absolute bottom-20 px-10">
@@ -48,7 +48,7 @@ export default function AuthLayout({ children }) {
                         <div
                             className="w-full h-full bg-cover bg-center relative"
                             style={{
-                                backgroundImage: "url(/images/auth/2.svg)",
+                                backgroundImage: "url(/images/auth/2.webp)",
                             }}
                         >
                             <div className="absolute bottom-20 px-10">
@@ -68,7 +68,7 @@ export default function AuthLayout({ children }) {
                         <div
                             className="w-full h-full bg-cover bg-center relative"
                             style={{
-                                backgroundImage: "url(/images/auth/3.svg)",
+                                backgroundImage: "url(/images/auth/3.webp)",
                             }}
                         >
                             <div className="absolute bottom-20 px-10">
@@ -105,7 +105,7 @@ export default function AuthLayout({ children }) {
                         );
                         border-radius: 4px;
                         height: 4px;
-                        opacity: 1; 
+                        opacity: 1;
                     }
                     .swiper-pagination-bullet-active {
                         background-color: rgba(
@@ -113,7 +113,7 @@ export default function AuthLayout({ children }) {
                             255,
                             255,
                             1
-                        ); 
+                        );
                         width: 45px !important;
                         border-radius: 4px;
                         transition: width 0.3s ease, background-color 0.3s ease;
