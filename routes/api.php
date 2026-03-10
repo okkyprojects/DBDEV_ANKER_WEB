@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AddressController;
+use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BannerController;
 use App\Http\Controllers\API\BillController;
@@ -41,6 +42,7 @@ Route::get('/cities', [LocationController::class, 'indexCity']);
 Route::get('/districts', [LocationController::class, 'indexDistrict']);
 Route::get('/banners', [BannerController::class, 'index']);
 Route::get('/terms', [TermController::class, 'index']);
+Route::get('/ps', [APIController::class, 'index']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
