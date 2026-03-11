@@ -434,9 +434,11 @@ class ProductRepository
         $products = $query->paginate(10);
 
         $products->getCollection()->transform(function ($product) {
-            $product->price = $product->variants->min('price');
-            $product->variant_count = $product->variants->count();
-            $product->total_stock = $product->variants->sum('stock');
+            $product->price = (int) $product->variants->min('price');
+            $product->variant_count = (int) $product->variants->count();
+            $product->total_stock = (int) $product->variants->sum('stock');
+            $product->total_sold = (int) $product->total_sold;
+
             return $product;
         });
 
@@ -538,8 +540,7 @@ class ProductRepository
 
         $variantExists = $this->product
             ->where('code', $code)
-            ->whereHas('variants', function ($q) {
-            }, '>', 0)
+            ->whereHas('variants', function ($q) {}, '>', 0)
             ->when($uuid, fn($q) => $q->where('uuid', '!=', $uuid))
             ->exists();
 

@@ -22,6 +22,11 @@ class Variant extends Model
         'discount_price',
         'stock',
     ];
+    protected $casts = [
+        'price' => 'integer',
+        'discount_price' => 'integer',
+        'stock' => 'integer',
+    ];
 
     public function product()
     {
