@@ -43,6 +43,9 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 });
+Route::get('/penghapusan-akun', function () {
+    return Inertia::render('AccountDeletion');
+})->name('account.deletion');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('home.index');
     Route::get('/daftar-seller', [HomeController::class, 'daftar_seller'])->name('home.seller.daftar_seller');
