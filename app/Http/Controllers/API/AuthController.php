@@ -354,6 +354,17 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        $hasActiveTransactions = \App\Models\Transaction::where('user_id', $user->id)
+            ->whereIn('status', [0, 1, 2, 3])
+            ->exists();
+
+        if ($hasActiveTransactions) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat menghapus akun karena terdapat pesanan yang belum selesai atau dibatalkan.',
+            ], 400);
+        }
+
         // Delete all tokens for this user
         $user->tokens()->delete();
 
