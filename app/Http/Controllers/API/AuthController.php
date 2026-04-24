@@ -349,4 +349,20 @@ class AuthController extends Controller
             'message' => 'Password berhasil direset. Silakan login menggunakan password baru.',
         ]);
     }
+
+    public function destroyAccount(Request $request)
+    {
+        $user = $request->user();
+
+        // Delete all tokens for this user
+        $user->tokens()->delete();
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil dihapus',
+        ]);
+    }
 }
