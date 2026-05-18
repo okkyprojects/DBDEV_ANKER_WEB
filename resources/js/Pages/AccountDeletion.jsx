@@ -8,7 +8,6 @@ export default function AccountDeletion() {
 
             <div className="min-h-screen bg-gray-50 py-10 px-4">
                 <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6 md:p-10">
-                    
                     <h1 className="text-2xl md:text-3xl font-bold mb-6">
                         Penghapusan Akun dan Data Pengguna
                     </h1>
