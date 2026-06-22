@@ -24,7 +24,8 @@ class APIController extends Controller
             "force_update" => true,
             "latest_version" => 1,
             "min_version" => 1,
-            "play_store_url" => "https://play.google.com/store/apps/details?id=com.anker.app"
+            "play_store_url" => "https://play.google.com/store/apps/details?id=com.anker.app",
+            "app_store_url" => "https://app.google.com/store/apps/details?id=com.anker.app"
         ];
         return $this->response->index($data);
     }
