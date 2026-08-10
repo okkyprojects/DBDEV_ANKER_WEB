@@ -1,6 +1,6 @@
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { useState, useEffect, useRef } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -39,6 +39,7 @@ export default function Index({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Syarat & Ketentuan" />
             <div className="flex flex-col gap-5">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">

@@ -18,7 +18,7 @@ import Pagination from "@/Components/Pagination/Pagination";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { useRef } from "react";
 import { useEffect } from "react";
-import { router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
 
 export default function Item({ data }) {
@@ -97,6 +97,7 @@ export default function Item({ data }) {
     }, [search]);
     return (
         <DefaultLayout>
+            <Head title="Laporan Item" />
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">

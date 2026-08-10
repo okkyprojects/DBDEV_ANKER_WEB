@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import ModalTambahUser from "@/Components/Modal/User/ModalTambahUser";
 import ModalEditUser from "@/Components/Modal/User/ModalEditUser";
 
@@ -37,6 +37,7 @@ export default function Index({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Pengguna" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

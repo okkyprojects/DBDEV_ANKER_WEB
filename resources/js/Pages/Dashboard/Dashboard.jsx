@@ -11,7 +11,7 @@ import {
 } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
 import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
@@ -137,6 +137,7 @@ export default function Dashboard({ data }) {
     const filters = ["Harian",  "Bulanan"];
     return (
         <DefaultLayout>
+            <Head title="Dashboard" />
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-xl sm:text-2xl font-semibold">

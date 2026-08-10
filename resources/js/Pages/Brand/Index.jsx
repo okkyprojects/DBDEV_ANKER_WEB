@@ -5,7 +5,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalTambahBrand from "@/Components/Modal/Brand/ModalTambahBrand";
 import ModalEditBrand from "@/Components/Modal/Brand/ModalEditBrand";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -74,6 +74,7 @@ export default function Index({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Brand" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

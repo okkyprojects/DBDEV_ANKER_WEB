@@ -1,6 +1,6 @@
 import HomeLayout from "@/Layouts/HomeLayout";
 import React, { useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import { FiUser, FiMapPin, FiLogOut, FiUpload, FiTrash2 } from "react-icons/fi";
 import { PiNotePencilDuotone } from "react-icons/pi";
 import ModalEditInformasiPibadi from "@/Components/Modal/Profil/ModalEditInformasiPribadi";
@@ -16,6 +16,7 @@ const InformasiToko = () => {
     console.log(auth);
     return (
         <HomeLayout>
+            <Head title="Informasi Toko" />
             <section className="max-w-7xl mx-auto px-5 py-10 space-y-5">
                 <h2 className="text-2xl font-semibold text-neutral-900">
                     Profil

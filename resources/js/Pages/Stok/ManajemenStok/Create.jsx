@@ -5,7 +5,7 @@ import { FaChevronUp } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoImageOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, router, useForm } from "@inertiajs/react";
+import { Head, Link, router, useForm } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 export default function Create({ data: initial_data }) {
@@ -100,6 +100,7 @@ export default function Create({ data: initial_data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Tambah Stok" />
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="bg-white p-5 rounded-xl">

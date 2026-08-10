@@ -16,7 +16,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDetailPesanan from "@/Components/Modal/Pesanan/ModalDetailPesanan";
 import ModalDeletePesanan from "@/Components/Modal/Pesanan/ModalDeletePesanan";
 import ModalFilter from "@/Components/Modal/Pesanan/ModalFilter";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { statusBadge } from "@/Config/const";
 import moment from "moment";
 import ModalUpdatePesanan from "@/Components/Modal/Pesanan/ModalUpdatePesanan";
@@ -143,6 +143,7 @@ export default function ManajemenPesanan({ data }) {
     };
     return (
         <DefaultLayout>
+            <Head title="Pesanan" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

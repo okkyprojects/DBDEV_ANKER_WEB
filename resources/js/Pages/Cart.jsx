@@ -30,7 +30,7 @@ export default function Cart({ data }) {
     };
     return (
         <HomeLayout>
-            <Head title="Welcome" />
+            <Head title="Keranjang" />
             <section className="max-w-7xl mx-auto px-5 pt-10 pb-10">
                 <h2 className="text-xl sm:text-2xl font-medium text-neutral-900 mb-5">
                     Keranjang

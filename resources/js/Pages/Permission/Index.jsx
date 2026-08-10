@@ -1,6 +1,6 @@
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { useState, useEffect } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 export default function PermissionIndex({ data }) {
@@ -77,6 +77,7 @@ export default function PermissionIndex({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Permission" />
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">

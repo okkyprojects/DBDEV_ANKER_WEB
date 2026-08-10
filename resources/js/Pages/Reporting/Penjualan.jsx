@@ -13,7 +13,7 @@ import {
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Penjualan/ModalFilter";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 
@@ -84,6 +84,7 @@ export default function Penjualan({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Laporan Penjualan" />
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">

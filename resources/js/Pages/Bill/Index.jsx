@@ -8,7 +8,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import ModalTambahBill from "@/Components/Modal/Bill/ModalTambahBill";
 import ModalEditBill from "@/Components/Modal/Bill/ModalEditBill";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { useRef } from "react";
 import { useEffect } from "react";
 
@@ -39,6 +39,7 @@ export default function Index({ data }) {
     }, [search]);
     return (
         <DefaultLayout>
+            <Head title="Tagihan" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

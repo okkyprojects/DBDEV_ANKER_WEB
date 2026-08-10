@@ -118,7 +118,6 @@ export default function Register() {
         //         </div>
         //     </form>
         // </GuestLayout>
-
         <AuthLayout>
             <Head title="Register" />
 

@@ -50,6 +50,7 @@ export default function ForgotPassword({ status }) {
         // </GuestLayout>
 
         <AuthLayout>
+            <Head title="Lupa Password" />
             <div className="w-full max-w-md rounded-xl shadow-md shadow-neutral-200 p-6 md:p-8 bg-white">
                 <Link href="/">
                     <img

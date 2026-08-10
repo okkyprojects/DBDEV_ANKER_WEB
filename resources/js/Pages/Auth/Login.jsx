@@ -98,6 +98,7 @@ export default function Login({ status, canResetPassword }) {
         //     </form>
         // </GuestLayout>
         <AuthLayout>
+            <Head title="Login" />
             <div className="w-full max-w-md rounded-xl shadow-md shadow-neutral-200 p-6 md:p-8">
                 <Link href="/">
                     <img

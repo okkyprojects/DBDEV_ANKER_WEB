@@ -1,7 +1,7 @@
 import HomeLayout from "@/Layouts/HomeLayout";
 import React, { useState } from "react";
 import { FiUser, FiMapPin, FiLogOut } from "react-icons/fi";
-import { Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import ModalTambahAlamat from "@/Components/Modal/Profil/ModalTambahAlamat";
 import { BsBuildingsFill, BsShopWindow } from "react-icons/bs";
 import { GoLock } from "react-icons/go";
@@ -13,6 +13,7 @@ const Alamat = ({ data }) => {
 
     return (
         <HomeLayout>
+            <Head title="Alamat Profil" />
             <section className="max-w-7xl mx-auto px-5 py-10 space-y-6">
                 <h2 className="text-2xl font-semibold text-neutral-900">
                     Profil

@@ -6,7 +6,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import ModalTambahKategori from "@/Components/Modal/Category/ModalTambahKategori";
 import ModalEditKategori from "@/Components/Modal/Category/ModalEditKategori";
-import { router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 export default function Index({ data }) {
@@ -78,6 +78,7 @@ export default function Index({ data }) {
 
     return (
         <DefaultLayout>
+            <Head title="Kategori" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

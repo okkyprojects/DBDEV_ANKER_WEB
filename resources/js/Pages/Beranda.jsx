@@ -16,7 +16,7 @@ import { categories, products } from "@/Dummy/dummy";
 export default function Beranda({data}) {
     return (
         <HomeLayout>
-            <Head title="Welcome" />
+            <Head title="Beranda" />
             <section className="max-w-7xl mx-auto px-5 pt-10">
                 <Swiper
                     modules={[Pagination, Autoplay]}

@@ -5,7 +5,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import { PiCubeLight } from "react-icons/pi";
 import { FaChevronDown, FaPlus, FaTrash } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import ModalFilter from "@/Components/Modal/Stok/ManajemenStok/ModalFilter";
 import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import ModalDeleteProduk from "@/Components/Modal/Produk/ModalDeleteProduk";
@@ -176,6 +176,7 @@ export default function StokPage({ data }) {
     };
     return (
         <DefaultLayout>
+            <Head title="Stok" />
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <p className="text-base sm:text-2xl font-semibold">

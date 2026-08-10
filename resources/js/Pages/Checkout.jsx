@@ -22,7 +22,7 @@ export default function Checkout() {
     }
     return (
         <HomeLayout>
-            <Head title="Welcome" />
+            <Head title="Checkout" />
             <section className="max-w-7xl mx-auto px-5 pt-10 pb-10">
                 <h2 className="text-xl sm:text-2xl  font-medium text-neutral-900 mb-5">
                     Checkout

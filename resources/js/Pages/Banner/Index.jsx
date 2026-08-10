@@ -8,7 +8,7 @@ import PaginationDashboard from "@/Components/Pagination/PaginationDashboard";
 import { FaPlus } from "react-icons/fa6";
 import ModalTambahBanner from "@/Components/Modal/Banner/ModalTambahBanner";
 import ModalEditBanner from "@/Components/Modal/Banner/ModalEditBanner";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 
 export default function Index({ data }) {
     const { permissions } = usePage().props;
@@ -17,6 +17,7 @@ export default function Index({ data }) {
     const [banner, setBanner] = useState();
     return (
         <DefaultLayout>
+            <Head title="Banner" />
             <div className="flex flex-col gap-5">
                 {/* HEADER & SEARCH */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

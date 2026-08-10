@@ -10,7 +10,7 @@ import {
 } from "react-icons/pi";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { useState } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { LuTrendingUp } from "react-icons/lu";
 import Chart from "react-apexcharts";
 import ModalFilter from "@/Components/Modal/Dashboard/ModalFilter";
@@ -171,6 +171,7 @@ export default function Index({ data, uuid }) {
     }, []);
     return (
         <DefaultLayout>
+            <Head title="Detail Laporan" />
             <div className="flex flex-col gap-5">
                 <div className="flex items-center justify-between gap-4">
                     <p className="text-xl sm:text-2xl font-semibold">
