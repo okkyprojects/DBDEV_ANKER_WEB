@@ -17,7 +17,7 @@
           <tr>
             <td style="text-align:center; padding:0;">
               <img
-                src=https://anker-web.okkyprojects.com/images/email/header_email.png
+                src=https://ankerindonesia.online/images/email/header_email.png
                 alt="Header"
                 width="600"
                 style="display:block; width:100%; max-width:600px; height:auto; border:0; line-height:100%; outline:none; text-decoration:none;">
@@ -33,7 +33,7 @@
                 <tr>
                   <td align="center" style="padding-bottom:8px;">
                     <img
-                      src="https://anker-web.okkyprojects.com/images/email/hero.png"
+                      src="https://ankerindonesia.online/images/email/hero.png"
                       alt="Hero"
                       style="display:block; max-width:260px; width:100%; height:auto; border:0; outline:none; text-decoration:none;">
                   </td>

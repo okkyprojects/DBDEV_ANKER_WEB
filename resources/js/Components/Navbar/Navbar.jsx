@@ -46,7 +46,7 @@ export default function Navbar() {
                                 <div className="flex items-center gap-4 flex-shrink-0">
                                     <Link href="/">
                                         <img
-                                            src="/images/logo/primary.svg"
+                                            src="/images/logo/logo.jpg"
                                             alt="Logo"
                                             className="h-5"
                                         />
@@ -70,9 +70,9 @@ export default function Navbar() {
                                                 !auth.user.seller
                                                     ? "/daftar-seller"
                                                     : auth.user.seller
-                                                          .status !== 1
-                                                    ? "/profil/informasi-toko"
-                                                    : "/seller/dashboard"
+                                                            .status !== 1
+                                                      ? "/profil/informasi-toko"
+                                                      : "/seller/dashboard"
                                             }
                                             className="flex items-center gap-1 text-sm"
                                         >
@@ -85,7 +85,7 @@ export default function Navbar() {
                                             <div
                                                 onClick={() =>
                                                     setShowDropdown(
-                                                        (prev) => !prev
+                                                        (prev) => !prev,
                                                     )
                                                 }
                                                 className="flex items-center space-x-2 cursor-pointer"
@@ -168,7 +168,7 @@ export default function Navbar() {
                         <div className="flex items-center gap-4 flex-shrink-0">
                             <Link href="/">
                                 <img
-                                    src="/images/logo/primary.svg"
+                                    src="/images/logo/logo.jpg"
                                     alt="Logo"
                                     className="h-5"
                                 />
@@ -199,8 +199,8 @@ export default function Navbar() {
                                         !auth.user.seller
                                             ? "/daftar-seller"
                                             : auth.user.seller.status != 1
-                                            ? "/profil/informasi-toko"
-                                            : "/dashboard"
+                                              ? "/profil/informasi-toko"
+                                              : "/dashboard"
                                     }
                                     className="flex items-center gap-1.5 text-sm font-medium"
                                 >
@@ -208,8 +208,8 @@ export default function Navbar() {
                                     {!auth.user.seller
                                         ? "Daftar Seller"
                                         : auth.user.seller.status != 1
-                                        ? "Informasi Toko"
-                                        : "Lihat Toko"}
+                                          ? "Informasi Toko"
+                                          : "Lihat Toko"}
                                 </Link>
                             )}
 

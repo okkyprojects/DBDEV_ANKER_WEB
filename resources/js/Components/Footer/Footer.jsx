@@ -11,7 +11,7 @@ export default function Footer() {
                     <div className="flex flex-col gap-5">
                         <Link href="/">
                             <img
-                                src="/images/logo/primary.svg"
+                                src="/images/logo/logo.jpg"
                                 className="h-4 lg:h-6"
                                 alt="Anker Logo"
                             />

@@ -102,7 +102,6 @@ const Sidebar = ({ isOpen, onToggle }) => {
         return acc;
     }, {});
 
-
     const [menuItems, setMenuItems] = useState({});
     const [activeSubMenuIndexes, setActiveSubMenuIndexes] = useState([]);
     const activeItemRef = useRef(null);
@@ -127,7 +126,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         setActiveSubMenuIndexes((prevIndexes) =>
             prevIndexes.includes(id)
                 ? prevIndexes.filter((i) => i !== id)
-                : [...prevIndexes, id]
+                : [...prevIndexes, id],
         );
     };
 
@@ -151,7 +150,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 aria-label="Sidebar"
             >
                 <img
-                    src="/images/logo/primary.svg"
+                    src="/images/logo/logo.jpg"
                     alt=""
                     className="w-28 py-5 pl-5"
                 />
@@ -189,21 +188,21 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                             href={menuItem.url || ""}
                                             ref={
                                                 pathname.startsWith(
-                                                    menuItem.url
+                                                    menuItem.url,
                                                 ) ||
                                                 (menuItem.submenu &&
                                                     menuItem.submenu.some(
                                                         (subItem) =>
                                                             pathname.startsWith(
-                                                                subItem.url
-                                                            )
+                                                                subItem.url,
+                                                            ),
                                                     ))
                                                     ? activeItemRef
                                                     : null
                                             }
                                             className={`flex items-center px-2 py-3 text-gray-600 font-light text-sm rounded-sm group ${
                                                 pathname.startsWith(
-                                                    menuItem.url
+                                                    menuItem.url,
                                                 )
                                                     ? "bg-primary-600/5 border-r-[2.5px] border-primary-600"
                                                     : "hover:bg-gray-50"
@@ -222,7 +221,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                                     size={12}
                                                     className={`ml-auto transition duration-300 ${
                                                         activeSubMenuIndexes.includes(
-                                                            menuItem.id
+                                                            menuItem.id,
                                                         )
                                                             ? "transform -rotate-180"
                                                             : ""
@@ -233,7 +232,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                         <AnimatePresence>
                                             {menuItem.submenu &&
                                                 activeSubMenuIndexes.includes(
-                                                    menuItem.id
+                                                    menuItem.id,
                                                 ) && (
                                                     <motion.ul
                                                         initial={{
@@ -268,14 +267,14 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                                                         }
                                                                         ref={
                                                                             pathname.startsWith(
-                                                                                subMenuItem.url
+                                                                                subMenuItem.url,
                                                                             )
                                                                                 ? activeSubMenuItemRef
                                                                                 : null
                                                                         }
                                                                         className={`flex items-center px-2 py-3 font-light tracking-wide text-sm text-gray-600 transition duration-300 rounded-sm group ${
                                                                             pathname.startsWith(
-                                                                                subMenuItem.url
+                                                                                subMenuItem.url,
                                                                             )
                                                                                 ? "bg-primary-600/5 border-r-[2.5px] border-primary-600"
                                                                                 : "hover:bg-gray-50"
@@ -291,7 +290,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                                                                         </span>
                                                                     </Link>
                                                                 </li>
-                                                            )
+                                                            ),
                                                         )}
                                                     </motion.ul>
                                                 )}

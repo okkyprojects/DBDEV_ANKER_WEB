@@ -54,9 +54,9 @@ export default function ForgotPassword({ status }) {
             <div className="w-full max-w-md rounded-xl shadow-md shadow-neutral-200 p-6 md:p-8 bg-white">
                 <Link href="/">
                     <img
-                        src="/images/logo/primary.svg"
+                        src="/images/logo/logo.jpg"
                         alt="Logo"
-                        className="mx-auto mb-3"
+                        className="mx-auto mb-3 w-24"
                     />
                 </Link>
                 <h2 className="text-center text-lg font-semibold text-neutral-900 mb-2">
