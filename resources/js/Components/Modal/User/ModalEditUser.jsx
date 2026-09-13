@@ -15,6 +15,7 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
         phone_number: user?.phone_number || "",
         gender: user?.gender || "",
         role: user?.roles?.[0]?.name || "",
+        company: user?.company || "",
         dob: user?.dob || "",
         status: user?.status?.toString() || "1",
         img: null,
@@ -115,6 +116,25 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
                                 )}
                             </div>
 
+                            {/* Perusahaan */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm">Perusahaan</label>
+                                <input
+                                    type="text"
+                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
+                                    value={data.company}
+                                    placeholder="Masukkan nama perusahaan"
+                                    onChange={(e) =>
+                                        setData("company", e.target.value)
+                                    }
+                                />
+                                {errors.company && (
+                                    <span className="text-xs text-red-500">
+                                        {errors.company}
+                                    </span>
+                                )}
+                            </div>
+
                             {/* Email */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Email</label>
@@ -193,7 +213,7 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
                             </div>
 
                             {/* Gender */}
-                            <div className="flex flex-col gap-2">
+                            {/* <div className="flex flex-col gap-2">
                                 <label className="text-sm">Jenis Kelamin</label>
                                 <select
                                     className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:outline-none focus:ring-0 py-2 px-3"
@@ -211,8 +231,7 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
                                         {errors.gender}
                                     </span>
                                 )}
-                            </div>
-
+                            </div> */}
                             {/* Tanggal Lahir */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Tanggal Lahir</label>

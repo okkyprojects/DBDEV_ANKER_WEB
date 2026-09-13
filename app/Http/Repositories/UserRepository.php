@@ -32,6 +32,7 @@ class UserRepository
             'gender' => 'nullable|in:L,P',
             'dob' => 'nullable|date',
             'img' => 'nullable|image|max:2048',
+            'company' => 'nullable|string|max:255',
         ];
     }
 
@@ -44,6 +45,7 @@ class UserRepository
             'phone_number' => $request->input('phone_number'),
             'gender' => $request->input('gender'),
             'dob' => $request->input('dob'),
+            'company' => $request->input('company'),
         ];
 
         if ($request->filled('password')) {
@@ -70,7 +72,8 @@ class UserRepository
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%')
-                    ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+                    ->orWhere('email', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('company', 'like', '%' . $request->input('search') . '%');
             });
         }
 
@@ -86,7 +89,8 @@ class UserRepository
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%')
-                    ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+                    ->orWhere('email', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('company', 'like', '%' . $request->input('search') . '%');
             });
         }
 

@@ -13,6 +13,7 @@ const ModalTambahUser = ({ isOpen, onClose,roles }) => {
         dob: "",
         password: "",
         role: "user",
+        company: "",
         img: null,
     });
 
@@ -99,6 +100,24 @@ const ModalTambahUser = ({ isOpen, onClose,roles }) => {
                                     </span>
                                 )}
                             </div>
+                            {/* Perusahaan */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm">Perusahaan</label>
+                                <input
+                                    type="text"
+                                    className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:ring-0 focus:outline-none placeholder:text-neutral-300 py-2 px-3"
+                                    value={data.company}
+                                    placeholder="Masukkan nama perusahaan"
+                                    onChange={(e) =>
+                                        setData("company", e.target.value)
+                                    }
+                                />
+                                {errors.company && (
+                                    <span className="text-xs text-red-500">
+                                        {errors.company}
+                                    </span>
+                                )}
+                            </div>
                             {/* Email */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Email</label>
@@ -178,7 +197,7 @@ const ModalTambahUser = ({ isOpen, onClose,roles }) => {
                                 )}
                             </div>
                             {/* Gender */}
-                            <div className="flex flex-col gap-2">
+                            {/* <div className="flex flex-col gap-2">
                                 <label className="text-sm">Jenis Kelamin</label>
                                 <select
                                     className="w-full rounded-xl text-sm border border-neutral-300 focus:border-primary-600 focus:ring-0 focus:outline-none py-2 px-3"
@@ -196,7 +215,7 @@ const ModalTambahUser = ({ isOpen, onClose,roles }) => {
                                         {errors.gender}
                                     </span>
                                 )}
-                            </div>
+                            </div> */}
                             {/* Tanggal Lahir */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Tanggal Lahir</label>

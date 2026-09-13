@@ -84,13 +84,13 @@ export default function Index({ data }) {
                                         Nama
                                     </th>
                                     <th className="min-w-[200px] px-4 py-4">
+                                        Perusahaan
+                                    </th>
+                                    <th className="min-w-[200px] px-4 py-4">
                                         Email
                                     </th>
                                     <th className="min-w-[150px] px-4 py-4">
                                         Telepon
-                                    </th>
-                                    <th className="min-w-[120px] px-4 py-4">
-                                        Gender
                                     </th>
                                     <th className="min-w-[150px] px-4 py-4">
                                         Role
@@ -126,17 +126,13 @@ export default function Index({ data }) {
                                             {item.name}
                                         </td>
                                         <td className="px-4 py-5">
+                                            {item.company || "-"}
+                                        </td>
+                                        <td className="px-4 py-5">
                                             {item.email}
                                         </td>
                                         <td className="px-4 py-5">
                                             {item.phone_number || "-"}
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            {item.gender === "L"
-                                                ? "Laki-laki"
-                                                : item.gender === "P"
-                                                ? "Perempuan"
-                                                : "-"}
                                         </td>
                                         <td className="px-4 py-5">
                                             {item.roles?.length > 0
