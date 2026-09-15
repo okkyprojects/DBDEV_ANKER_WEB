@@ -233,7 +233,7 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
                                 )}
                             </div> */}
                             {/* Tanggal Lahir */}
-                            <div className="flex flex-col gap-2">
+                            {/* <div className="flex flex-col gap-2">
                                 <label className="text-sm">Tanggal Lahir</label>
                                 <input
                                     type="date"
@@ -248,7 +248,7 @@ const ModalEditUser = ({ isOpen, onClose, user,roles }) => {
                                         {errors.dob}
                                     </span>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* Foto */}
                             <div className="flex flex-col gap-2">
