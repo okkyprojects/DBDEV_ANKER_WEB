@@ -8,6 +8,9 @@
             <th>Nama Pemesan</th>
             <th>Email Pemesan</th>
             <th>No. HP</th>
+            <th>Perusahaan</th>
+            <th>Nama Penerima</th>
+            <th>No Telp Penerima</th>
             <th>Alamat</th>
             <th>Provinsi</th>
             <th>Kota</th>
@@ -34,6 +37,9 @@
                 <td>{{ $item->transaction->user->name ?? '-' }}</td>
                 <td>{{ $item->transaction->user->email ?? '-' }}</td>
                 <td>{{ $item->transaction->user->phone_number ?? '-' }}</td>
+                <td>{{ $item->transaction->user->company ?? '-' }}</td>
+                <td>{{ $item->transaction->address->name ?? '-' }}</td>
+                <td>{{ $item->transaction->address->phone_number ?? '-' }}</td>
                 <td>{{ $item->transaction->address->address ?? '-' }}</td>
                 <td>{{ $item->transaction->address->province->nama ?? '-' }}</td>
                 <td>{{ $item->transaction->address->city->nama ?? '-' }}</td>
