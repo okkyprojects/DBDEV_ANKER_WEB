@@ -29,6 +29,8 @@ class UserSeeder extends Seeder
             'product-delete',
             'product-export',
 
+            'stock-history-index',
+
             'bill-index',
             'bill-add',
             'bill-update',

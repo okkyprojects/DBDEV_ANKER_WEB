@@ -4,6 +4,7 @@ namespace App\Http\Repositories;
 
 use App\Models\Product;
 use App\Models\Variant;
+use App\Support\StockChangeContext;
 use App\Traits\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -82,6 +83,7 @@ class VariantRepository
 
             $data = $this->request($item);
 
+            StockChangeContext::set('update_manual');
             $variant = $this->variant->updateOrCreate(
                 ['uuid' => $uuid],
                 $data
