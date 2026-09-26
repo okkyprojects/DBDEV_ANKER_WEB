@@ -15,6 +15,7 @@ use App\Models\City;
 use App\Models\Product;
 use App\Models\Province;
 use App\Models\User;
+use App\Support\StockChangeContext;
 use App\Traits\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -938,6 +939,7 @@ class TransactionRepository
             foreach ($items as $item) {
                 $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
                 if ($variant) {
+                    StockChangeContext::set('reduce_from_order');
                     $variant->decrement('stock', $item->quantity);
                 }
             }
@@ -947,6 +949,7 @@ class TransactionRepository
             foreach ($items as $item) {
                 $variant = $this->variant->where('uuid', $item->variant_uuid)->first();
                 if ($variant) {
+                    StockChangeContext::set('increase_from_order_cancel');
                     $variant->increment('stock', $item->quantity);
                 }
             }

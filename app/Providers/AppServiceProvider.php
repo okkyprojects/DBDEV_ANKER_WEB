@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Variant;
+use App\Observers\VariantObserver;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Variant::observe(VariantObserver::class);
+
         Inertia::share('auth', function () {
             return [
                 'user' => Auth::user(),

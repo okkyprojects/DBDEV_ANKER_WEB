@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StockHistoryController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\VariantStockController;
 use App\Http\Controllers\HomeController;
@@ -77,6 +78,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/data-produk/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
             Route::delete('/bulk-delete/data-produk', [ProductController::class, 'bulk_destroy'])->name('product.bulk_destroy');
             Route::get('/download-template-produk', [ProductController::class, 'downloadTemplate'])->name('product.downloadTemplate');
+            Route::get('/history-stok', [StockHistoryController::class, 'index'])->name('history_stok.index');
         });
     Route::prefix('reporting')
         ->name('reporting.')

@@ -33,6 +33,12 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 text: "Data Produk",
                 url: "/produk/data-produk",
             },
+            permissions.includes("stock-history-index") && {
+                id: 13,
+                icon: <PiStackLight size={21} className="mr-4" />,
+                text: "History Stok",
+                url: "/produk/history-stok",
+            },
         ],
         REPORTING: [
             permissions.includes("transaction-index") && {
