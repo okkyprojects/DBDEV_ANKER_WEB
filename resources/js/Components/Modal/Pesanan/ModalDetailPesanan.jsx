@@ -103,6 +103,11 @@ const ModalDetailPesanan = ({ isOpen, onClose, item }) => {
                                                         {formatRupiah(
                                                             product?.price
                                                         )}
+                                                        {product?.is_free && (
+                                                            <span className="ml-2 inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                                                                Gratis Promo
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

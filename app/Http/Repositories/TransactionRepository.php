@@ -43,8 +43,9 @@ class TransactionRepository
     private $product;
     private $province;
     private $city;
+    private $promoRepository;
 
-    public function __construct(Response $response, Transaction $transaction, TransactionItem $transactionItem, TransactionAddress $transactionAddress, TransactionBill $transactionBill, Bill $bill, Address $address, Variant $variant, CartItem $cartItem, Cart $cart, User $user, Product $product, Province $province, City $city)
+    public function __construct(Response $response, Transaction $transaction, TransactionItem $transactionItem, TransactionAddress $transactionAddress, TransactionBill $transactionBill, Bill $bill, Address $address, Variant $variant, CartItem $cartItem, Cart $cart, User $user, Product $product, Province $province, City $city, PromoRepository $promoRepository)
     {
         $this->response = $response;
         $this->transaction = $transaction;
@@ -60,6 +61,7 @@ class TransactionRepository
         $this->product = $product;
         $this->province = $province;
         $this->city = $city;
+        $this->promoRepository = $promoRepository;
     }
     // public function index_penjualan(Request $request)
     // {
@@ -804,6 +806,11 @@ class TransactionRepository
             return $this->update($request);
         }
 
+        // Barang gratis promo dihitung ulang oleh server, abaikan item gratis yang dikirim client
+        $request['items'] = collect($request->input('items', []))->reject(function ($item) {
+            return !empty($item['is_free']);
+        })->values()->all();
+
         $uuid = (string) Str::uuid();
         $transaction_code = $this->generateTransactionCode();
         $total_price = 0;
@@ -905,7 +912,25 @@ class TransactionRepository
             $this->transactionItem->create($itemData);
         }
 
-        return $this->response->store($transaction);
+        DB::transaction(function () use ($request, $uuid, $transaction_code) {
+            foreach ($this->promoRepository->claim_free_items($request['items']) as $free) {
+                $this->transactionItem->create([
+                    'uuid' => Str::uuid(),
+                    'transaction_uuid' => $uuid,
+                    'transaction_code' => $transaction_code,
+                    'variant_uuid' => $free['variant']->uuid,
+                    'promo_uuid' => $free['promo']->uuid,
+                    'product_name' => $free['variant']->product->name,
+                    'variant_name' => $free['variant']->name,
+                    'img' => $free['variant']->img ?? '/images/no/product.jpg',
+                    'quantity' => $free['quantity'],
+                    'price' => 0,
+                    'is_free' => true,
+                ]);
+            }
+        });
+
+        return $this->response->store($transaction->load('items'));
     }
 
     private function update($request)
@@ -916,6 +941,7 @@ class TransactionRepository
             return $this->response->notFound('Transaksi tidak ditemukan berdasarkan kode transaksi.');
         }
 
+        $previousStatus = $trx->status;
         $updateData = $this->request($request, $trx);
         if (isset($updateData['file']) && $trx->file) {
             Storage::disk('public')->delete(str_replace('storage/', '', $trx->file));
@@ -953,6 +979,10 @@ class TransactionRepository
                     $variant->increment('stock', $item->quantity);
                 }
             }
+
+            if ($previousStatus != 5) {
+                $this->promoRepository->release_quota($trx->uuid);
+            }
         }
 
 
@@ -964,6 +994,10 @@ class TransactionRepository
         $trx = $this->transaction->where('uuid', $uuid)->first();
         if (!$trx) {
             return $this->response->notFound();
+        }
+
+        if ($trx->status != 5) {
+            $this->promoRepository->release_quota($trx->uuid);
         }
 
         $trx->items()->delete();

@@ -46,6 +46,8 @@ export default function PermissionIndex({ data }) {
             "transaction",
             "term",
             "brand",
+            "promo",
+            "notification",
         ].flatMap((r) => [
             `${r}-index`,
             `${r}-add`,
@@ -154,6 +156,8 @@ export default function PermissionIndex({ data }) {
                                     "transaction",
                                     "term",
                                     "brand",
+                                    "promo",
+                                    "notification",
                                 ].map((resource, index) => {
                                     const perms = {
                                         read: `${resource}-index`,

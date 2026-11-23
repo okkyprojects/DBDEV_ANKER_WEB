@@ -8,6 +8,8 @@ import {
     PiUserLight,
     PiCirclesFourLight,
     PiKeyLight,
+    PiTagLight,
+    PiBellLight,
 } from "react-icons/pi";
 import { PiBuildingApartmentLight } from "react-icons/pi";
 import styles from "./Sidebar.module.css";
@@ -54,6 +56,20 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 icon: <PiStackLight size={21} className="mr-4" />,
                 text: "Manajemen Pesanan",
                 url: "/pesanan/manajemen-pesanan",
+            },
+        ],
+        PROMOSI: [
+            permissions.includes("promo-index") && {
+                id: 14,
+                icon: <PiTagLight size={21} className="mr-4" />,
+                text: "Promo",
+                url: "/promosi/promo",
+            },
+            permissions.includes("notification-index") && {
+                id: 15,
+                icon: <PiBellLight size={21} className="mr-4" />,
+                text: "Notifikasi",
+                url: "/promosi/notifikasi",
             },
         ],
         MASTER: [

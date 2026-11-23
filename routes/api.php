@@ -12,6 +12,7 @@ use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfilController;
+use App\Http\Controllers\API\PromoController;
 use App\Http\Controllers\API\SellerController;
 use App\Http\Controllers\API\TermController;
 use App\Http\Controllers\API\TransactionController;
@@ -41,6 +42,7 @@ Route::get('/provinces', [LocationController::class, 'indexProvince']);
 Route::get('/cities', [LocationController::class, 'indexCity']);
 Route::get('/districts', [LocationController::class, 'indexDistrict']);
 Route::get('/banners', [BannerController::class, 'index']);
+Route::get('/promos', [PromoController::class, 'index']);
 Route::get('/terms', [TermController::class, 'index']);
 Route::get('/ps', [APIController::class, 'index']);
 
@@ -62,6 +64,7 @@ Route::prefix('auth')->group(function () {
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('carts', CartController::class);
+    Route::post('/promos/check', [PromoController::class, 'check']);
     Route::apiResource('transactions', TransactionController::class);
     Route::get('/export-transactions', [TransactionController::class, 'export']);
     Route::apiResource('addresses', AddressController::class);

@@ -23,6 +23,7 @@ class CartRepository
     private $variant;
     private $transaction;
     private $transactionItem;
+    private $promoRepository;
 
     public function __construct(
         Response $response,
@@ -32,6 +33,7 @@ class CartRepository
         Variant $variant,
         Transaction $transaction,
         TransactionItem $transactionItem,
+        PromoRepository $promoRepository,
     ) {
         $this->response = $response;
         $this->product = $product;
@@ -40,6 +42,7 @@ class CartRepository
         $this->variant = $variant;
         $this->transaction = $transaction;
         $this->transactionItem = $transactionItem;
+        $this->promoRepository = $promoRepository;
     }
     public function index()
     {
@@ -67,8 +70,15 @@ class CartRepository
                     'product_name'    => $variant->product->name,
                     'img'             => $variant->img,
                     'stock'     => $variant->stock,
+                    'is_free'         => false,
+                    'promo_uuid'      => null,
+                    'promo_name'      => null,
                 ];
             }
+
+            // Barang gratis dari promo, tampil di keranjang dengan harga Rp 0
+            $freeItems = $this->promoRepository->free_items($data);
+            $data = array_merge($data, $this->promoRepository->format_free_items($freeItems));
         }
 
         return $data;
@@ -144,7 +154,7 @@ class CartRepository
             return $this->response->notFound('Transaksi tidak ditemukan');
         }
 
-        $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->get();
+        $items = $this->transactionItem->where('transaction_uuid', $transaction->uuid)->where('is_free', false)->get();
         if ($items->isEmpty()) {
             return $this->response->notFound('Tidak ada item dalam transaksi');
         }

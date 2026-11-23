@@ -69,6 +69,10 @@ class User extends Authenticatable
         return $this->hasOne(Address::class)->where('is_main', true)
             ->with(['province', 'city', 'district']);
     }
+    public function device_tokens()
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
     // public function roles()
     // {
     //     return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'model_has_roles', 'model_id', 'role_id');

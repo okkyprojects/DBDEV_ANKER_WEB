@@ -15,11 +15,16 @@ class TransactionItem extends Model
     protected $fillable = [
         'transaction_uuid',
         'variant_uuid',
+        'promo_uuid',
         'product_name',
         'variant_name',
         'quantity',
         'price',
+        'is_free',
         'img',
+    ];
+    protected $casts = [
+        'is_free' => 'boolean',
     ];
 
     public function transaction()
@@ -33,5 +38,10 @@ class TransactionItem extends Model
     public function variant()
     {
         return $this->belongsTo(Variant::class, 'variant_uuid', 'uuid');
+    }
+
+    public function promo()
+    {
+        return $this->belongsTo(Promo::class, 'promo_uuid', 'uuid');
     }
 }

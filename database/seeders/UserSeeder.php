@@ -84,6 +84,18 @@ class UserSeeder extends Seeder
             'brand-update',
             'brand-delete',
             'brand-export',
+
+            'promo-index',
+            'promo-add',
+            'promo-update',
+            'promo-delete',
+            'promo-export',
+
+            'notification-index',
+            'notification-add',
+            'notification-update',
+            'notification-delete',
+            'notification-export',
         ];
         foreach ($permissions as $p) {
             Permission::firstOrCreate([

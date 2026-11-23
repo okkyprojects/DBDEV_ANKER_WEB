@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DeviceToken;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -75,8 +76,9 @@ class AuthController extends Controller
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'otp'   => 'required|string',
+            'email'        => 'required|email',
+            'otp'          => 'required|string',
+            'device_token' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -110,6 +112,13 @@ class AuthController extends Controller
         $user->save();
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        if ($request->filled('device_token')) {
+            DeviceToken::updateOrCreate(
+                ['device_token' => $request->device_token],
+                ['user_id' => $user->id]
+            );
+        }
 
         return response()->json([
             'success' => true,
@@ -168,8 +177,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string|min:6',
+            'email'        => 'required|email',
+            'password'     => 'required|string|min:6',
+            'device_token' => 'nullable|string|max:255',
         ]);
 
         $user = User::where('email', $request->email)
@@ -199,6 +209,13 @@ class AuthController extends Controller
         // }
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        if ($request->filled('device_token')) {
+            DeviceToken::updateOrCreate(
+                ['device_token' => $request->device_token],
+                ['user_id' => $user->id]
+            );
+        }
+
         return response()->json([
             'user'  => $user,
             'token' => $token,
@@ -208,6 +225,16 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $request->validate([
+            'device_token' => 'nullable|string|max:255',
+        ]);
+
+        if ($request->filled('device_token')) {
+            DeviceToken::where('user_id', $request->user()->id)
+                ->where('device_token', $request->device_token)
+                ->delete();
+        }
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logout berhasil']);

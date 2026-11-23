@@ -49,7 +49,7 @@
                 <td>{{ $item->variant->product->name ?? '-' }}</td>
 
                 {{-- ambil nama dan SKU varian dari relasi variant --}}
-                <td>{{ $item->variant->name ?? '-' }}</td>
+                <td>{{ $item->variant->name ?? '-' }}{{ $item->is_free ? ' (Gratis Promo)' : '' }}</td>
                 <td>{{ $item->variant->sku ?? '-' }}</td>
 
                 <td>{{ $item->quantity }}</td>

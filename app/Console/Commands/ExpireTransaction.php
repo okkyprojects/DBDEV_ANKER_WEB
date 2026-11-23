@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Repositories\PromoRepository;
 use App\Models\Transaction;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
@@ -15,14 +16,14 @@ class ExpireTransaction extends Command
 
     protected $description = 'Expire transaction and restore stock';
 
-    public function handle()
+    public function handle(PromoRepository $promoRepository)
     {
         Log::info('ExpireTransaction START', [
             'time' => now()->toDateTimeString()
         ]);
 
         try {
-            DB::transaction(function () {
+            DB::transaction(function () use ($promoRepository) {
                 $transactions = Transaction::with('items.variant')
                     ->where('status', 0)
                     ->where('expired_at', '<', Carbon::now())
@@ -58,6 +59,8 @@ class ExpireTransaction extends Command
                         'status' => 5,
                         'note_transaction' => 'Kadaluarsa',
                     ]);
+
+                    $promoRepository->release_quota($transaction->uuid);
 
                     Log::info('Transaction EXPIRED', [
                         'transaction_id' => $transaction->id

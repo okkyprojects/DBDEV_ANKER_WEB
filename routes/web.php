@@ -5,8 +5,10 @@ use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\PromoController;
 use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
@@ -102,6 +104,20 @@ Route::middleware('auth')->group(function () {
             Route::post('/import-pesanan', [TransactionController::class, 'import'])->name('manajemen.import');
             Route::delete('/manajemen-pesanan/{uuid}', [TransactionController::class, 'destroy'])->name('manajemen.destroy');
             Route::post('/manajemen-pesanan/{uuid}', [TransactionController::class, 'update'])->name('manajemen.update');
+        });
+    Route::prefix('promosi')
+        ->name('promosi.')
+        ->middleware('auth')
+        ->group(function () {
+            // Promo
+            Route::get('/promo', [PromoController::class, 'index'])->name('promo.index');
+            Route::post('/promo', [PromoController::class, 'store'])->name('promo.store');
+            Route::delete('/promo/{uuid}', [PromoController::class, 'destroy'])->name('promo.destroy');
+            Route::post('/promo/{uuid}/notifikasi', [PromoController::class, 'notify'])->name('promo.notify');
+
+            // Notifikasi
+            Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notification.index');
+            Route::post('/notifikasi', [NotificationController::class, 'store'])->name('notification.store');
         });
     Route::delete('/variant/{uuid}', [VariantController::class, 'destroy'])->name('variant.destroy');
     Route::get('/export-variant', [VariantController::class, 'export'])->name('variant.export');
